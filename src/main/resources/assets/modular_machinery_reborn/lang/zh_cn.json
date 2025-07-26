@@ -69,6 +69,8 @@
 
   "craftcheck.failure.item.input": "缺少物品输入, 需要 %sx %s！",
   "craftcheck.failure.item.output.space": "没有足够的库存空间用于物品输出！",
+  "craftcheck.failure.durability.input": "耐久值不足, 需要 %s 但已找到 %s！",
+  "craftcheck.failure.durability.output": "未能修复物品, 尝试修复 %s 耐久值但是 %s 空余！",
   "craftcheck.failure.fluid.input": "缺少液体输入, 需要 %s mB %s 但找到 %s mB %s！",
   "craftcheck.failure.fluid.output.space": "没有足够的库存空间用于流体输出, 需要 %s mB 但找到 %s mB 空余！",
   "craftcheck.failure.fluid.output.fluid": "与容器中已有流体不匹配, 需要 %s 但找到 %s!",
@@ -103,6 +105,8 @@
   "component.missing.height": "未找到高度计！",
   "component.missing.chunkload": "未找到区块加载器！",
   "component.missing.function": "未找到函数组件（控制器集成）！",
+  "component.missing.durability.input": "未找到耐久值损耗仓！",
+  "component.missing.durability.output": "未找到耐久值修复仓！",
 
   "gui.blueprint.popout.info": "潜行以将当前预览锁定在当前世界中。",
   "gui.blueprint.popout.place": "右击以显示预览；远离或放置其他结构预览（蓝图）将会清除此前世界中的结构预览；视角面对控制器时可以根据其朝向自动旋转。",
@@ -231,6 +235,11 @@
   "block.modular_machinery_reborn.outputbus_huge": "巨型物品输出仓",
   "block.modular_machinery_reborn.outputbus_ludicrous": "超级物品输出仓",
 
+  "block.modular_machinery_reborn.durabilityhatch_tiny": "微型耐久处理仓",
+  "block.modular_machinery_reborn.durabilityhatch_small": "小型耐久处理仓",
+  "block.modular_machinery_reborn.durabilityhatch_normal": "中型耐久处理仓",
+  "block.modular_machinery_reborn.durabilityhatch_big": "大型耐久处理仓",
+
   "block.modular_machinery_reborn.fluidinputhatch_tiny": "微型流体输入仓",
   "block.modular_machinery_reborn.fluidinputhatch_small": "小型流体输入仓",
   "block.modular_machinery_reborn.fluidinputhatch_normal": "中型流体输入仓",
@@ -351,6 +360,9 @@
   "modular_machinery_reborn.jei.ingredient.height": "高度: %s",
   "modular_machinery_reborn.jei.ingredient.chunkload": "区块加载器半径: %s",
 
+  "modular_machinery_reborn.ingredient.durability.consume": "消耗 %s 耐久值",
+  "modular_machinery_reborn.ingredient.durability.repair": "修复 %s 耐久值",
+
   "modular_machinery_reborn.controller.tooltip.0": "使用蓝图右键已放置的控制器",
   "modular_machinery_reborn.controller.tooltip.1": "来显示关于这个控制器的结构",
   "modular_machinery_reborn.controller.no_machine": "未找到机器",
@@ -381,6 +393,8 @@
   "mmr.recipe.modifier.speed.MULTIPLICATION": " (x%s 倍配方处理的速度)",
   "mmr.recipe.modifier.item.ADDITION": " (为配方增加 %s 物品 %s , 是否影响概率: %s)",
   "mmr.recipe.modifier.item.MULTIPLICATION": " (为配方提供 %s 倍物品 %s, 是否影响概率: %s)",
+  "mmr.recipe.modifier.durability.ADDITION": " (为配方增加 %s 物品耐久值 %s)",
+  "mmr.recipe.modifier.durability.MULTIPLICATION": " (为配方增加 %s 倍品耐久值 %s)",
   "mmr.recipe.modifier.fluid.ADDITION": " (为配方增加 %s 流体 %s, 是否影响概率: %s)",
   "mmr.recipe.modifier.fluid.MULTIPLICATION": " (为配方提供 %s 倍流体 %s, 是否影响概率: %s)",
   "mmr.recipe.modifier.energy.ADDITION": " (为配方增加 %s 能源 %s, 是否影响概率: %s)",
