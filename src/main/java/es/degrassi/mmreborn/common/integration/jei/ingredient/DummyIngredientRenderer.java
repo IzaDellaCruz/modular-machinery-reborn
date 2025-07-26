@@ -11,20 +11,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class DummyIngredientRenderer<T> implements IIngredientRenderer<T> {
 
-    @Override
-    public void render(GuiGraphics graphics, @Nullable T t) {
+  @Override
+  public void render(GuiGraphics graphics, @Nullable T t) {
+    // Do not render anything as it is dummy
+  }
 
-    }
+  //Safe to remove
+  @SuppressWarnings("removal")
+  @Override
+  public List<Component> getTooltip(T t, TooltipFlag iTooltipFlag) {
+    return new ArrayList<>();
+  }
 
-    //Safe to remove
-    @SuppressWarnings("removal")
-    @Override
-    public List<Component> getTooltip(T t, TooltipFlag iTooltipFlag) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
-
-    }
+  @Override
+  public void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
+    // Do not get any tooltip as it is dummy
+  }
 }

@@ -48,7 +48,8 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
-  public ExperienceHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ExperienceHatchSize size, IOType ioType) {
+  protected ExperienceHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ExperienceHatchSize size,
+                          IOType ioType) {
     super(type, pos, state);
     this.size = size;
     this.ioType = ioType;

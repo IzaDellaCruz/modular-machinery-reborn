@@ -12,6 +12,7 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nullable;
 
 public class RedstoneHelper {
+  private RedstoneHelper() {}
   public static int getRedstoneLevel(@Nullable BlockEntity sync) {
     if (sync == null) return 0;
     return switch (sync) {

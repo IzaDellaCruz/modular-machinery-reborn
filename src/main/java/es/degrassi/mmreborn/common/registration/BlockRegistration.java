@@ -36,6 +36,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class BlockRegistration {
+  private BlockRegistration() {}
   public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ModularMachineryReborn.MODID);
 
   public static final DeferredBlock<BlockCasing> CASING_PLAIN = BLOCKS.register(rootLC("casing_" + CasingType.PLAIN.getSerializedName()), BlockCasing::new);

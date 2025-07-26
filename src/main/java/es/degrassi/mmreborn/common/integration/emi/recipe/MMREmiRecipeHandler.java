@@ -21,6 +21,7 @@ import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.network.client.emi.FillRecipeC2SPacket;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -211,7 +212,7 @@ public class MMREmiRecipeHandler implements StandardRecipeHandler<ControllerCont
             }
           });
     } catch (Exception e) {
-      e.printStackTrace();
+      MMRLogger.INSTANCE.error(e);
     }
     return stacks;
   }

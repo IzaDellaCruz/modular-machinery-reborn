@@ -40,10 +40,12 @@ public class ExperienceWidget extends AbstractWidget {
 
   @Override
   public void playDownSound(SoundManager handler) {
+    // Do not play a sound on click
   }
 
   @Override
   protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    this.defaultButtonNarrationText(narrationElementOutput);
   }
 
   public List<FormattedCharSequence> getTooltipMessage() {

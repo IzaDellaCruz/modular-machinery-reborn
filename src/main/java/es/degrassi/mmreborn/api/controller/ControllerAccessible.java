@@ -18,10 +18,8 @@ public interface ControllerAccessible {
 
   @Nullable
   default MachineControllerEntity getController() {
-    if (getLevel() != null && getControllerPos() != null) {
-      if (getLevel().getBlockEntity(getControllerPos()) instanceof MachineControllerEntity entity) {
-        return entity;
-      }
+    if (getLevel() != null && getControllerPos() != null && getLevel().getBlockEntity(getControllerPos()) instanceof MachineControllerEntity entity) {
+      return entity;
     }
     return null;
   }

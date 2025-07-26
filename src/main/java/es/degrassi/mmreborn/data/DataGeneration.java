@@ -12,6 +12,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @EventBusSubscriber(modid = ModularMachineryReborn.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGeneration {
+  private DataGeneration() {}
 
   @SubscribeEvent
   public static void gatherData(GatherDataEvent event) {

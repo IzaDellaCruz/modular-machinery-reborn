@@ -45,6 +45,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class DefaultCodecs {
+  private DefaultCodecs() {}
 
   public static final NamedCodec<ResourceLocation> RESOURCE_LOCATION = NamedCodec.STRING.comapFlatMap(DefaultCodecs::decodeResourceLocation, ResourceLocation::toString, "Resource location");
   public static final NamedCodec<Character> CHARACTER = NamedCodec.STRING.comapFlatMap(DefaultCodecs::decodeCharacter, Object::toString, "Character");

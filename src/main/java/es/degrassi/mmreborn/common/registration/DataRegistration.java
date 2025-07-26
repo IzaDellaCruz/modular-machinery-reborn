@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class DataRegistration {
+  private DataRegistration() {}
   public static final DeferredRegister<DataType<?, ?>> DATAS = DeferredRegister.create(DataType.REGISTRY_KEY, ModularMachineryReborn.MODID);
   public static final Registry<DataType<?, ?>> DATA_REGISTRY = DATAS.makeRegistry(builder -> {});
 

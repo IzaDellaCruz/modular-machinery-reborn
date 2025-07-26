@@ -11,6 +11,7 @@ import net.neoforged.fml.ModLoader;
 import java.util.Map;
 
 public class EmiComponentRegistry {
+  private EmiComponentRegistry() {}
   private static Map<RequirementType<?>, EmiComponentFactory<?, ?>> components;
 
   public static void init() {

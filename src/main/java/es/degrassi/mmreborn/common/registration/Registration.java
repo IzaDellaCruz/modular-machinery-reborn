@@ -6,6 +6,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.bus.api.IEventBus;
 
 public class Registration {
+  private Registration() {}
   public static final LootContextParamSet MODULAR_MACHINERY_LOOT_PARAMETER_SET = LootContextParamSets.register(
       "modular_machinery_reborn", builder ->
       builder.optional(LootContextParams.ORIGIN).optional(LootContextParams.BLOCK_ENTITY)

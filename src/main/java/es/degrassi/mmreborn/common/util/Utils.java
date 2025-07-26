@@ -1,14 +1,15 @@
 package es.degrassi.mmreborn.common.util;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Random;
-
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class Utils {
-  public static final Random RAND = new Random();
+  private Utils() {}
+  public static final RandomSource RAND = RandomSource.create();
   private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("#,###");
   public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 

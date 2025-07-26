@@ -18,7 +18,7 @@ public abstract class TileInventory extends ColorableMachineComponentEntity {
   protected final IOInventory inventory;
   private final int slots;
 
-  public TileInventory(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, int slots) {
+  protected TileInventory(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, int slots) {
     super(entityType, pos, blockState);
     this.inventory = buildInventory(slots);
     this.slots = slots;

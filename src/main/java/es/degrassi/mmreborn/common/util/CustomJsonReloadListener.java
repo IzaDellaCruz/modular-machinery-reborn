@@ -23,7 +23,7 @@ public abstract class CustomJsonReloadListener extends SimplePreparableReloadLis
   private static final Logger LOGGER = MMRLogger.INSTANCE;
   private final String directory;
 
-  public CustomJsonReloadListener(String string) {
+  protected CustomJsonReloadListener(String string) {
     this.directory = string;
   }
 

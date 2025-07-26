@@ -35,13 +35,11 @@ public record CExperienceButtonClickedPacket(BlockPos entityPos, ExperienceButto
   }
 
   public static void handle(CExperienceButtonClickedPacket packet, IPayloadContext context) {
-    if (context.player() instanceof ServerPlayer player) {
-      if (player.level().getBlockEntity(packet.entityPos) instanceof ExperienceHatchEntity entity) {
-        if (packet.amount.isAll())
-          ExperienceUtils.addAllLevelToPlayer(entity.getTank(), packet.extraction, player);
-        else
-          ExperienceUtils.addLevelToPlayer(entity.getTank(), packet.amount.getAmount(packet.extraction), player);
-      }
+    if (context.player() instanceof ServerPlayer player && player.level().getBlockEntity(packet.entityPos) instanceof ExperienceHatchEntity entity) {
+      if (packet.amount.isAll())
+        ExperienceUtils.addAllLevelToPlayer(entity.getTank(), packet.extraction, player);
+      else
+        ExperienceUtils.addLevelToPlayer(entity.getTank(), packet.amount.getAmount(packet.extraction), player);
     }
   }
 }

@@ -18,6 +18,7 @@ import java.util.Map;
  * crash.
  */
 public class TextureSizeHelper {
+  private TextureSizeHelper() {}
 
   private static final Logger LOGGER = LogManager.getLogger();
   private static final Map<ResourceLocation, Pair<Integer, Integer>> SIZES = Maps.newHashMap();

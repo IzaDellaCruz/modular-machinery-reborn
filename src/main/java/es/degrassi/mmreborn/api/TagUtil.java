@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 public class TagUtil {
+  private TagUtil() {}
 
   public static Stream<Item> getItems(TagKey<Item> tag) {
     return BuiltInRegistries.ITEM.getTag(tag).map(named -> named.stream().map(Holder::value)).orElse(Stream.empty());

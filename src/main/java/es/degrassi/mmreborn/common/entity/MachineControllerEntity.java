@@ -72,7 +72,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   private int lastFocus;
   private SoundManager soundManager;
 
-  private final long tickOffset = Utils.RAND.nextLong(0, Long.MAX_VALUE);
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE);
   private long lastCheckTick;
 
   public MachineControllerEntity(BlockPos pos, BlockState state) {

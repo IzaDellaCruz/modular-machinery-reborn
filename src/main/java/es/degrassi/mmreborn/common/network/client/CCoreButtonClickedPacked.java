@@ -32,10 +32,8 @@ public record CCoreButtonClickedPacked(BlockPos entityPos, int cores) implements
   }
 
   public static void handle(CCoreButtonClickedPacked packet, IPayloadContext context) {
-    if (context.player() instanceof ServerPlayer player) {
-      if (player.level().getBlockEntity(packet.entityPos) instanceof ParallelHatchEntity entity) {
-        entity.setCores(packet.cores);
-      }
+    if (context.player() instanceof ServerPlayer player && player.level().getBlockEntity(packet.entityPos) instanceof ParallelHatchEntity entity) {
+      entity.setCores(packet.cores);
     }
   }
 }

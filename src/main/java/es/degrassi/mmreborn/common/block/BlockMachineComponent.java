@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class BlockMachineComponent extends Block implements BlockDynamicColor, EntityBlock {
-  public BlockMachineComponent(Properties properties) {
+  protected BlockMachineComponent(Properties properties) {
     super(properties.requiresCorrectToolForDrops());
   }
 

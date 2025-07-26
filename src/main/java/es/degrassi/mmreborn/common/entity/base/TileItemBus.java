@@ -39,7 +39,8 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
-  public TileItemBus(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, ItemBusSize size, IOType ioType) {
+  protected TileItemBus(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, ItemBusSize size,
+                   IOType ioType) {
     super(entityType, pos, blockState, size.getSlotCount());
     this.size = size;
     this.ioType = ioType;

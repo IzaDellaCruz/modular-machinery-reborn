@@ -252,8 +252,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   public void repairItem(ItemStack stack, int amount) {
-    removeDurability(stack, -amount);
-    /*AtomicInteger toRepair = new AtomicInteger(amount);
+    AtomicInteger toRepair = new AtomicInteger(amount);
     this.inputs.stream()
         .filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .forEach(component -> {
@@ -261,7 +260,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
           toRepair.addAndGet(-maxRepair);
           component.getItemStack().setDamageValue(component.getItemStack().getDamageValue() - maxRepair);
         });
-    setChanged();*/
+    setChanged();
   }
 
   public void removeDurability(ItemStack input, int amount) {

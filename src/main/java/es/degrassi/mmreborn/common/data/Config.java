@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.common.data;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 
 public class Config {
+  private Config() {}
   public static int machineColor;
   public static int chanceColor;
 

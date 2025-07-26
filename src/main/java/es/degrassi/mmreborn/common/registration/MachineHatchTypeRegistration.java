@@ -13,13 +13,12 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class MachineHatchTypeRegistration {
+  private MachineHatchTypeRegistration() {}
 
   public static final DeferredRegister<MachineHatchType> MACHINE_COMPONENTS =
       DeferredRegister.create(MachineHatchType.REGISTRY_KEY, ModularMachineryReborn.MODID);
   public static final Registry<MachineHatchType> MachineHatchType_REGISTRY = MACHINE_COMPONENTS.makeRegistry(builder -> {
   });
-
-  // TODO: update wiki to this new thing
 
   public static final Supplier<MachineHatchType> BIOME_READER =
       MACHINE_COMPONENTS.register(rootLC("BIOME_READER".toLowerCase(Locale.ENGLISH)),

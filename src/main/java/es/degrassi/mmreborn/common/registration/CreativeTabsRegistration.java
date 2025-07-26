@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class CreativeTabsRegistration {
+  private CreativeTabsRegistration() {}
   public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModularMachineryReborn.MODID);
 
   public static final Supplier<CreativeModeTab> MODULAR_MACHINERY_REBORN_TAB = CREATIVE_TABS.register("modular_machinery_reborn", () -> CreativeModeTab.builder()

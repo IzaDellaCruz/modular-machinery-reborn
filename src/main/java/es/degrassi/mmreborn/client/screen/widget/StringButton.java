@@ -67,11 +67,9 @@ public class StringButton extends Button implements TooltipRender {
 
   @Override
   public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-    if (isMouseOver(mouseX, mouseY)) {
-      if (renderTooltip && tooltips != null && !tooltips.isEmpty()) {
-        for (Component tooltip : tooltips) {
-          guiGraphics.renderTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
-        }
+    if (isMouseOver(mouseX, mouseY) && renderTooltip && tooltips != null && !tooltips.isEmpty()) {
+      for (Component tooltip : tooltips) {
+        guiGraphics.renderTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
       }
     }
   }

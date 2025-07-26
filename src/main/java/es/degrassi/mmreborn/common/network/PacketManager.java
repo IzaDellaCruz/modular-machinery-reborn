@@ -17,7 +17,6 @@ import es.degrassi.mmreborn.common.network.server.SUpdateContainerPacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateCraftingStatusPacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineColorPacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
-import es.degrassi.mmreborn.common.network.server.SUpdateRecipePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateCoresPacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateEnergyComponentPacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateExperienceComponentPacket;
@@ -31,6 +30,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @EventBusSubscriber(modid = ModularMachineryReborn.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class PacketManager {
+  private PacketManager() {}
   @SubscribeEvent
   public static void register(final RegisterPayloadHandlersEvent event) {
     final PayloadRegistrar registrar = event.registrar(ModularMachineryReborn.MODID);
@@ -43,7 +43,6 @@ public class PacketManager {
     registrar.playToClient(SUpdateFluidComponentPacket.TYPE, SUpdateFluidComponentPacket.CODEC, SUpdateFluidComponentPacket::handle);
     registrar.playToClient(SUpdateItemComponentPacket.TYPE, SUpdateItemComponentPacket.CODEC, SUpdateItemComponentPacket::handle);
     registrar.playToClient(SUpdateCraftingStatusPacket.TYPE, SUpdateCraftingStatusPacket.CODEC, SUpdateCraftingStatusPacket::handle);
-    registrar.playToClient(SUpdateRecipePacket.TYPE, SUpdateRecipePacket.CODEC, SUpdateRecipePacket::handle);
     registrar.playToClient(SUpdateMachineColorPacket.TYPE, SUpdateMachineColorPacket.CODEC, SUpdateMachineColorPacket::handle);
     registrar.playToClient(SUpdateMachineTexturePacket.TYPE, SUpdateMachineTexturePacket.CODEC, SUpdateMachineTexturePacket::handle);
     registrar.playToClient(SSyncMachinesPacket.TYPE, SSyncMachinesPacket.CODEC, SSyncMachinesPacket::handle);

@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class ProcessorTypeRegistration {
+  private ProcessorTypeRegistration() {}
   public static final DeferredRegister<ProcessorType<? extends IProcessor>> MACHINE_PROCESSORS =
       DeferredRegister.create(ProcessorType.REGISTRY_KEY, ModularMachineryReborn.MODID);
 

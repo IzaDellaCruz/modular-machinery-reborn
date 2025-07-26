@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ChunkloaderList {
+  private ChunkloaderList() {}
 
   private static final List<WeakReference<ChunkloaderEntity>> LOADED_MACHINES = Collections.synchronizedList(Lists.newArrayList());
 

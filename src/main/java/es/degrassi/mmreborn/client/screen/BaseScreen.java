@@ -29,7 +29,7 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   public static final ResourceLocation TAB_HOVERED = ModularMachineryReborn.rl("textures/gui/widget/base_tab_hovered.png");
 
   protected final E entity;
-  public BaseScreen(T menu, Inventory playerInventory, Component title) {
+  protected BaseScreen(T menu, Inventory playerInventory, Component title) {
     super(menu, playerInventory, title);
     this.entity = menu.getEntity();
   }

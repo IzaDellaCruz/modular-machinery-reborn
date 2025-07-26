@@ -11,6 +11,7 @@ import net.neoforged.fml.ModLoader;
 import java.util.Map;
 
 public class EmiStackRegistry {
+  private EmiStackRegistry() {}
   private static Map<RequirementType<?>, EmiStackFactory<?>> stacks;
 
   public static void init() {

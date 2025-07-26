@@ -11,6 +11,7 @@ import net.neoforged.fml.ModLoader;
 import java.util.Map;
 
 public class JeiComponentRegistry {
+  private JeiComponentRegistry() {}
   private static Map<RequirementType<?>, JeiComponentFactory<?, ?>> components;
 
   public static void init() {

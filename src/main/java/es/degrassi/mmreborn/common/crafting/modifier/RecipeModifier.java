@@ -12,9 +12,9 @@ import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 
 import java.util.List;
-import java.util.Random;
 
 @Getter
 public abstract class RecipeModifier implements IRecipeModifier {
@@ -54,7 +54,7 @@ public abstract class RecipeModifier implements IRecipeModifier {
     blacklist.add(requirementType);
   }
 
-  public static final Random RAND = new Random();
+  public static final RandomSource RAND = RandomSource.create();
 
   public final RequirementType<?> requirementType;
   public final IOType mode;
@@ -64,7 +64,8 @@ public abstract class RecipeModifier implements IRecipeModifier {
   public final float min;
   public final Component tooltip;
 
-  public RecipeModifier(RequirementType<?> requirementType, IOType mode, float modifier, float chance, float max, float min) {
+  protected RecipeModifier(RequirementType<?> requirementType, IOType mode, float modifier, float chance, float max,
+                   float min) {
     this.requirementType = requirementType;
     this.mode = mode;
     this.modifier = modifier;

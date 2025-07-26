@@ -44,10 +44,9 @@ public class Range<T extends Comparable<T>> {
   public T match(List<T> things) {
     T matched = null;
     for (T thing : things) {
-      if (contains(thing)) {
-        // valid - check if it is greater than the currently matched version
-        if (matched == null || thing.compareTo(matched) > 0)
-          matched = thing;
+      // valid - check if it is greater than the currently matched version
+      if (contains(thing) && (matched == null || thing.compareTo(matched) > 0)) {
+        matched = thing;
       }
     }
     return matched;

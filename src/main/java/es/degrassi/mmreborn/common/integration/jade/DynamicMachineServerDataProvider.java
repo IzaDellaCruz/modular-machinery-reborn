@@ -29,10 +29,6 @@ public class DynamicMachineServerDataProvider implements IServerDataProvider<Blo
                 .filter(MachineProcessorCore::hasActiveRecipe)
                 .count()
         );
-//        if (machine.hasActiveRecipe()) {
-//          tag.putDouble("progress", machine.getFirstRunningCore().map(MachineProcessorCore::getRecipeProgressTime).orElse(0f));
-//          tag.putInt("total", machine.getFirstRunningCore().map(MachineProcessorCore::getRecipeTotalTime).map(Float::intValue).orElse(0));
-//        }
       }
       nbt.put(ModularMachineryReborn.MODID, tag);
     }

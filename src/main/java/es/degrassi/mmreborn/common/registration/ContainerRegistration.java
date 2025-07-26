@@ -18,6 +18,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class ContainerRegistration {
+  private ContainerRegistration() {}
   public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(BuiltInRegistries.MENU, ModularMachineryReborn.MODID);
 
   public static final DeferredHolder<MenuType<?>, MenuType<ControllerContainer>> CONTROLLER =

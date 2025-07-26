@@ -206,6 +206,7 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
   }
 
   protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    // Do not render the default texts
   }
 
   public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {

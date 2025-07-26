@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class MiscUtils {
+  private MiscUtils() {}
 
   public static List<String> splitStringBy(String str, String spl) {
     return Lists.newArrayList(str.split(spl));

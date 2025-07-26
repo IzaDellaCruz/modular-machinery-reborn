@@ -22,10 +22,8 @@ public record SAddControllerRenderer(BlockPos controllerPos) implements CustomPa
   }
 
   public static void handle(SAddControllerRenderer packet, IPayloadContext context) {
-    if (context.flow().isClientbound()) {
-      if (context.player().level().getBlockEntity(packet.controllerPos) instanceof MachineControllerEntity entity) {
-        ControllerRenderer.add(entity.getFoundMachine(), packet.controllerPos);
-      }
+    if (context.flow().isClientbound() && context.player().level().getBlockEntity(packet.controllerPos) instanceof MachineControllerEntity entity) {
+      ControllerRenderer.add(entity.getFoundMachine(), packet.controllerPos);
     }
   }
 }

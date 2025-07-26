@@ -18,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -41,6 +42,7 @@ public class Structure {
   ).apply(structure, Structure::makeStructure), "Structure with modifiers");
 
   public static final Structure EMPTY = new Structure(Map.of(), List.of(List.of("m")), Map.of(), List.of());
+  private static final RandomSource random = RandomSource.create();
 
   private static Structure makeStructure(List<List<String>> pattern, Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
     Structure.Builder builder = Structure.Builder.start();
@@ -139,7 +141,7 @@ public class Structure {
         continue;
       }
       if (worldPos.equals(controllerPos)) continue;
-      setBlock(level, worldPos, ingredient.getAll().get((int) (Math.random() * ingredient.getAll().size())));
+      setBlock(level, worldPos, ingredient.getAll().get(random.nextInt() * ingredient.getAll().size()));
     }
   }
 

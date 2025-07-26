@@ -235,12 +235,6 @@ public class MMRJeiPlugin implements IModPlugin {
     jeiHelpers = jeiRuntime.getJeiHelpers();
   }
 
-  public static void reloadMachines(Map<ResourceLocation, DynamicMachine> machines) {
-    machines.forEach((id, machine) -> {
-//      MMRRecipeCategory category = recipeCategories.get(machine);
-    });
-  }
-
 
   /**
    * This decorator is adapted from AlmostUnified <a href="https://github.com/AlmostReliable/almostunified/blob/1.21.1/Common/src/main/java/com/almostreliable/unified/compat/viewer/AlmostJEI.java">AlmostJEI$Decorator</a>

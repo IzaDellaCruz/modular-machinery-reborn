@@ -30,6 +30,7 @@ public class BlockEntitySynchronized extends BlockEntity implements IEntitySynch
   }
 
   public void tick() {
+    // Used by overrides with no functionality by default
   }
 
   @Override

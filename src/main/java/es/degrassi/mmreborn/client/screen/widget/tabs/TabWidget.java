@@ -70,6 +70,7 @@ public class TabWidget extends AbstractWidget {
 
   @Override
   protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    this.defaultButtonNarrationText(narrationElementOutput);
   }
 
   public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
@@ -98,6 +99,7 @@ public class TabWidget extends AbstractWidget {
   }
 
   public void gatherComponents(List<Either<FormattedText, TooltipComponent>> components) {
+    // Used on subclasses but by default it should not collect anything
   }
 
   public interface OnClick {

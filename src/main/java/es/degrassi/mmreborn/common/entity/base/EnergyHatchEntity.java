@@ -52,7 +52,8 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
-  public EnergyHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EnergyHatchSize size, IOType ioType) {
+  protected EnergyHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EnergyHatchSize size,
+                          IOType ioType) {
     super(type, pos, state);
     this.size = size;
     this.ioType = ioType;

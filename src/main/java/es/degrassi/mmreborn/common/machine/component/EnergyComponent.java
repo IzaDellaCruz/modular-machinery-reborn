@@ -37,7 +37,7 @@ public class EnergyComponent extends MachineComponent<IEnergyHandler> {
 
           @Override
           public void setCurrentEnergy(long energy) {
-
+            // can't set data on the merged components
           }
 
           @Override

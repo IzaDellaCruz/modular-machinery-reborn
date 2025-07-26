@@ -61,7 +61,7 @@ public class FluidComponent extends MachineComponent<HybridTank> {
 
           @Override
           public void setFluid(FluidStack stack) {
-
+            // can't set data on the merged components
           }
 
           @Override

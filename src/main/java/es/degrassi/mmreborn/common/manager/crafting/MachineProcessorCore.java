@@ -19,19 +19,19 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class MachineProcessorCore implements ISyncableStuff {
   private final MachineProcessor processor;
   private final MachineControllerEntity tile;
-  private final Random rand = Utils.RAND;
+  private final RandomSource rand = Utils.RAND;
   private final MachineRecipeFinder recipeFinder;
   @Getter
   @Setter
@@ -76,19 +76,17 @@ public class MachineProcessorCore implements ISyncableStuff {
 
   @SuppressWarnings("unchecked")
   public void init() {
-    if (isActive()) {
-      //Search for previous recipe
-      if (this.futureRecipeID != null && this.tile.getLevel() != null) {
-        this.tile.getLevel().getRecipeManager()
-            .byKey(this.futureRecipeID)
-            .filter(holder -> holder.value() instanceof MachineRecipe)
-            .map(holder -> (RecipeHolder<MachineRecipe>) holder)
-            .ifPresent(this::setRecipe);
-        //Remove all requirements that were already processed before the machine was unloaded.
-        this.requirementList.getProcessRequirements().entrySet().removeIf(entry -> entry.getKey() < this.recipeProgressTime / this.recipeTotalTime);
-        this.futureRecipeID = null;
-        this.tile.getComponentManager().updateComponents(true);
-      }
+    //Search for previous recipe
+    if (isActive() && this.futureRecipeID != null && this.tile.getLevel() != null) {
+      this.tile.getLevel().getRecipeManager()
+          .byKey(this.futureRecipeID)
+          .filter(holder -> holder.value() instanceof MachineRecipe)
+          .map(holder -> (RecipeHolder<MachineRecipe>) holder)
+          .ifPresent(this::setRecipe);
+      //Remove all requirements that were already processed before the machine was unloaded.
+      this.requirementList.getProcessRequirements().entrySet().removeIf(entry -> entry.getKey() < this.recipeProgressTime / this.recipeTotalTime);
+      this.futureRecipeID = null;
+      this.tile.getComponentManager().updateComponents(true);
     }
     this.recipeFinder.init();
   }

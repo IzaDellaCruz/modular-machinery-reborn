@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class RequirementTypeRegistration {
+  private RequirementTypeRegistration() {}
   public static final DeferredRegister<RequirementType<? extends IRequirement<?>>> MACHINE_REQUIREMENTS =
       DeferredRegister.create(RequirementType.REGISTRY_KEY, ModularMachineryReborn.MODID);
 

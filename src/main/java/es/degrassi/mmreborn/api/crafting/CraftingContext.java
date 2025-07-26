@@ -111,8 +111,6 @@ public class CraftingContext implements ICraftingContext {
       }
     }
     return modified;
-
-    // return RecipeModifierOld.applyModifiers(tile.getComponentManager().getModifiers(type), type, mode, value, false);
   }
 
   public static class Mutable extends CraftingContext {

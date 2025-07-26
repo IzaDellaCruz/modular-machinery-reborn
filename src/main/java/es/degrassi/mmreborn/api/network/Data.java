@@ -7,7 +7,7 @@ public abstract class Data<T> implements IData<T> {
     private final short id;
     private final T value;
 
-    public Data(DataType<?, T> type, short id, T value) {
+    protected Data(DataType<?, T> type, short id, T value) {
         this.type = type;
         this.id = id;
         this.value = value;

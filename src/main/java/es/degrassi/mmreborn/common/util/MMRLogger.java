@@ -17,6 +17,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 public class MMRLogger {
+  private MMRLogger() {}
 
   public static final Logger INSTANCE = ModularMachineryReborn.LOGGER;
   public static final String NAME = "Modular Machinery Reborn";
@@ -32,7 +33,9 @@ public class MMRLogger {
 
     TriggeringPolicy policy = new TriggeringPolicy() {
       @Override
-      public void initialize(RollingFileManager manager) {}
+      public void initialize(RollingFileManager manager) {
+        // Required to create an instance
+      }
 
       @Override
       public boolean isTriggeringEvent(LogEvent logEvent) {

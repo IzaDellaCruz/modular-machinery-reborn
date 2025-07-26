@@ -131,10 +131,8 @@ public class IconButton extends Button implements TooltipRender {
 
   @Override
   public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-    if (isMouseOver(mouseX, mouseY)) {
-      if (renderTooltip) {
-        guiGraphics.renderTooltip(Minecraft.getInstance().font, getTooltipMessage().stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
-      }
+    if (isMouseOver(mouseX, mouseY) && renderTooltip) {
+      guiGraphics.renderTooltip(Minecraft.getInstance().font, getTooltipMessage().stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
     }
   }
 

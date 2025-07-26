@@ -36,8 +36,6 @@ public class RegistrarCodec<V> implements NamedCodec<V> {
       of(ModularMachineryReborn.getRequirementRegistrar(), true);
   public static final NamedCodec<ComponentType> COMPONENT = of(ModularMachineryReborn.getComponentRegistrar(), true);
   public static final NamedCodec<MachineHatchType> HATCH_TYPE = of(ModularMachineryReborn.getMachineHatchTypeRegistrar(), true);
-//    public static final NamedCodec<GuiElementType<?>> GUI_ELEMENT = of(ICustomMachineryAPI.INSTANCE.guiElementRegistrar(), true);
-//    public static final NamedCodec<MachineAppearanceProperty<?>> APPEARANCE_PROPERTY = of(ICustomMachineryAPI.INSTANCE.appearancePropertyRegistrar(), true);
   public static final NamedCodec<DataType<?, ?>> DATA = of(ModularMachineryReborn.dataRegistrar(), true);
   public static final NamedCodec<ProcessorType<?>> CRAFTING_PROCESSOR = of(ModularMachineryReborn.processorRegistrar(), true);
 

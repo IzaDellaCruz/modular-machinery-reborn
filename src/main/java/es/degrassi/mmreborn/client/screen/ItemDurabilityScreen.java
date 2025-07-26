@@ -24,7 +24,9 @@ public class ItemDurabilityScreen extends BaseScreen<ItemDurabilityContainer, Du
   }
 
   @Override
-  protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {}
+  protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    // Do not render the default texts
+  }
 
   @Override
   protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {

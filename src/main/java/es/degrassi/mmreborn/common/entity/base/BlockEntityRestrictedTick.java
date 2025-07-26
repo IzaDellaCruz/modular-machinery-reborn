@@ -11,7 +11,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public abstract class BlockEntityRestrictedTick extends ColorableMachineComponentEntity {
 
-  public BlockEntityRestrictedTick(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState) {
+  protected BlockEntityRestrictedTick(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState) {
     super(entityType, pos, blockState);
   }
 

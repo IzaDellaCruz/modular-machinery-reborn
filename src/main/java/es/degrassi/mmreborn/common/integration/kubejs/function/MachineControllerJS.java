@@ -38,10 +38,8 @@ public class MachineControllerJS {
     if (o instanceof Wrapper w) {
       o = w.unwrap();
     }
-    if (o instanceof BlockEntity be) {
-      if (be instanceof MachineControllerEntity mce) {
-        return new MachineControllerJS(mce);
-      }
+    if (o instanceof BlockEntity be && be instanceof MachineControllerEntity mce) {
+      return new MachineControllerJS(mce);
     }
     if (o instanceof BlockContainerJS bc) {
       return of(bc.getEntity());

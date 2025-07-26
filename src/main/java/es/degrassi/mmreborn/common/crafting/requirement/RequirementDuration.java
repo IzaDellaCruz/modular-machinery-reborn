@@ -53,7 +53,7 @@ public class RequirementDuration implements IRequirement<DurationComponent> {
 
   @Override
   public void gatherRequirements(IRequirementList<DurationComponent> list) {
-
+    // If the {@link #test(DurationComponent, ICraftingContext)} success then this requirement is OK to proceed
   }
 
   @Override

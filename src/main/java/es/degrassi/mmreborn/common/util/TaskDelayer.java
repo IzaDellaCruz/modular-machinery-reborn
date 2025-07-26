@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber(modid = ModularMachineryReborn.MODID, bus = Bus.GAME)
 public class TaskDelayer {
+  private TaskDelayer() {}
 
   private static final List<Pair<AtomicInteger, Runnable>> tasks = Lists.newArrayList();
 

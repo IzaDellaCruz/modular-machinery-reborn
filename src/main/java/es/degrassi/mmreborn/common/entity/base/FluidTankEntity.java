@@ -43,7 +43,8 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
-  public FluidTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidHatchSize size, IOType ioType) {
+  protected FluidTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidHatchSize size,
+                           IOType ioType) {
     super(type, pos, state);
     this.tank = size.buildTank(this, ioType == IOType.INPUT, ioType == IOType.OUTPUT);
     this.hatchSize = size;

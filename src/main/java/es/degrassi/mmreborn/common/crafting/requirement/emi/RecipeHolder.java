@@ -36,15 +36,13 @@ public interface RecipeHolder extends StackHolder {
         EmiHistory.pop();
         return true;
       }
-    } else if (recipe != null && recipe.supportsRecipeTree()) {
-      if (function.apply(EmiConfig.defaultStack)) {
-        if (BoM.isDefaultRecipe(getStack(), recipe)) {
-          BoM.removeRecipe(getStack(), recipe);
-        } else {
-          BoM.addRecipe(getStack(), recipe);
-        }
-        return true;
+    } else if (recipe != null && recipe.supportsRecipeTree() && function.apply(EmiConfig.defaultStack)) {
+      if (BoM.isDefaultRecipe(getStack(), recipe)) {
+        BoM.removeRecipe(getStack(), recipe);
+      } else {
+        BoM.addRecipe(getStack(), recipe);
       }
+      return true;
     }
     return false;
   }

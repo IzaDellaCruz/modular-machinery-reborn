@@ -25,9 +25,6 @@ public class ControllerModelLoader implements IGeometryLoader<ControllerModelLoa
 
   public static class ControllerModelGeometry implements IUnbakedGeometry<ControllerModelGeometry> {
 
-    public ControllerModelGeometry() {
-    }
-
     @Override
     public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBaker arg, Function<Material, TextureAtlasSprite> function, ModelState arg2, ItemOverrides arg3) {
       return new ControllerBakedModel();

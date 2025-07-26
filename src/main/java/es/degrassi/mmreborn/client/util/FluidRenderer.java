@@ -18,6 +18,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix4f;
 
 public class FluidRenderer {
+  private FluidRenderer() {}
 
   private static final int MIN_FLUID_HEIGHT = 1;
   private static final int TEXTURE_SIZE = 16;

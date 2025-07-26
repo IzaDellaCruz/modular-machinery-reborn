@@ -72,8 +72,6 @@ public record SSyncMachinesPacket(Map<ResourceLocation, DynamicMachine> machines
       Minecraft mc = Minecraft.getInstance();
       CreativeModeTab.ItemDisplayParameters params = new CreativeModeTab.ItemDisplayParameters(mc.player.connection.enabledFeatures(), mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get(), mc.level.registryAccess());
       CreativeTabsRegistration.MODULAR_MACHINERY_REBORN_TAB.get().buildContents(params);
-      if (ModList.get().isLoaded("jei"))
-        MMRJeiPlugin.reloadMachines(packet.machines);
     }
   }
 }

@@ -18,7 +18,7 @@ public abstract class PopupScreen<T extends AbstractContainerMenu> extends BaseP
   private double dragX;
   private double dragY;
 
-  public PopupScreen(BasePopupScreen<T> parent, int xSize, int ySize) {
+  protected PopupScreen(BasePopupScreen<T> parent, int xSize, int ySize) {
     super(parent.getMenu(), parent.getPlayerInventory(), Component.literal("Popup"), xSize, ySize);
     this.parent = parent;
   }

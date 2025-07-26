@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class KubeJSIntegration {
+  private KubeJSIntegration() {}
   public static MachineLocation getMachineLocation(Resource resource, String packName, ResourceLocation id) {
     try(PackResources pack = resource.source()) {
       if(pack instanceof KubeFileResourcePack)

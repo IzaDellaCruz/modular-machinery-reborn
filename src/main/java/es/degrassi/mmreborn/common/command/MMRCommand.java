@@ -22,13 +22,14 @@ import java.io.File;
 import java.util.concurrent.CompletableFuture;
 
 public class MMRCommand {
+  private MMRCommand() {}
   public static LiteralArgumentBuilder<CommandSourceStack> register(String name) {
     return Commands.literal(name)
       .then(logging())
       .then(reload());
   }
 
-  public static ArgumentBuilder<CommandSourceStack, ?> logging() {
+  private static ArgumentBuilder<CommandSourceStack, ?> logging() {
     return Commands.literal("log")
       .requires(cs -> cs.hasPermission(2))
       .executes(ctx -> {
@@ -38,7 +39,7 @@ public class MMRCommand {
       });
   }
 
-  public static ArgumentBuilder<CommandSourceStack, ?> reload() {
+  private static ArgumentBuilder<CommandSourceStack, ?> reload() {
     return Commands.literal("reload")
       .requires(cs -> cs.hasPermission(2))
       .executes(ctx -> {

@@ -20,6 +20,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 @EventBusSubscriber(modid = ModularMachineryReborn.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public abstract class MMRClientEvents {
+  private MMRClientEvents() {}
   @SubscribeEvent
   public static void renderLevel(final RenderLevelStageEvent event) {
     if(event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {

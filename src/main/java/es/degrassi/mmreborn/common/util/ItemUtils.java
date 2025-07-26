@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class ItemUtils {
+  private ItemUtils() {}
   public static boolean consumeFromInventory(IItemHandlerModifiable handler, ItemStack toConsume, boolean simulate, boolean strict) {
     Map<Integer, ItemStack> contents = findItemsIndexedInInventory(handler, toConsume, strict);
     if (contents.isEmpty()) return false;
@@ -56,7 +57,6 @@ public class ItemUtils {
           stack.setCount(stack.getCount() - added);
           if(!simulate) {
             handler.setStackInSlot(i, handler.getStackInSlot(i).copyWithCount(handler.getStackInSlot(i).getCount() + added));
-            // handler.getStackInSlot(i).setCount(handler.getStackInSlot(i).getCount() + added);
           }
           if (stack.getCount() <= 0)
             return insertedAmt;

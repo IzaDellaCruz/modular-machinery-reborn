@@ -67,9 +67,8 @@ public class IntRange extends Range<Integer> {
       int index2 = process.indexOf(']');
 
       int index = index2;
-      if (index2 < 0 || index1 < index2) {
-        if (index1 >= 0)
-          index = index1;
+      if ((index2 < 0 || index1 < index2) && index1 >= 0) {
+        index = index1;
       }
 
       if (index < 0)
@@ -79,9 +78,8 @@ public class IntRange extends Range<Integer> {
       if (lowerBound == null)
         lowerBound = restriction.lowerBound();
 
-      if (upperBound != null) {
-        if (restriction.lowerBound() == null || restriction.lowerBound().compareTo(upperBound) < 0)
-          throw new IllegalArgumentException("Ranges overlap: \"" + spec + "\"");
+      if (upperBound != null && (restriction.lowerBound() == null || restriction.lowerBound().compareTo(upperBound) < 0)) {
+        throw new IllegalArgumentException("Ranges overlap: \"" + spec + "\"");
       }
       restrictions.add(restriction);
 

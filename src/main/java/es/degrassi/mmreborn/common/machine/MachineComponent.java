@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class MachineComponent<T> implements Comparable<MachineComponent<T>> {
   private final IOType ioType;
 
-  public MachineComponent(IOType ioType) {
+  protected MachineComponent(IOType ioType) {
     this.ioType = ioType;
   }
 

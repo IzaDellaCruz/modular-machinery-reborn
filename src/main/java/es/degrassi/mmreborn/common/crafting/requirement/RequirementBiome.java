@@ -77,7 +77,7 @@ public class RequirementBiome implements IRequirement<BiomeComponent> {
 
   @Override
   public void gatherRequirements(IRequirementList<BiomeComponent> list) {
-
+    // If the {@link #test(BiomeComponent, ICraftingContext)} success then this requirement is OK to proceed
   }
 
   @Override

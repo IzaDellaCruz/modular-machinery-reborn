@@ -87,7 +87,6 @@ public class BlockController extends BlockMachineComponent {
     ControllerItem.getMachine(stack).ifPresent(machine -> {
       BlockEntity tile = level.getBlockEntity(pos);
       if (tile instanceof MachineControllerEntity machineTile) {
-        //machineTile.setMachine(machine.getRegistryName());
         machineTile.setId(machine.getRegistryName());
         if (level instanceof ServerLevel serverLevel)
           level.getServer().tell(new TickTask(1, () -> PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), new SMachineUpdatePacket(machine.getRegistryName(), pos))));

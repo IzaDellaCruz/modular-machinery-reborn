@@ -67,7 +67,7 @@ public class RequirementDimension implements IRequirement<DimensionComponent> {
 
   @Override
   public void gatherRequirements(IRequirementList<DimensionComponent> list) {
-
+    // If the {@link #test(DimensionComponent, ICraftingContext)} success then this requirement is OK to proceed
   }
 
   @Override

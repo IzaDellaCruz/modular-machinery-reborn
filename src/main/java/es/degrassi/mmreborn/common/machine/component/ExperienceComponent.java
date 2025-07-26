@@ -84,12 +84,12 @@ public class ExperienceComponent extends MachineComponent<IExperienceHandler> {
 
           @Override
           public void setExperience(int tank, long l) {
-
+            // can't set data on the merged components
           }
 
           @Override
           public void setCapacity(int tank, long l) {
-
+            // can't set data on the merged components
           }
 
           @Override

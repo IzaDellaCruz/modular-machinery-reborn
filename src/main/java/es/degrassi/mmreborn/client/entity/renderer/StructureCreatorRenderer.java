@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class StructureCreatorRenderer {
+  private StructureCreatorRenderer() {}
 
   public static void renderSelectedBlocks(PoseStack pose) {
     if(Minecraft.getInstance().player != null && Minecraft.getInstance().player.getMainHandItem().getItem() == ItemRegistration.STRUCTURE_CREATOR_ITEM.get()) {

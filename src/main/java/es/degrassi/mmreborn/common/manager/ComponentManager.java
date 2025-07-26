@@ -53,7 +53,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   private final Map<ComponentType, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
   private final Map<BlockPos, List<ModifierReplacement>> foundModifiers = Maps.newHashMap();
 
-  private final long tickOffset = Utils.RAND.nextLong(0, Long.MAX_VALUE);
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE);
   private long lastComponentsCheckTick;
   private long lastModifiersCheckTick;
 
@@ -175,9 +175,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   }
 
   public List<RecipeModifier> getModifiers(RequirementType<?> type) {
-    if (foundModifiers.isEmpty()) {
-      if (!getController().getFoundMachine().getModifiers().isEmpty())
-        updateModifiers(false);
+    if (foundModifiers.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) {
+      updateModifiers(false);
     }
     return foundModifiers.values()
         .stream()

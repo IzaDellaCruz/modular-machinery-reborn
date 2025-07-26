@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class DataComponentRegistration {
+  private DataComponentRegistration() {}
   public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ModularMachineryReborn.MODID);
 
   public static final Supplier<DataComponentType<ResourceLocation>> MACHINE_DATA =

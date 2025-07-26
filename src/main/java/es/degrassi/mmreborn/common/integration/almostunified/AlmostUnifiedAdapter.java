@@ -11,6 +11,7 @@ import net.minecraft.world.item.Item;
 import java.util.Optional;
 
 public class AlmostUnifiedAdapter {
+  private AlmostUnifiedAdapter() {}
   public static boolean isLoaded() {
     return Mods.isAULoaded();
   }

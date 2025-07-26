@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 public class MMRTags {
+  private MMRTags() {}
   private static TagKey<Block> blockTag(String name, boolean isNeoForge) {
     return BlockTags.create(isNeoForge ? ResourceLocation.fromNamespaceAndPath("c", name) : ModularMachineryReborn.rl(name));
   }

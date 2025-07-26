@@ -45,7 +45,7 @@ public abstract class BasePopupScreen<T extends AbstractContainerMenu> extends A
   @Getter
   private final Inventory playerInventory;
 
-  public BasePopupScreen(T pMenu, Inventory pPlayerInventory, Component component, int xSize, int ySize) {
+  protected BasePopupScreen(T pMenu, Inventory pPlayerInventory, Component component, int xSize, int ySize) {
     super(pMenu, pPlayerInventory, component);
     this.xSize = xSize;
     this.ySize = ySize;

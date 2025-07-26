@@ -103,14 +103,6 @@ public class CorePopupScreen extends PopupScreen<ControllerContainer> {
     );
 
     if (core.isActive()) {
-//      MutableComponent status = Component.translatable("gui.controller.status");
-//      if (core.isHasActiveRecipe()) {
-//        String percProgress = Utils.decimalFormatWithPercentage(Mth.clamp(core.getCurrentActiveRecipeProgress() * 100F, 0, 100));
-//        status.append(Component.translatable("gui.controller.status.crafting.progress", percProgress));
-//      } else {
-//        status.append(CraftingStatus.NO_RECIPE.getUnlocMessage());
-//      }
-//      progress.setMessage(status);
       row.addChild(
           progress,
           2,

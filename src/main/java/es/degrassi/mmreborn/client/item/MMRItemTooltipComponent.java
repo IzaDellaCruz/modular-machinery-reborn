@@ -45,7 +45,6 @@ public class MMRItemTooltipComponent implements TooltipComponent {
   }
 
   public ItemStack getItem() {
-//    this.timer.onDraw();
     return timer.getOrDefault(this.item, ItemStack.EMPTY);
   }
 }

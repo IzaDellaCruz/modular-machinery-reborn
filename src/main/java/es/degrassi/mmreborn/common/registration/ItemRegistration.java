@@ -35,6 +35,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class ItemRegistration {
+  private ItemRegistration() {}
   public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ModularMachineryReborn.MODID);
 
   public static final DeferredItem<ItemBlueprint> BLUEPRINT = ITEMS.register(rootLC("blueprint"),

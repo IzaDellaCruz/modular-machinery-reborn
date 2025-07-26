@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class ComponentRegistration {
+  private ComponentRegistration() {}
 
   public static final DeferredRegister<ComponentType> MACHINE_COMPONENTS =
       DeferredRegister.create(ComponentType.REGISTRY_KEY, ModularMachineryReborn.MODID);
