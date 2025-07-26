@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
@@ -185,6 +186,6 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
   @Override
   @HideFromJS
   public MachineRecipeBuilderJS error(String error, Object... args) {
-    throw new KubeRuntimeException(MessageFormatter.arrayFormat(error, args).getMessage());
+    throw new KubeRuntimeException(MessageFormatter.arrayFormat(error, args).getMessage()).source(this.sourceLine);
   }
 }
