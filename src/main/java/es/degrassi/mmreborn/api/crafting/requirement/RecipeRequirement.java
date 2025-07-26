@@ -9,8 +9,7 @@ import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.manager.ComponentManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 
 public class RecipeRequirement<C extends MachineComponent<?>, R extends IRequirement<C>> {
   public static final NamedCodec<RecipeRequirement<?, ?>> CODEC = NamedCodec.record(recipeRequirementInstance ->
@@ -64,7 +63,7 @@ public class RecipeRequirement<C extends MachineComponent<?>, R extends IRequire
     return this.requirement.test(component, context) ? CraftingResult.success() : CraftingResult.error(Component.empty());
   }
 
-  public boolean shouldSkip(Random rand, ICraftingContext context) {
+  public boolean shouldSkip(RandomSource rand, ICraftingContext context) {
     float chance = context.getModifiedValue(this.chance, this.requirement);
     return rand.nextFloat() > chance;
   }
