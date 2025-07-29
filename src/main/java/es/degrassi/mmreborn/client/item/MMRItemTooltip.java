@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.client.item;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -45,12 +46,10 @@ public class MMRItemTooltip implements ClientTooltipComponent {
 
   @Override
   public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
-    guiGraphics.renderItem(stack, x, y);
-    guiGraphics.renderItemDecorations(font, stack, x, y);
     if (completed) {
       guiGraphics.blit(
           CHECK,
-          x + 16 + 8 + (Math.min(font.width(text), textWidth)),
+          x,
           y,
           0,
           0,
@@ -60,7 +59,10 @@ public class MMRItemTooltip implements ClientTooltipComponent {
           TextureSizeHelper.getHeight(CHECK)
       );
     }
-    guiGraphics.drawWordWrap(font, text, x + 16 + 4, y + 6, textWidth, -1);
-
+    x += TextureSizeHelper.getWidth(CHECK) + 4;
+    guiGraphics.renderItem(stack, x, y);
+    guiGraphics.renderItemDecorations(font, stack, x, y);
+    guiGraphics.drawWordWrap(font, text.copy().withStyle(completed ? ChatFormatting.GREEN : ChatFormatting.GRAY),
+        x + 16 + 4, y + 6, textWidth, -1);
   }
 }
