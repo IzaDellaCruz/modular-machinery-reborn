@@ -1,6 +1,5 @@
 package es.degrassi.mmreborn.common.crafting.requirement;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,7 +14,6 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -69,12 +67,7 @@ public class RequirementDurability implements IRequirement<DurabilityComponent> 
   }
 
   private boolean processWithLog(Function<Integer, Boolean> function, int amount) {
-    boolean processed = function.apply(amount);
-    MMRLogger.INSTANCE.warn("Processed DurabilityRequirement: {} Test for mode {} with result {}",
-        new GsonBuilder().setPrettyPrinting().create().toJson(this.asJson()),
-        getMode(),
-        processed);
-    return processed;
+    return function.apply(amount);
   }
 
   @Override
