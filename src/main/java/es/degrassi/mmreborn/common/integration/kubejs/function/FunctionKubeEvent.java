@@ -18,7 +18,7 @@ public class FunctionKubeEvent implements KubeEvent {
 
   public FunctionKubeEvent(ICraftingContext internal) {
     this.internal = internal;
-    this.machine = new MachineControllerJS((MachineControllerEntity) getTile());
+    this.machine = new MachineControllerJS(getTile());
   }
 
   public FunctionKubeEvent getContext() {

@@ -72,7 +72,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   private int lastFocus;
   private SoundManager soundManager;
 
-  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE);
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick;
 
   public MachineControllerEntity(BlockPos pos, BlockState state) {
@@ -285,6 +285,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     this.craftingStatus = CraftingStatus.deserialize(compound.getCompound("status"), pRegistries);
     this.id = ResourceLocation.parse(compound.getString("machine"));
     processor.deserialize(compound.getCompound("craftingManager"));
+    this.isPaused = compound.getBoolean("isPaused");
     if (getLevel() != null && !getLevel().isClientSide)
       checkStructure(true);
   }
@@ -296,6 +297,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     compound.putString("machine", id.toString());
     compound.put("craftingManager", processor.serialize());
     compound.put("componentManager", componentManager.serializeNBT(pRegistries));
+    compound.putBoolean("isPaused", isPaused);
   }
 
   public void refreshClientData() {

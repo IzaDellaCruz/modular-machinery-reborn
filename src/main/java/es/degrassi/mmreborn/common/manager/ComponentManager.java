@@ -53,7 +53,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   private final Map<ComponentType, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
   private final Map<BlockPos, List<ModifierReplacement>> foundModifiers = Maps.newHashMap();
 
-  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE);
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastComponentsCheckTick;
   private long lastModifiersCheckTick;
 
