@@ -3,7 +3,7 @@ package es.degrassi.mmreborn.client.screen.popup;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.widget.Icon;
-import es.degrassi.mmreborn.client.screen.widget.IconButton;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.client.screen.widget.StringButton;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import net.minecraft.client.Minecraft;
@@ -115,8 +115,8 @@ public class CoreGridPopupScreen extends PopupScreen<ControllerContainer> {
     restB.active = getPage() > 1;
   }
 
-  private @NotNull IconButton createCoreButton(MachineProcessorCore core) {
-    IconButton button = new IconButton(0, 0, core.isActive() ? Icon.CORE_ACTIVE : Icon.CORE_INACTIVE, (btn) -> {
+  private @NotNull ItemOrIconButton createCoreButton(MachineProcessorCore core) {
+    ItemOrIconButton button = new ItemOrIconButton(0, 0, core.isActive() ? Icon.CORE_ACTIVE : Icon.CORE_INACTIVE, (btn) -> {
       parent.closePopup(this);
       parent.openPopup(new CorePopupScreen((ControllerScreen) parent, 180, 96, getPage(), core.getCore()).addCloseButton(), "popup");
     }).renderTooltip(true).setTooltips(Component.translatable("mmr.gui.core.button", core.getCore()));

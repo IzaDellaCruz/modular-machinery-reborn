@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHatchEntity> {
 
   public EnergyHatchScreen(EnergyHatchContainer pMenu, Inventory pPlayerInventory, Component pTitle) {
-    super(pMenu, pPlayerInventory, pTitle);
+    super(pMenu, pPlayerInventory, pTitle, false);
   }
 
   @Override

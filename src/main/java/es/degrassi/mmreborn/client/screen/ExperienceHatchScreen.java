@@ -26,7 +26,7 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
   private final Map<ExperienceButtonType, ExperienceButton> experienceButtons = Maps.newHashMap();
 
   public ExperienceHatchScreen(ExperienceHatchContainer menu, Inventory playerInventory, Component title) {
-    super(menu, playerInventory, title);
+    super(menu, playerInventory, title, false);
   }
 
   @Override

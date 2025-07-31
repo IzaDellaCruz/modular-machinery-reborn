@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ParallelHatchScreen extends BaseScreen<ParallelHatchContainer, ParallelHatchEntity> {
   public ParallelHatchScreen(ParallelHatchContainer menu, Inventory playerInventory, Component title) {
-    super(menu, playerInventory, title);
+    super(menu, playerInventory, title, false);
   }
 
   @Override

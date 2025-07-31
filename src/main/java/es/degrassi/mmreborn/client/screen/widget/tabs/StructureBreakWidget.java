@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.client.screen.widget.tabs;
 
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.popup.ConfirmationPopup;
-import es.degrassi.mmreborn.client.screen.widget.ItemButton;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.common.network.client.CBreakStructurePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,7 +25,7 @@ public class StructureBreakWidget extends TabWidget {
   public final Component component = Component.translatable("modular_machinery_reborn.gui.structure_break_button");
 
   public StructureBreakWidget(ControllerScreen parentScreen, ResourceLocation machine, BlockPos controllerPos) {
-    super(0, 0, null, new ItemButton(5, 5, Items.DIAMOND_PICKAXE, button -> {}));
+    super(0, 0, new ItemOrIconButton(5, 5, Items.DIAMOND_PICKAXE, button -> {}));
     this.parentScreen = parentScreen;
     this.machine = machine;
     this.controllerPos = controllerPos;

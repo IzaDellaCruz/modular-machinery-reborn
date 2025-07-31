@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CoreActionButton extends IconButton {
+public class CoreActionButton extends ItemOrIconButton {
 
   private final CoreActionType type;
 
@@ -22,13 +22,13 @@ public class CoreActionButton extends IconButton {
     this.type = type;
   }
 
+  public CoreActionButton(OnPressT onPress, CoreActionType type) {
+    this(0, 0, onPress, type);
+  }
+
   @Override
   public @Nullable Tooltip getTooltip() {
     return Tooltip.create(type.component(Screen.hasShiftDown(), Screen.hasControlDown()));
-  }
-
-  public CoreActionButton(OnPressT onPress, CoreActionType type) {
-    this(0, 0, onPress, type);
   }
 
   @Override

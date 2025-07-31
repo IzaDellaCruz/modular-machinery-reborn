@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.client.screen.widget.tabs;
 
 import dev.emi.emi.api.EmiApi;
-import es.degrassi.mmreborn.client.screen.widget.IconButton;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.common.integration.emi.MMREmiPlugin;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.util.Mods;
@@ -15,8 +15,8 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class ShowRecipesTabWidget extends TabWidget {
-  public ShowRecipesTabWidget(@Nullable IconButton icon, DynamicMachine machine) {
-    super(0, 0, icon, null, (mouseX, mouseY, button) -> {
+  public ShowRecipesTabWidget(@Nullable ItemOrIconButton icon, DynamicMachine machine) {
+    super(0, 0, icon, (mouseX, mouseY, button) -> {
       if (Mods.isEMILoaded()) {
         EmiApi.displayRecipeCategory(MMREmiPlugin.categories.get(machine));
       }

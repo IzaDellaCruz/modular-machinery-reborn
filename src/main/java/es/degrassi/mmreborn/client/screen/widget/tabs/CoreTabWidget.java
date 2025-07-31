@@ -3,7 +3,7 @@ package es.degrassi.mmreborn.client.screen.widget.tabs;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.popup.CoreGridPopupScreen;
 import es.degrassi.mmreborn.client.screen.widget.Icon;
-import es.degrassi.mmreborn.client.screen.widget.IconButton;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,7 @@ public class CoreTabWidget extends TabWidget {
   public final Component component = Component.translatable("modular_machinery_reborn.gui.core_button");
 
   public CoreTabWidget(ControllerScreen parentScreen) {
-    super(0, 0, new IconButton(5, 5, Icon.CHECK, (button) -> {}));
+    super(0, 0, new ItemOrIconButton(5, 5, Icon.CHECK, (button) -> {}));
     this.parentScreen = parentScreen;
   }
 

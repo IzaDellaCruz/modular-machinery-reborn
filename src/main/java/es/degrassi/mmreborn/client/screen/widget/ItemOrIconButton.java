@@ -21,37 +21,48 @@ import java.util.List;
 @Getter
 @Setter
 @ParametersAreNonnullByDefault
-public class IconButton extends Button implements TooltipRender {
+public class ItemOrIconButton extends Button implements TooltipRender {
   private boolean halfSize = false;
   private boolean disableClickSound = false;
   private boolean disableBackground = false;
+  @Nullable
+  private final Item item;
   @Nullable
   private final Icon icon;
 
   private boolean renderTooltip = true;
   private List<Component> tooltips;
 
-  public IconButton(int x, int y, Button.OnPress onPress) {
+  public ItemOrIconButton(int x, int y, OnPress onPress) {
     super(x, y, 16, 16, Component.empty(), onPress, Button.DEFAULT_NARRATION);
+    this.item = null;
     this.icon = null;
   }
 
-  public IconButton(int x, int y, Icon icon, Button.OnPress onPress) {
+  public ItemOrIconButton(int x, int y, Item item, OnPress onPress) {
     super(x, y, 16, 16, Component.empty(), onPress, Button.DEFAULT_NARRATION);
+    this.item = item;
+    this.icon = null;
+  }
+
+  public ItemOrIconButton(int x, int y, Icon icon, OnPress onPress) {
+    super(x, y, 16, 16, Component.empty(), onPress, Button.DEFAULT_NARRATION);
+    this.item = null;
     this.icon = icon;
   }
 
-  public IconButton(Button.Builder builder) {
+  public ItemOrIconButton(Builder builder) {
     super(builder);
+    this.item = null;
     this.icon = null;
   }
 
-  public IconButton renderTooltip(boolean render) {
+  public ItemOrIconButton renderTooltip(boolean render) {
     this.renderTooltip = render;
     return this;
   }
 
-  public IconButton setTooltips(Component... components) {
+  public ItemOrIconButton setTooltips(Component... components) {
     this.tooltips = Lists.newArrayList(components);
     return this;
   }
@@ -70,7 +81,7 @@ public class IconButton extends Button implements TooltipRender {
   public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
     if (this.visible) {
       Icon icon = this.getIcon();
-      Item item = this.getItemOverlay();
+      Item item = this.getItem();
       if (this.halfSize) {
         this.width = 8;
         this.height = 8;
@@ -113,10 +124,6 @@ public class IconButton extends Button implements TooltipRender {
     return getTooltipArea().contains((int) mouseX, (int) mouseY);
   }
 
-  protected @Nullable Item getItemOverlay() {
-    return null;
-  }
-
   public List<Component> getTooltipMessage() {
     return tooltips;
   }
@@ -131,18 +138,21 @@ public class IconButton extends Button implements TooltipRender {
 
   @Override
   public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-    if (isMouseOver(mouseX, mouseY) && renderTooltip) {
-      guiGraphics.renderTooltip(Minecraft.getInstance().font, getTooltipMessage().stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
+    if (isMouseOver(mouseX, mouseY)) {
+      if (renderTooltip) {
+        guiGraphics.renderTooltip(Minecraft.getInstance().font, getTooltipMessage().stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
+      }
     }
   }
 
   @Override
   public String toString() {
-    return "IconButton{" +
+    return "ItemButton{" +
         "halfSize=" + halfSize +
         ", disableClickSound=" + disableClickSound +
         ", disableBackground=" + disableBackground +
-        ", icon=" + icon +
+        ", item=" + (item == null ? "null" : item) +
+        ", icon=" + (icon == null ? "null" : icon) +
         ", renderTooltip=" + renderTooltip +
         ", x=" + getX() +
         ", y=" + getY() +

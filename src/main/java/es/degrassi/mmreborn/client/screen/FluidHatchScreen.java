@@ -18,7 +18,7 @@ import java.util.List;
 public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankEntity> {
 
   public FluidHatchScreen(FluidHatchContainer pMenu, Inventory pPlayerInventory, Component pTitle) {
-    super(pMenu, pPlayerInventory, pTitle);
+    super(pMenu, pPlayerInventory, pTitle, false);
   }
 
   @Override
@@ -53,7 +53,7 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
 
         FluidStack content = entity.getTank().getFluid();
         int amt;
-        if(content.getAmount() <= 0) {
+        if (content.getAmount() <= 0) {
           text.add(Component.translatable("tooltip.fluidhatch.empty"));
           amt = 0;
         } else {

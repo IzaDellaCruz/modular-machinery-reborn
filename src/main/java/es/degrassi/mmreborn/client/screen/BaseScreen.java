@@ -29,13 +29,17 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   public static final ResourceLocation TAB_HOVERED = ModularMachineryReborn.rl("textures/gui/widget/base_tab_hovered.png");
 
   protected final E entity;
-  protected BaseScreen(T menu, Inventory playerInventory, Component title) {
+  protected final boolean renderLabels;
+  protected BaseScreen(T menu, Inventory playerInventory, Component title, boolean renderLabels) {
     super(menu, playerInventory, title);
     this.entity = menu.getEntity();
+    this.renderLabels = renderLabels;
   }
 
   @Nullable
-  public abstract ResourceLocation getTexture();
+  public ResourceLocation getTexture() {
+    return ModularMachineryReborn.rl("background");
+  }
 
   @Override
   public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -102,6 +106,11 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   }
 
   @Override
+  protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    if (this.renderLabels) super.renderLabels(guiGraphics, mouseX, mouseY);
+  }
+
+  @Override
   protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
     if (getTexture() != null) {
       guiGraphics.pose().pushPose();
@@ -110,6 +119,33 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
       this.topPos = (this.height - this.imageHeight) / 2;
       guiGraphics.blit(getTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight);
       guiGraphics.pose().popPose();
+    }
+  }
+
+  protected void renderBgWithSlotSize(GuiGraphics guiGraphics, int cols, int slots) {
+    if (getTexture() != null) {
+      guiGraphics.pose().pushPose();
+      guiGraphics.setColor(1f, 1f, 1f, 1f);
+      this.leftPos = (this.width - this.imageWidth) / 2;
+      this.topPos = (this.height - this.imageHeight) / 2;
+      int slotsWidth = cols * 18 + 16;
+      int invWidth = 18 * 9 + 16;
+      int height =
+          (int) Math.ceil(slots * 1D / cols) * 18 + 16
+              + 18 * 4 + 3 + font.wordWrapHeight(title, Math.max(slotsWidth, invWidth) - 16) + titleLabelY;
+
+      guiGraphics.blitSprite(getTexture(), leftPos, topPos, Math.max(slotsWidth, invWidth), height);
+      guiGraphics.pose().popPose();
+    }
+  }
+
+  protected void renderSlots(GuiGraphics guiGraphics) {
+    for (Slot slot : getMenu().slots) {
+      guiGraphics.blit(BASE_SLOT, slot.x + getGuiLeft() - 1, slot.y + getGuiTop() - 1, 0, 0,
+          TextureSizeHelper.getWidth(BASE_SLOT),
+          TextureSizeHelper.getHeight(BASE_SLOT),
+          TextureSizeHelper.getWidth(BASE_SLOT),
+          TextureSizeHelper.getHeight(BASE_SLOT));
     }
   }
 

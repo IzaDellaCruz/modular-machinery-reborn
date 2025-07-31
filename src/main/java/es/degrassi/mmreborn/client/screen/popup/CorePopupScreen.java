@@ -3,7 +3,7 @@ package es.degrassi.mmreborn.client.screen.popup;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.widget.Icon;
-import es.degrassi.mmreborn.client.screen.widget.IconButton;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.common.crafting.helper.CraftingStatus;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.util.Utils;
@@ -53,7 +53,7 @@ public class CorePopupScreen extends PopupScreen<ControllerContainer> {
     row.addChild(new StringWidget(this.initialXSize - 10, 0, Component.literal(""), font), cols);
 
     if (closeButton) {
-      IconButton returnButton = new IconButton(0, 0, Icon.BACK, (btn) -> {
+      ItemOrIconButton returnButton = new ItemOrIconButton(0, 0, Icon.BACK, (btn) -> {
         CoreGridPopupScreen screen = new CoreGridPopupScreen((ControllerScreen) this.parent, 10 * 16 + 5*3 + 5*9, 9 * 20).addCloseButton();
         screen.setPage(page);
         this.parent.closePopup(this);

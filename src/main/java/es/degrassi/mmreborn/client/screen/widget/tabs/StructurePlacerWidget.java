@@ -8,7 +8,7 @@ import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.client.item.MMRItemTooltipComponent;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.popup.ConfirmationPopup;
-import es.degrassi.mmreborn.client.screen.widget.ItemButton;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.common.network.client.CPlaceStructurePacket;
 import es.degrassi.mmreborn.common.util.CycleTimer;
 import net.minecraft.ChatFormatting;
@@ -44,7 +44,7 @@ public class StructurePlacerWidget extends TabWidget {
   public final Component component = Component.translatable("modular_machinery_reborn.gui.structure_placer_button");
 
   public StructurePlacerWidget(ControllerScreen parentScreen, ResourceLocation machine, BlockPos controllerPos) {
-    super(0, 0, null, new ItemButton(5, 5, Blocks.STRUCTURE_BLOCK.asItem(), button -> {}));
+    super(0, 0, new ItemOrIconButton(5, 5, Blocks.STRUCTURE_BLOCK.asItem(), button -> {}));
     this.parentScreen = parentScreen;
     this.machine = machine;
     this.controllerPos = controllerPos;

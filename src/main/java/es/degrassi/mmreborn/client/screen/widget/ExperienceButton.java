@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class ExperienceButton extends IconButton {
+public class ExperienceButton extends ItemOrIconButton {
 
   private final ExperienceButtonType type;
 
