@@ -4,7 +4,10 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
+import es.degrassi.mmreborn.api.crafting.IProcessor;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.DataType;
+import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.client.util.EnergyDisplayUtil;
 import es.degrassi.mmreborn.common.block.BlockController;
 import es.degrassi.mmreborn.common.block.prop.ConfigLoaded;
@@ -242,11 +245,11 @@ public class ModularMachineryReborn {
     }
   }
 
-  public static Registry<ProcessorType<?>> processorRegistrar() {
+  public static Registry<ProcessorType<? extends IProcessor>> processorRegistrar() {
     return ProcessorTypeRegistration.PROCESSOR_REGISTRY;
   }
 
-  public static Registry<RequirementType<?>> getRequirementRegistrar() {
+  public static Registry<RequirementType<? extends IRequirement<?>>> getRequirementRegistrar() {
     return RequirementTypeRegistration.REQUIREMENTS_REGISTRY;
   }
 
@@ -257,7 +260,7 @@ public class ModularMachineryReborn {
     return MachineHatchTypeRegistration.MachineHatchType_REGISTRY;
   }
 
-  public static Registry<DataType<?, ?>> dataRegistrar() {
+  public static Registry<DataType<? extends IData<?>, ?>> dataRegistrar() {
     return DataRegistration.DATA_REGISTRY;
   }
 }

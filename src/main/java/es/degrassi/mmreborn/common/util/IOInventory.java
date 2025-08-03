@@ -288,7 +288,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   private static boolean isSameItem(ItemStack toTest, ItemStack ingredient) {
     if(toTest.getItem() != ingredient.getItem())
       return false;
-    return ingredient.getComponents().stream().allMatch(component -> component.type() == DataComponents.DAMAGE || (toTest.has(component.type()) && Objects.equals(toTest.get(component.type()), component.value())));
+    return ingredient.getComponents().stream()
+        .allMatch(component -> component.type() == DataComponents.DAMAGE || (toTest.has(component.type()) && Objects.equals(toTest.get(component.type()), component.value())));
   }
 
   public CompoundTag writeNBT(HolderLookup.Provider pRegistries) {
@@ -318,11 +319,16 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
               this.inventory.stream()
                   .filter(inv -> inv.getSlot() == componentNBT.getInt("slot"))
                   .findFirst()
-                  .ifPresentOrElse(inv -> inv.deserialize(pRegistries, componentNBT), () -> {
-                    this.inventory.add(new ItemSlot(this, defaultFilter, componentNBT, pRegistries));
-                  });
+                  .ifPresentOrElse(
+                      inv -> inv.deserialize(pRegistries, componentNBT),
+                      () -> this.inventory.add(new ItemSlot(this, defaultFilter, componentNBT, pRegistries))
+                  );
             }
-      });
+          });
+      this.inputs.clear();
+      this.outputs.clear();
+      this.inputs.addAll(this.inventory.stream().filter(slot -> Arrays.stream(this.inSlots).anyMatch(i -> i == slot.getSlot())).toList());
+      this.outputs.addAll(this.inventory.stream().filter(slot -> Arrays.stream(this.outSlots).anyMatch(i -> i == slot.getSlot())).toList());
       this.setChanged();
     }
   }

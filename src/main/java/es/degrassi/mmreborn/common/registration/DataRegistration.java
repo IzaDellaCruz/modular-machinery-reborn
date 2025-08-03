@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.registration;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.network.DataType;
+import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.api.network.data.BooleanData;
 import es.degrassi.mmreborn.api.network.data.DoubleData;
 import es.degrassi.mmreborn.api.network.data.FloatData;
@@ -33,8 +34,9 @@ import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
 public class DataRegistration {
   private DataRegistration() {}
-  public static final DeferredRegister<DataType<?, ?>> DATAS = DeferredRegister.create(DataType.REGISTRY_KEY, ModularMachineryReborn.MODID);
-  public static final Registry<DataType<?, ?>> DATA_REGISTRY = DATAS.makeRegistry(builder -> {});
+  public static final DeferredRegister<DataType<? extends IData<?>, ?>> DATAS =
+      DeferredRegister.create(DataType.REGISTRY_KEY, ModularMachineryReborn.MODID);
+  public static final Registry<DataType<? extends IData<?>, ?>> DATA_REGISTRY = DATAS.makeRegistry(builder -> {});
 
   public static final Supplier<DataType<BooleanData, Boolean>> BOOLEAN_DATA = DATAS.register(rootLC("boolean"),
       () -> DataType.create(Boolean.class, BooleanSyncable::create, BooleanData::new));

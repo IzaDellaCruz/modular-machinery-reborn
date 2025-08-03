@@ -43,7 +43,7 @@ public interface IData<T> {
      */
     static IData<?> readData(RegistryFriendlyByteBuf buffer) {
         ResourceLocation typeId = buffer.readResourceLocation();
-        DataType<?, ?> type = ModularMachineryReborn.dataRegistrar().get(typeId);
+        DataType<? extends IData<?>, ?> type = ModularMachineryReborn.dataRegistrar().get(typeId);
         if(type == null)
             throw new IllegalStateException("Attempting to read invalid IData : " + typeId + " is not a valid registered DataType !");
         short id = buffer.readShort();

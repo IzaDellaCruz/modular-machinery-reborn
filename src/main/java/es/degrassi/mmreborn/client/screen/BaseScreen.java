@@ -29,11 +29,11 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   public static final ResourceLocation TAB_HOVERED = ModularMachineryReborn.rl("textures/gui/widget/base_tab_hovered.png");
 
   protected final E entity;
-  protected final boolean renderLabels;
+  protected final boolean shouldRenderLabels;
   protected BaseScreen(T menu, Inventory playerInventory, Component title, boolean renderLabels) {
     super(menu, playerInventory, title);
     this.entity = menu.getEntity();
-    this.renderLabels = renderLabels;
+    this.shouldRenderLabels = renderLabels;
   }
 
   @Nullable
@@ -107,7 +107,7 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
 
   @Override
   protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-    if (this.renderLabels) super.renderLabels(guiGraphics, mouseX, mouseY);
+    if (this.shouldRenderLabels) super.renderLabels(guiGraphics, mouseX, mouseY);
   }
 
   @Override

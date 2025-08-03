@@ -23,7 +23,8 @@ public class DataType<D extends IData<T>, T> {
      * The {@link ResourceKey} pointing to the {@link DataType} vanilla registry.
      * Can be used to create a {@link net.neoforged.neoforge.registries.DeferredRegister} for registering your {@link DataType}.
      */
-    public static final ResourceKey<Registry<DataType<?, ?>>> REGISTRY_KEY = ResourceKey.createRegistryKey(ModularMachineryReborn.rl("data_type"));
+    public static final ResourceKey<Registry<DataType<? extends IData<?>, ?>>> REGISTRY_KEY =
+        ResourceKey.createRegistryKey(ModularMachineryReborn.rl("data_type"));
 
     /**
      * A factory method to create new {@link DataType}.

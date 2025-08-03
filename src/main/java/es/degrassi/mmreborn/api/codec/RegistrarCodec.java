@@ -4,7 +4,10 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.crafting.IProcessor;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.DataType;
+import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
@@ -32,12 +35,11 @@ public class RegistrarCodec<V> implements NamedCodec<V> {
   /**
    * MMR registries
    **/
-  public static final NamedCodec<RequirementType<?>> REQUIREMENT_NEW =
-      of(ModularMachineryReborn.getRequirementRegistrar(), true);
+  public static final NamedCodec<RequirementType<? extends IRequirement<?>>> REQUIREMENT_NEW = of(ModularMachineryReborn.getRequirementRegistrar(), true);
   public static final NamedCodec<ComponentType> COMPONENT = of(ModularMachineryReborn.getComponentRegistrar(), true);
   public static final NamedCodec<MachineHatchType> HATCH_TYPE = of(ModularMachineryReborn.getMachineHatchTypeRegistrar(), true);
-  public static final NamedCodec<DataType<?, ?>> DATA = of(ModularMachineryReborn.dataRegistrar(), true);
-  public static final NamedCodec<ProcessorType<?>> CRAFTING_PROCESSOR = of(ModularMachineryReborn.processorRegistrar(), true);
+  public static final NamedCodec<DataType<? extends IData<?>, ?>> DATA = of(ModularMachineryReborn.dataRegistrar(), true);
+  public static final NamedCodec<ProcessorType<? extends IProcessor>> CRAFTING_PROCESSOR = of(ModularMachineryReborn.processorRegistrar(), true);
 
   public static final NamedCodec<ResourceLocation> MMR_LOC_CODEC = NamedCodec.STRING.comapFlatMap(
     s -> {

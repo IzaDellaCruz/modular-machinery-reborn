@@ -9,7 +9,7 @@ import java.text.NumberFormat;
 
 public class Utils {
   private Utils() {}
-  public static final RandomSource RAND = RandomSource.create();
+  public static final RandomSource RAND = RandomSource.create(42L);
   private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("#,###");
   public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
