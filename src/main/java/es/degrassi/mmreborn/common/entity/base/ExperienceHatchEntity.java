@@ -75,6 +75,7 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
 
   @Override
   public void tick() {
+    super.tick();
     tickInventory();
   }
 

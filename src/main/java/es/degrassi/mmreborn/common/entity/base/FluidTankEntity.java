@@ -11,6 +11,8 @@ import es.degrassi.mmreborn.common.machine.component.FluidComponent;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.HybridTank;
+import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -21,12 +23,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Optional;
 
 @Getter
 @Setter
-public abstract class FluidTankEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<FluidComponent>, ControllerAccessible, TextureableMachineEntity {
+public abstract class FluidTankEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<FluidComponent>, ControllerAccessible,
+    TextureableMachineEntity, CapabilityInventoryEntity<IFluidHandlerItem> {
   private HybridTank tank;
   private IOType ioType;
   private FluidHatchSize hatchSize;
@@ -43,6 +53,12 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
+  @Getter
+  private final IOInventory capabilityInventory;
+
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
+  private long lastCheckTick;
+
   protected FluidTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidHatchSize size,
                            IOType ioType) {
     super(type, pos, state);
@@ -51,11 +67,59 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.ioType = ioType;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_fluid" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
+    this.capabilityInventory = createCapabilityInventory();
 
     this.tank.setListener(() -> {
       if (getController() != null)
         getController().getProcessor().setMachineInventoryChanged();
     });
+  }
+
+  @Override
+  public ItemCapability<IFluidHandlerItem, Void> getCapability() {
+    return Capabilities.FluidHandler.ITEM;
+  }
+
+  @Override
+  public void tick() {
+    super.tick();
+    tickInventory();
+  }
+
+  @Override
+  public void tickInventory() {
+    if (!shouldTickInventory()) return;
+    capabilityInventory.getInventory().forEach(slot -> {
+      Optional.ofNullable(slot.getItemStack().getCapability(getCapability())).ifPresent(cap -> {
+        if (ioType == IOType.NONE) return;
+        if (ioType.isInput()) {
+          if (this.getTank().getFluidAmount() >= this.getTank().getCapacity()) return;
+          FluidStack simulatedCap = cap.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+          int simulatedInsert = getTank().fill(simulatedCap.copy(), IFluidHandler.FluidAction.SIMULATE);
+          cap.drain(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
+          getTank().fill(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
+        } else if (ioType.isOutput()) {
+          if (this.getTank().getFluidAmount() == 0) return;
+          FluidStack simulatedExtract = getTank().drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+          int simulatedCap = cap.fill(simulatedExtract.copy(), IFluidHandler.FluidAction.SIMULATE);
+          cap.fill(simulatedExtract.copyWithAmount(simulatedCap), IFluidHandler.FluidAction.EXECUTE);
+          getTank().drain(simulatedExtract.copyWithAmount(simulatedCap), IFluidHandler.FluidAction.EXECUTE);
+        }
+      });
+    });
+  }
+
+  @Override
+  public IOType getMode() {
+    return ioType;
+  }
+
+  public boolean shouldTickInventory() {
+    long gameTime = getLevel().getGameTime();
+    if (!Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckTick, tickOffset, 2))
+      return false;
+    lastCheckTick = gameTime;
+    return true;
   }
 
   @Override

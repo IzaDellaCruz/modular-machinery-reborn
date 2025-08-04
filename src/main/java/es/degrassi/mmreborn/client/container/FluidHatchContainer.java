@@ -12,6 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class FluidHatchContainer extends ContainerBase<FluidTankEntity> {
 
   public static void open(ServerPlayer player, FluidTankEntity machine) {
@@ -34,5 +36,16 @@ public class FluidHatchContainer extends ContainerBase<FluidTankEntity> {
 
   public FluidHatchContainer(int id, Inventory inv, FriendlyByteBuf buffer) {
     this(id, inv, ModularMachineryRebornClient.getClientSideFluidHatchEntity(buffer.readBlockPos()));
+  }
+
+  @Override
+  public void init() {
+    super.init();
+    addSyncedSlot(new SlotItemComponent(
+        getEntity().getCapabilityInventory().getInventory().get(0),
+        new AtomicInteger(this.getFirstComponentSlotIndex()).getAndIncrement(),
+        35 + 8,
+        10 + 61/2 - 8
+    ));
   }
 }

@@ -88,6 +88,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
 
   @Override
   public void tick() {
+    super.tick();
     tickInventory();
   }
 

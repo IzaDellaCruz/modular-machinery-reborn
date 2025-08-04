@@ -39,6 +39,7 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
     guiGraphics.pose().pushPose();
     FluidRenderer.renderFluid(guiGraphics.pose(), leftPos + 15, topPos + 10, 20, 61, content, entity.getTank().getCapacity());
     guiGraphics.pose().popPose();
+    renderSlots(guiGraphics);
   }
 
   @Override
