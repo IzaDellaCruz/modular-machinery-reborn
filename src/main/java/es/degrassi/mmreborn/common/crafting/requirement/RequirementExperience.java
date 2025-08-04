@@ -59,7 +59,7 @@ public class RequirementExperience implements IRequirement<ExperienceComponent> 
   public void gatherRequirements(IRequirementList<ExperienceComponent> list) {
     if (mode.isInput()) {
       list.processOnStart(this::processInput);
-    } else {
+    } else if (mode.isOutput()) {
       list.processOnEnd(this::processOutput);
     }
   }
@@ -89,7 +89,7 @@ public class RequirementExperience implements IRequirement<ExperienceComponent> 
     IExperienceHandler handler = component.getContainerProvider();
     long amount = (long) context.getModifiedValue(required, this);
     long remaining = handler.getExperienceCapacity() - handler.getExperience();
-    if (remaining - this.required < 0) {
+    if (remaining >= amount) {
       for (int i = 0; i < component.getContainerProvider().getTanks(); i++) {
         amount -= component.getContainerProvider().receiveExperienceRecipe(i, amount, false);
       }
