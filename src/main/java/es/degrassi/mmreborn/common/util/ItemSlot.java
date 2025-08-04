@@ -66,9 +66,12 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
     return nbt;
   }
 
-  public IOType getMode() {
-    if (maxInput > 0) return IOType.INPUT;
-    return IOType.OUTPUT;
+  public boolean isInput() {
+    return maxInput > 0;
+  }
+
+  public boolean isOutput() {
+    return maxOutput > 0;
   }
 
   @Override

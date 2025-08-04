@@ -69,7 +69,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     this.inSlots = inSlots;
     this.outSlots = outSlots;
     this.defaultFilter = stack -> true;
-    this.inventory.addAll(generateInventory());
+    boolean allBoth = Arrays.stream(inSlots).allMatch(s -> Arrays.stream(outSlots).anyMatch(os -> os == s));
+    this.inventory.addAll(generateInventory(allBoth));
     this.accessibleSides = Arrays.asList(accessibleFrom);
   }
 
@@ -77,7 +78,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     this.inSlots = inSlots;
     this.outSlots = outSlots;
     this.defaultFilter = filter;
-    this.inventory.addAll(generateInventory(filter));
+    boolean allBoth = Arrays.stream(inSlots).allMatch(s -> Arrays.stream(outSlots).anyMatch(os -> os == s));
+    this.inventory.addAll(generateInventory(filter, allBoth));
     this.accessibleSides = Arrays.asList(accessibleFrom);
   }
 
@@ -327,18 +329,27 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
           });
       this.inputs.clear();
       this.outputs.clear();
-      this.inputs.addAll(this.inventory.stream().filter(slot -> slot.getMode().isInput()).toList());
-      this.outputs.addAll(this.inventory.stream().filter(slot -> slot.getMode().isOutput()).toList());
+      this.inputs.addAll(this.inventory.stream().filter(ItemSlot::isInput).toList());
+      this.outputs.addAll(this.inventory.stream().filter(ItemSlot::isOutput).toList());
       this.setChanged();
     }
   }
 
-  private List<ItemSlot> generateInventory() {
-    return generateInventory(item -> true);
+  private List<ItemSlot> generateInventory(boolean allBoth) {
+    return generateInventory(item -> true, allBoth);
   }
 
-  private List<ItemSlot> generateInventory(Predicate<ItemStack> filter) {
+  private List<ItemSlot> generateInventory(Predicate<ItemStack> filter, boolean allBoth) {
     List<ItemSlot> inventory = new ArrayList<>();
+    if (allBoth) {
+      for (Integer slot : inSlots) {
+        ItemSlot itemSlot = new ItemSlot(slot, this, getSlotLimit(slot), getSlotLimit(slot), getSlotLimit(slot), filter);
+        this.inputs.add(itemSlot);
+        this.outputs.add(itemSlot);
+        inventory.add(itemSlot);
+      }
+      return inventory;
+    }
     for (Integer slot : inSlots) {
       ItemSlot itemSlot = new ItemSlot(slot, this, getSlotLimit(slot), getSlotLimit(slot), 0, filter);
       this.inputs.add(itemSlot);
