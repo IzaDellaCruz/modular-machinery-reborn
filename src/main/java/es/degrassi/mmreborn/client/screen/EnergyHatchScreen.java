@@ -38,6 +38,7 @@ public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHa
     int pxFilled = Mth.ceil(percFilled * 61F);
     guiGraphics.blit(getTexture(), leftPos + 15,  topPos + 10 + 61 - pxFilled, 196, 61 - pxFilled, 20, pxFilled);
     guiGraphics.pose().popPose();
+    renderSlots(guiGraphics);
   }
 
   @Override

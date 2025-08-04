@@ -25,6 +25,7 @@ public class EnergyOutputHatchEntity extends EnergyHatchEntity {
 
   public void tick() {
     if (level.isClientSide()) return;
+    super.tick();
 
     long prevEnergy = this.energy;
 

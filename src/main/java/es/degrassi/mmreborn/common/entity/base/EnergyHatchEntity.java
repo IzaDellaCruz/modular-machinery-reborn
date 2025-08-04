@@ -12,6 +12,7 @@ import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateEnergyComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.MiscUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,14 +24,19 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Optional;
 
 public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity implements IEnergyHandler,
-    MachineComponentEntity<EnergyComponent>, ControllerAccessible, TextureableMachineEntity {
+    MachineComponentEntity<EnergyComponent>, ControllerAccessible, TextureableMachineEntity,
+    CapabilityInventoryEntity<IEnergyStorage> {
 
   protected long energy = 0;
   protected EnergyHatchSize size;
@@ -49,6 +55,10 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   private ResourceLocation overlayTexture;
   @Getter
   private ResourceLocation defaultOverlayTexture;
+
+  @Getter
+  private final IOInventory capabilityInventory;
+
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
@@ -59,6 +69,48 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     this.ioType = ioType;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_energy" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
+    this.capabilityInventory = createCapabilityInventory();
+  }
+
+  @Override
+  public ItemCapability<IEnergyStorage, Void> getCapability() {
+    return Capabilities.EnergyStorage.ITEM;
+  }
+
+  @Override
+  public IOType getMode() {
+    return ioType;
+  }
+
+  @Override
+  public void tick() {
+    tickInventory();
+  }
+
+  @Override
+  public void tickInventory() {
+    capabilityInventory.getInventory().forEach(slot -> {
+      Optional.ofNullable(slot.getItemStack().getCapability(getCapability())).ifPresent(cap -> {
+        if (ioType == IOType.NONE) return;
+        if (ioType.isInput()) {
+          if (!cap.canExtract()) return;
+          if (!this.canReceive()) return;
+          if (this.getCurrentEnergy() >= this.getMaxEnergy()) return;
+          int simulatedCap = cap.extractEnergy(Integer.MAX_VALUE, true);
+          int simulatedInsert = receiveEnergy(simulatedCap, true);
+          cap.extractEnergy(simulatedInsert, false);
+          receiveEnergy(simulatedInsert, false);
+        } else if (ioType.isOutput()) {
+          if (!cap.canReceive()) return;
+          if (!this.canExtract()) return;
+          if (this.getEnergyStored() == 0) return;
+          int simulatedExtract = extractEnergy(Integer.MAX_VALUE, true);
+          int simulatedCap = cap.receiveEnergy(simulatedExtract, true);
+          cap.receiveEnergy(simulatedCap, false);
+          extractEnergy(simulatedCap, false);
+        }
+      });
+    });
   }
 
   @Nullable
