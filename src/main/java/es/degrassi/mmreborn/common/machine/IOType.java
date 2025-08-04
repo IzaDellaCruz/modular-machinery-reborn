@@ -32,6 +32,10 @@ public enum IOType implements StringRepresentable {
     return this == INPUT;
   }
 
+  public boolean isOutput() {
+    return this == OUTPUT;
+  }
+
   @Override
   public String getSerializedName() {
     return name().toLowerCase(Locale.ROOT);

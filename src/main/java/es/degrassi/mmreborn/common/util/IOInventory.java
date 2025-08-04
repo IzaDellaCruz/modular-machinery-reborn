@@ -57,8 +57,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   private final Predicate<ItemStack> defaultFilter;
 
   private IOInventory() {
-    accessibleSides = Arrays.asList(Direction.values());
-    defaultFilter = stack -> true;
+    this.accessibleSides = Arrays.asList(Direction.values());
+    this.defaultFilter = stack -> true;
   }
 
   public IOInventory(int[] inSlots, int[] outSlots) {
@@ -68,7 +68,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   public IOInventory(int[] inSlots, int[] outSlots, Direction... accessibleFrom) {
     this.inSlots = inSlots;
     this.outSlots = outSlots;
-    defaultFilter = stack -> true;
+    this.defaultFilter = stack -> true;
     this.inventory.addAll(generateInventory());
     this.accessibleSides = Arrays.asList(accessibleFrom);
   }
@@ -76,7 +76,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   public IOInventory(int[] inSlots, int[] outSlots, Predicate<ItemStack> filter, Direction... accessibleFrom) {
     this.inSlots = inSlots;
     this.outSlots = outSlots;
-    defaultFilter = filter;
+    this.defaultFilter = filter;
     this.inventory.addAll(generateInventory(filter));
     this.accessibleSides = Arrays.asList(accessibleFrom);
   }
@@ -327,8 +327,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
           });
       this.inputs.clear();
       this.outputs.clear();
-      this.inputs.addAll(this.inventory.stream().filter(slot -> Arrays.stream(this.inSlots).anyMatch(i -> i == slot.getSlot())).toList());
-      this.outputs.addAll(this.inventory.stream().filter(slot -> Arrays.stream(this.outSlots).anyMatch(i -> i == slot.getSlot())).toList());
+      this.inputs.addAll(this.inventory.stream().filter(slot -> slot.getMode().isInput()).toList());
+      this.outputs.addAll(this.inventory.stream().filter(slot -> slot.getMode().isOutput()).toList());
       this.setChanged();
     }
   }
