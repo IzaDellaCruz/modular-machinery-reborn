@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
+import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
@@ -13,7 +14,9 @@ import es.degrassi.mmreborn.common.network.server.component.SUpdateEnergyCompone
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
 import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.ItemSlot;
 import es.degrassi.mmreborn.common.util.MiscUtils;
+import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -21,6 +24,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,6 +35,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -58,6 +63,9 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
 
   @Getter
   private final IOInventory capabilityInventory;
+
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
+  private long lastCheckTick;
 
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
@@ -87,8 +95,17 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     tickInventory();
   }
 
+  public boolean shouldTickInventory() {
+    long gameTime = getLevel().getGameTime();
+    if (!Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckTick, tickOffset, 2))
+      return false;
+    lastCheckTick = gameTime;
+    return true;
+  }
+
   @Override
   public void tickInventory() {
+    if (!shouldTickInventory()) return;
     capabilityInventory.getInventory().forEach(slot -> {
       Optional.ofNullable(slot.getItemStack().getCapability(getCapability())).ifPresent(cap -> {
         if (ioType == IOType.NONE) return;

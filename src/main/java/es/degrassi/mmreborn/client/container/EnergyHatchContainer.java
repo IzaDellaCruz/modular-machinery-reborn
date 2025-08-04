@@ -44,7 +44,7 @@ public class EnergyHatchContainer extends ContainerBase<EnergyHatchEntity> {
         getEntity().getCapabilityInventory().getInventory().get(0),
         new AtomicInteger(this.getFirstComponentSlotIndex()).getAndIncrement(),
         35 + 8,
-        10 + 61/2 - 9
+        10 + 61/2 - 8
     ));
   }
 }

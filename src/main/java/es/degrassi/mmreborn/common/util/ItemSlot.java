@@ -3,7 +3,6 @@ package es.degrassi.mmreborn.common.util;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.api.network.syncable.ItemStackSyncable;
-import es.degrassi.mmreborn.common.machine.IOType;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup;

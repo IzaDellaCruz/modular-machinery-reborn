@@ -1,20 +1,23 @@
 package es.degrassi.mmreborn.common.entity.base;
 
 import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.ItemSlot;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @Getter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class TileInventory extends ColorableMachineComponentEntity {
+public abstract class TileInventory extends ColorableMachineComponentEntity implements ItemDroppeable {
   protected final IOInventory inventory;
   private final int slots;
 
@@ -36,5 +39,12 @@ public abstract class TileInventory extends ColorableMachineComponentEntity {
   protected void saveAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {
     super.saveAdditional(compound, pRegistries);
     compound.put("inventory", this.inventory.writeNBT(pRegistries));
+  }
+
+  @Override
+  public void addDrops(List<ItemStack> drops) {
+    getInventory().getInventory().stream().map(ItemSlot::getItemStack)
+        .filter(stack -> !stack.isEmpty())
+        .forEach(stack -> drops.add(stack.copy()));
   }
 }

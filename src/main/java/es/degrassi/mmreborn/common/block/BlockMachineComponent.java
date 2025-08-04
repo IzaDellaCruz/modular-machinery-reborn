@@ -1,14 +1,16 @@
 package es.degrassi.mmreborn.common.block;
 
 import es.degrassi.mmreborn.common.data.Config;
-import es.degrassi.mmreborn.common.entity.base.BlockEntitySynchronized;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
-import es.degrassi.mmreborn.common.entity.base.TileInventory;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.entity.base.ItemDroppeable;
+import es.degrassi.mmreborn.common.util.IEntitySynchronizable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +61,7 @@ public abstract class BlockMachineComponent extends Block implements BlockDynami
   @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
     return (level, pos, state, blockEntity) -> {
-      if (blockEntity.getType() == pBlockEntityType && blockEntity instanceof BlockEntitySynchronized entity) {
+      if (blockEntity.getType() == pBlockEntityType && blockEntity instanceof IEntitySynchronizable entity) {
         entity.tick();
       }
     };
@@ -67,20 +70,20 @@ public abstract class BlockMachineComponent extends Block implements BlockDynami
   @Override
   protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.@NotNull Builder builder) {
     List<ItemStack> drops = super.getDrops(state, builder);
-    if (builder.getParameter(LootContextParams.BLOCK_ENTITY) instanceof TileInventory entity) {
-      IOInventory inv = entity.getInventory();
-      for (int i = 0; i < inv.getSlots(); i++) {
-        ItemStack stack = inv.getStackInSlot(i);
-        if(!stack.isEmpty()) {
-          drops.add(stack);
-        }
-      }
+    BlockEntity be = builder.getParameter(LootContextParams.BLOCK_ENTITY);
+    if (be instanceof ItemDroppeable entity) {
+      entity.addDrops(drops);
     }
     return drops;
   }
 
   @Override
   protected boolean canBeReplaced(BlockState state, Fluid fluid) {
+    return false;
+  }
+
+  @Override
+  protected boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
     return false;
   }
 }
