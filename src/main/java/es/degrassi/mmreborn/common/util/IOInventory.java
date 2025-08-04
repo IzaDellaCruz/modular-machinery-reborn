@@ -69,8 +69,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     this.inSlots = inSlots;
     this.outSlots = outSlots;
     this.defaultFilter = stack -> true;
-    boolean allBoth = Arrays.stream(inSlots).allMatch(s -> Arrays.stream(outSlots).anyMatch(os -> os == s));
-    this.inventory.addAll(generateInventory(allBoth));
+    this.inventory.addAll(generateInventory());
     this.accessibleSides = Arrays.asList(accessibleFrom);
   }
 
@@ -78,8 +77,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     this.inSlots = inSlots;
     this.outSlots = outSlots;
     this.defaultFilter = filter;
-    boolean allBoth = Arrays.stream(inSlots).allMatch(s -> Arrays.stream(outSlots).anyMatch(os -> os == s));
-    this.inventory.addAll(generateInventory(filter, allBoth));
+    this.inventory.addAll(generateInventory(filter));
     this.accessibleSides = Arrays.asList(accessibleFrom);
   }
 
@@ -335,21 +333,12 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     }
   }
 
-  private List<ItemSlot> generateInventory(boolean allBoth) {
-    return generateInventory(item -> true, allBoth);
+  private List<ItemSlot> generateInventory() {
+    return generateInventory(item -> true);
   }
 
-  private List<ItemSlot> generateInventory(Predicate<ItemStack> filter, boolean allBoth) {
+  private List<ItemSlot> generateInventory(Predicate<ItemStack> filter) {
     List<ItemSlot> inventory = new ArrayList<>();
-    if (allBoth) {
-      for (Integer slot : inSlots) {
-        ItemSlot itemSlot = new ItemSlot(slot, this, getSlotLimit(slot), getSlotLimit(slot), getSlotLimit(slot), filter);
-        this.inputs.add(itemSlot);
-        this.outputs.add(itemSlot);
-        inventory.add(itemSlot);
-      }
-      return inventory;
-    }
     for (Integer slot : inSlots) {
       ItemSlot itemSlot = new ItemSlot(slot, this, getSlotLimit(slot), getSlotLimit(slot), 0, filter);
       this.inputs.add(itemSlot);
