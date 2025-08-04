@@ -3,12 +3,8 @@ package es.degrassi.mmreborn.common.block;
 import es.degrassi.mmreborn.client.container.ItemBusContainer;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
-import es.degrassi.mmreborn.common.entity.base.TileInventory;
-import es.degrassi.mmreborn.common.registration.ItemRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -20,10 +16,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -40,51 +34,6 @@ public class BlockInputBus extends BlockMachineComponent {
     this.size = size;
   }
 
-  @Override
-  protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.@NotNull Builder builder) {
-    List<ItemStack> drops = super.getDrops(state, builder);
-    switch (size) {
-      case TINY ->        drops.add(ItemRegistration.ITEM_INPUT_BUS_TINY.get().getDefaultInstance());
-      case SMALL ->       drops.add(ItemRegistration.ITEM_INPUT_BUS_SMALL.get().getDefaultInstance());
-      case NORMAL ->      drops.add(ItemRegistration.ITEM_INPUT_BUS_NORMAL.get().getDefaultInstance());
-      case REINFORCED ->  drops.add(ItemRegistration.ITEM_INPUT_BUS_REINFORCED.get().getDefaultInstance());
-      case BIG ->         drops.add(ItemRegistration.ITEM_INPUT_BUS_BIG.get().getDefaultInstance());
-      case HUGE ->        drops.add(ItemRegistration.ITEM_INPUT_BUS_HUGE.get().getDefaultInstance());
-      case LUDICROUS ->   drops.add(ItemRegistration.ITEM_INPUT_BUS_LUDICROUS.get().getDefaultInstance());
-    }
-    return drops;
-  }
-
-  @Override
-  public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-    BlockEntity te = level.getBlockEntity(pos);
-    if(te instanceof TileInventory entity) {
-      IOInventory inv = entity.getInventory();
-      for (int i = 0; i < inv.getSlots(); i++) {
-        ItemStack stack = inv.getStackInSlot(i);
-        if(!stack.isEmpty()) {
-          popResource(level, pos, stack);
-          inv.setStackInSlot(i, ItemStack.EMPTY);
-        }
-      }
-    }
-    super.playerDestroy(level, player, pos, state, blockEntity, tool);
-  }
-
-  @Override
-  public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-    if(player.getAbilities().instabuild && level instanceof ServerLevel serverLevel && level.getBlockEntity(pos) instanceof TileInventory entity) {
-      IOInventory inv = entity.getInventory();
-      for (int i = 0; i < inv.getSlots(); i++) {
-        ItemStack stack = inv.getStackInSlot(i);
-        if(!stack.isEmpty()) {
-          popResource(level, pos, stack);
-          inv.setStackInSlot(i, ItemStack.EMPTY);
-        }
-      }
-    }
-    return super.playerWillDestroy(level, pos, state, player);
-  }
   @Override
   public void appendHoverText(ItemStack pStack, Item.TooltipContext pContext, List<Component> tooltip, TooltipFlag pTooltipFlag) {
     super.appendHoverText(pStack, pContext, tooltip, pTooltipFlag);

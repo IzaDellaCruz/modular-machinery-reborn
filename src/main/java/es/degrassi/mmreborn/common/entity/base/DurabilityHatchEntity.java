@@ -4,7 +4,6 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
-import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;

@@ -26,6 +26,7 @@ import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.network.server.SMachineUpdatePacket;
 import es.degrassi.mmreborn.common.network.server.SSyncPauseStatePacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateCraftingStatusPacket;
+import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
 import es.degrassi.mmreborn.common.util.SoundManager;
@@ -36,6 +37,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -79,6 +81,12 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     super(EntityRegistration.CONTROLLER.get(), pos, state);
     componentManager = new ComponentManager(this);
     processor = new MachineProcessor(this);
+  }
+
+  @Override
+  protected void collectImplicitComponents(DataComponentMap.Builder components) {
+    super.collectImplicitComponents(components);
+    components.set(DataComponentRegistration.MACHINE_DATA, getId());
   }
 
   public void setStatus(MachineStatus status, Component message) {

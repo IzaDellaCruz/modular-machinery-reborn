@@ -34,15 +34,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
@@ -123,15 +120,6 @@ public class BlockController extends BlockMachineComponent {
       PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), new SRemoveControllerRenderer(pos));
     }
     return super.playerWillDestroy(level, pos, state, player);
-  }
-
-  @Override
-  protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.@NotNull Builder builder) {
-    List<ItemStack> drops = super.getDrops(state, builder);
-    if (builder.getParameter(LootContextParams.BLOCK_ENTITY) instanceof MachineControllerEntity entity) {
-      drops.add(ControllerItem.makeMachineItem(entity.getId()));
-    }
-    return drops;
   }
 
   @Override

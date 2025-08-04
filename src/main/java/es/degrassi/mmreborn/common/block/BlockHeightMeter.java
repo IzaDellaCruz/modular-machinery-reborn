@@ -1,9 +1,7 @@
 package es.degrassi.mmreborn.common.block;
 
 import es.degrassi.mmreborn.common.entity.HeightMeterEntity;
-import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -12,11 +10,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.storage.loot.LootParams;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class BlockHeightMeter extends BlockMachineComponent {
   public BlockHeightMeter() {
@@ -45,13 +41,6 @@ public class BlockHeightMeter extends BlockMachineComponent {
   @Override
   public BlockState rotate(BlockState state, Rotation rotation) {
     return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
-  }
-
-  @Override
-  protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.@NotNull Builder builder) {
-    List<ItemStack> drops = super.getDrops(state, builder);
-    drops.add(ItemRegistration.HEIGHT_METER.get().getDefaultInstance());
-    return drops;
   }
 
   @Nullable

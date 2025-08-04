@@ -3,7 +3,6 @@ package es.degrassi.mmreborn.common.block;
 import es.degrassi.mmreborn.client.container.ParallelHatchContainer;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
-import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,19 +88,6 @@ public class ParallelHatchBlock extends BlockMachineComponent {
   @Override
   public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
     return new ParallelHatchEntity(blockPos, blockState, type);
-  }
-
-  @Override
-  protected @NotNull List<ItemStack> getDrops(@NotNull BlockState state, LootParams.@NotNull Builder builder) {
-    List<ItemStack> drops = super.getDrops(state, builder);
-    switch (type) {
-      case BASIC ->    drops.add(ItemRegistration.PARALLEL_HATCH_BASIC.get().getDefaultInstance());
-      case MEDIUM ->   drops.add(ItemRegistration.PARALLEL_HATCH_MEDIUM.get().getDefaultInstance());
-      case ADVANCED -> drops.add(ItemRegistration.PARALLEL_HATCH_ADVANCED.get().getDefaultInstance());
-      case ULTIMATE -> drops.add(ItemRegistration.PARALLEL_HATCH_ULTIMATE.get().getDefaultInstance());
-      case MAX ->      drops.add(ItemRegistration.PARALLEL_HATCH_MAX.get().getDefaultInstance());
-    }
-    return drops;
   }
 
   @Override
