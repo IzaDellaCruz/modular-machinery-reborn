@@ -5,6 +5,10 @@
 [![](http://cf.way2muchnoise.eu/1083840.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/modular-machinery-reborn)
 [![Modrinth](https://img.shields.io/modrinth/dt/modular-machinery-reborn?color=00AF5C&label=downloads&style=flat&logo=modrinth)](https://modrinth.com/mod/modular-machinery-reborn)
 [![](https://img.shields.io/discord/1071821610836828200?color=7289DA)](https://discord.gg/2XCPCVa59h)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alec016_modular-machinery-reborn&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=alec016_modular-machinery-reborn)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=alec016_modular-machinery-reborn&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=alec016_modular-machinery-reborn)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=alec016_modular-machinery-reborn&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=alec016_modular-machinery-reborn)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=alec016_modular-machinery-reborn&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=alec016_modular-machinery-reborn)
 
 Modular Machinery Reborn is a Minecraft NeoForge mod currently developed for Minecraft 1.21 and 1.21.1
 
