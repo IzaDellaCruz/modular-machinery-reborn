@@ -12,6 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ExperienceHatchContainer extends ContainerBase<ExperienceHatchEntity> {
   public static void open(ServerPlayer player, ExperienceHatchEntity machine) {
     player.openMenu(new MenuProvider() {
@@ -32,5 +34,16 @@ public class ExperienceHatchContainer extends ContainerBase<ExperienceHatchEntit
 
   public ExperienceHatchContainer(int id, Inventory inv, FriendlyByteBuf buffer) {
     this(ModularMachineryRebornClient.getClientSideExperienceHatchEntity(buffer.readBlockPos()), inv.player, id);
+  }
+
+  @Override
+  public void init() {
+    super.init();
+    addSyncedSlot(new SlotItemComponent(
+        getEntity().getCapabilityInventory().getInventory().get(0),
+        new AtomicInteger(this.getFirstComponentSlotIndex()).getAndIncrement(),
+        176 / 2 - 8,
+        47
+    ));
   }
 }

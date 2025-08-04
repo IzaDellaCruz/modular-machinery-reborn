@@ -1,5 +1,7 @@
 package es.degrassi.mmreborn.common.entity.base;
 
+import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
+import es.degrassi.experiencelib.api.capability.IExperienceHandler;
 import es.degrassi.experiencelib.impl.capability.BasicExperienceHandler;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
@@ -12,6 +14,8 @@ import es.degrassi.mmreborn.common.machine.component.ExperienceComponent;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateExperienceComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
+import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -20,16 +24,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Optional;
 
-public abstract class ExperienceHatchEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<ExperienceComponent>, ControllerAccessible, TextureableMachineEntity {
+public abstract class ExperienceHatchEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<ExperienceComponent>,
+    ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IExperienceHandler> {
   protected ExperienceHatchSize size;
   protected IOType ioType;
   @Getter
@@ -47,6 +56,11 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
   private ResourceLocation defaultOverlayTexture;
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
+  @Getter
+  private final IOInventory capabilityInventory;
+
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
+  private long lastCheckTick;
 
   protected ExperienceHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ExperienceHatchSize size,
                           IOType ioType) {
@@ -56,6 +70,87 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_experience" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
     this.experienceTank = buildTank();
+    this.capabilityInventory = this.createCapabilityInventory();
+  }
+
+  @Override
+  public void tick() {
+    tickInventory();
+  }
+
+  @Override
+  public IOType getMode() {
+    return ioType;
+  }
+
+  public boolean shouldTickInventory() {
+    long gameTime = getLevel().getGameTime();
+    if (!Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckTick, tickOffset, 2))
+      return false;
+    lastCheckTick = gameTime;
+    return true;
+  }
+
+  @Override
+  public void tickInventory() {
+    if (!shouldTickInventory()) return;
+    capabilityInventory.getInventory().forEach(slot -> {
+      Optional.ofNullable(slot.getItemStack().getCapability(getCapability())).ifPresent(cap -> {
+        if (ioType == IOType.NONE) return;
+        if (ioType.isInput()) {
+          if (!cap.canExtract(0)) return;
+          if (this.getTank().getExperience() >= this.getTank().getExperienceCapacity()) return;
+          if (slot.getItemStack().is(Items.EXPERIENCE_BOTTLE)) {
+            int experienceBottles = slot.getItemStack().getCount();
+            for (int i = 0; i < experienceBottles; i++) {
+              long simulatedCap = cap.extractExperience(0, Long.MAX_VALUE, true);
+              long simulatedInsert = getTank().receiveExperienceRecipe(0, simulatedCap, true);
+              if (simulatedInsert < 7) return;
+              ItemStack stack = slot.extractItemBypassLimit(1, true);
+              if (stack.isEmpty()) return;
+              slot.extractItemBypassLimit(1, false);
+              cap.extractExperienceRecipe(0, simulatedInsert, false);
+              getTank().receiveExperience(0, simulatedInsert, false);
+            }
+          } else {
+            if (slot.getItemStack().is(Items.GLASS_BOTTLE)) return;
+            long simulatedCap = cap.extractExperience(0, Long.MAX_VALUE, true);
+            long simulatedInsert = getTank().receiveExperience(0, simulatedCap, true);
+            cap.extractExperienceRecipe(0, simulatedInsert, false);
+            getTank().receiveExperienceRecipe(0, simulatedInsert, false);
+          }
+        } else if (ioType.isOutput()) {
+          if (!cap.canReceive(0)) return;
+          if (this.getTank().getExperience() == 0) return;
+          if (slot.getItemStack().is(Items.GLASS_BOTTLE)) {
+            int experienceBottles = slot.getItemStack().getCount();
+            if (experienceBottles > 1) return;
+            long simulatedCap = cap.receiveExperienceRecipe(0, Long.MAX_VALUE, true);
+            long simulatedInsert = getTank().extractExperienceRecipe(0, simulatedCap, true);
+            if (simulatedInsert < 7) return;
+            ItemStack extracted = slot.extractItemBypassLimit(1, true);
+            if (extracted.isEmpty()) return;
+            ItemStack stack = slot.insertItemBypassLimit(new ItemStack(Items.EXPERIENCE_BOTTLE, 1), true);
+            if (stack.isEmpty()) return;
+            slot.extractItemBypassLimit(1, false);
+            slot.insertItemBypassLimit(new ItemStack(Items.EXPERIENCE_BOTTLE, 1), false);
+            cap.receiveExperienceRecipe(0, simulatedInsert, false);
+            getTank().extractExperienceRecipe(0, simulatedInsert, false);
+          } else {
+            if (slot.getItemStack().is(Items.EXPERIENCE_BOTTLE)) return;
+            long simulatedCap = cap.receiveExperienceRecipe(0, Long.MAX_VALUE, true);
+            long simulatedInsert = getTank().extractExperienceRecipe(0, simulatedCap, true);
+            cap.receiveExperienceRecipe(0, simulatedInsert, false);
+            getTank().extractExperienceRecipe(0, simulatedInsert, false);
+          }
+        }
+      });
+    });
+  }
+
+  @Override
+  public ItemCapability<IExperienceHandler, Void> getCapability() {
+    return ExperienceLibCapabilities.EXPERIENCE.item();
   }
 
   public BasicExperienceHandler getTank() {
@@ -133,6 +228,7 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
 
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
+    this.capabilityInventory.deserialize(compound.getCompound("inventory"), pRegistries);
   }
 
   @Override
@@ -151,6 +247,7 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
+    compound.put("inventory", this.capabilityInventory.writeNBT(pRegistries));
   }
 
   @Override

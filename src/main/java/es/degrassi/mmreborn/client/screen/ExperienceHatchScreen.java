@@ -72,6 +72,7 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
         addRenderableWidget(experienceButtons.get(type));
       }
     }
+    renderSlots(guiGraphics);
   }
 
   @Override
