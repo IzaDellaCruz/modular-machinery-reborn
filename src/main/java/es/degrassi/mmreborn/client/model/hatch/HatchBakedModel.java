@@ -63,6 +63,10 @@ public class HatchBakedModel implements IDynamicBakedModel {
     return new Material(InventoryMenu.BLOCK_ATLAS, texture);
   }
 
+  private static Material copy(Material material) {
+    return new Material(material.atlasLocation(), material.texture());
+  }
+
   @Override
   public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state,
                                            @Nullable Direction side,
@@ -82,7 +86,10 @@ public class HatchBakedModel implements IDynamicBakedModel {
       if (model == null) return List.of();
       var oldBlockModel = ((BlockModel) baker.getModel(model));
       Map<String, Either<Material, String>> textureMap = Maps.newHashMap();
-      textureMap.putAll(oldBlockModel.textureMap);
+      oldBlockModel.textureMap.forEach((string, either) -> {
+        either.ifLeft(material -> textureMap.put(string, Either.left(copy(material))));
+        either.ifRight(name -> textureMap.put(string, Either.right(name)));
+      });
 
       if (baseTexture != null && baseTextureName != null) {
         switch (baseTextureName) {
