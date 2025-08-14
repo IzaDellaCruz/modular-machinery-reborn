@@ -193,6 +193,7 @@ public class MMRJeiPlugin implements IModPlugin {
             .getAllRecipesFor(RecipeRegistration.RECIPE_TYPE.get())
             .stream()
             .map(RecipeHolder::value)
+            .filter(recipe -> !recipe.isHidden())
             .sorted(Comparator.comparingInt(MachineRecipe::getConfiguredPriority).reversed())
             .collect(Collectors.groupingBy(MachineRecipe::getOwningMachineIdentifier));
 

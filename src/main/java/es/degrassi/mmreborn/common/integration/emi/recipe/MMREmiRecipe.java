@@ -76,8 +76,7 @@ public class MMREmiRecipe extends BasicEmiRecipe {
     }
     Font font = Minecraft.getInstance().font;
 
-
-    recipe.getRequirements()
+    (recipe.getJeiRequirements().isEmpty() ? recipe.getRequirements() : recipe.getJeiRequirements())
         .stream()
         .filter(component -> EmiComponentRegistry.hasEmiComponent(component.getType()))
         .map(requirement -> requirement.castRequirement(requirement))

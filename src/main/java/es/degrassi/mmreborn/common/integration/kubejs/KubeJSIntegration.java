@@ -46,7 +46,7 @@ public class KubeJSIntegration {
         machines.put(machine.getRegistryName(), machine);
       });
     } catch (Exception e) {
-      ScriptType.SERVER.console.warn("Couldn't build machine: " + machineId.get(), e);
+      ScriptType.SERVER.console.error("Couldn't build machine: " + machineId.get(), e);
     }
     ScriptType.SERVER.console.infof("Successfully added %s Modular Machines ", event.getBuilders().size());
     return machines;

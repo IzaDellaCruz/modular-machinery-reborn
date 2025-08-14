@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
@@ -33,6 +32,7 @@ import com.google.common.collect.Lists;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +45,9 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
 
   @HideFromJS
   public static final Map<ResourceLocation, Map<ResourceLocation, Integer>> IDS = Maps.newHashMap();
+
+  @HideFromJS
+  private boolean jei = false;
 
   @HideFromJS
   public MachineRecipeBuilderJS(ResourceLocation machine, int time, int width, int height, int progressX, int progressY) {
@@ -114,6 +117,11 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
     for (RecipeRequirement<?, ?> requirement : getValue(ModularMachineryRebornRecipeSchemas.REQUIREMENTS))
       builder.addRequirement(requirement);
 
+    builder.addJeiRequirements(getValue(ModularMachineryRebornRecipeSchemas.JEI_REQUIREMENTS));
+
+    if (getValue(ModularMachineryRebornRecipeSchemas.HIDE))
+      builder.hide();
+
     builder.shouldRenderProgress(getValue(ModularMachineryRebornRecipeSchemas.SHOULD_RENDER_PROGRESS));
     builder.withPriority(getValue(ModularMachineryRebornRecipeSchemas.PRIORITY));
     builder.shouldVoidOnFailure(getValue(ModularMachineryRebornRecipeSchemas.VOID));
@@ -129,6 +137,16 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
     }
     if (this.json != null)
       this.json.addProperty("type", RecipeRegistration.RECIPE_TYPE.getId().toString());
+    return this;
+  }
+
+  public MachineRecipeBuilderJS jei() {
+    this.jei = true;
+    return this;
+  }
+
+  public MachineRecipeBuilderJS hide() {
+    setValue(ModularMachineryRebornRecipeSchemas.HIDE, true);
     return this;
   }
 
@@ -170,15 +188,16 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
   @Override
   @HideFromJS
   public MachineRecipeBuilderJS addRequirement(RecipeRequirement<?, ?> requirement) {
-    setValue(ModularMachineryRebornRecipeSchemas.REQUIREMENTS, addToList(ModularMachineryRebornRecipeSchemas.REQUIREMENTS, requirement));
+    if(!this.jei)
+      setValue(ModularMachineryRebornRecipeSchemas.REQUIREMENTS, addToList(ModularMachineryRebornRecipeSchemas.REQUIREMENTS, requirement));
+    else
+      setValue(ModularMachineryRebornRecipeSchemas.JEI_REQUIREMENTS, addToList(ModularMachineryRebornRecipeSchemas.JEI_REQUIREMENTS, requirement));
     return this;
   }
 
   @HideFromJS
   private <E> List<E> addToList(RecipeKey<List<E>> key, E element) {
-    List<E> list = Lists.newArrayList();
-    List<E> values = getValue(key);
-    if (values != null) list.addAll(values);
+    List<E> list = new ArrayList<>(getValue(key));
     list.add(element);
     return list;
   }

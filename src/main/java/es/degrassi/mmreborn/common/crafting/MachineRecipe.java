@@ -38,7 +38,9 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
       DefaultCodecs.RESOURCE_LOCATION.fieldOf("machine").forGetter(MachineRecipeBuilder::getMachine),
       NamedCodec.intRange(1, Integer.MAX_VALUE).fieldOf("time").forGetter(MachineRecipeBuilder::getTime),
       RecipeRequirement.CODEC.listOf().fieldOf("requirements").forGetter(MachineRecipeBuilder::getRequirements),
+      RecipeRequirement.CODEC.listOf().optionalFieldOf("jeiRequirements", List.of()).forGetter(MachineRecipeBuilder::getJeiRequirements),
       NamedCodec.INT.optionalFieldOf("priority", 0).forGetter(MachineRecipeBuilder::getPrio),
+      NamedCodec.BOOL.optionalFieldOf("hidden", false).forGetter(MachineRecipeBuilder::isHidden),
       NamedCodec.BOOL.optionalFieldOf("voidFailure", true).forGetter(MachineRecipeBuilder::isVoidF),
       NamedCodec.INT.optionalFieldOf("width", 256).forGetter(MachineRecipeBuilder::getWidth),
       NamedCodec.INT.optionalFieldOf("height", 256).forGetter(MachineRecipeBuilder::getHeight),
@@ -50,6 +52,7 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
   @Getter(AccessLevel.NONE)
   private final int tickTime;
   private final List<RecipeRequirement<?, ?>> recipeRequirements = Lists.newArrayList();
+  private final List<RecipeRequirement<?, ?>> jeiRequirements = Lists.newArrayList();
   private final int configuredPriority;
   private final boolean voidPerTickFailure;
   private final PositionedRequirement progressPosition;
@@ -59,6 +62,7 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
   private final boolean shouldRenderProgress;
 
   private boolean modified = false;
+  private boolean hidden = false;
 
   public MachineRecipe(ResourceLocation owningMachine, int tickTime, int configuredPriority,
                        boolean voidPerTickFailure, int width, int height,
@@ -71,6 +75,11 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     this.shouldRenderProgress = shouldRenderProgress;
     this.width = width;
     this.height = height;
+  }
+
+  public void hide(boolean hide) {
+    this.hidden = hide;
+    if (hidden) MMRLogger.INSTANCE.info("Hiding recipe: {}", this);
   }
 
   public ResourceLocation getOwningMachineIdentifier() {
@@ -91,6 +100,18 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     }
     if (requirement.isModified()) setModified(true);
     this.recipeRequirements.add(requirement);
+  }
+
+  public void addJeiRequirement(RecipeRequirement<?, ?> requirement) {
+    if (requirement.requirement() instanceof RequirementEnergy) {
+      for (RecipeRequirement<?, ?> req : this.getJeiRequirements()) {
+        if (req.requirement() instanceof RequirementEnergy && req.requirement().getMode() == requirement.requirement().getMode()) {
+          throw new IllegalStateException("Tried to add multiple energy requirements for the same ioType! Please only add one for each ioType!");
+        }
+      }
+    }
+    if (requirement.isModified()) setModified(true);
+    this.jeiRequirements.add(requirement);
   }
 
   public int getRecipeTotalTickTime() {
@@ -121,12 +142,16 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     json.addProperty("tickTime", tickTime);
     JsonArray recipeRequirements = new JsonArray();
     this.recipeRequirements.forEach(req -> recipeRequirements.add(req.asJson()));
+    JsonArray jeiRequirements = new JsonArray();
+    this.jeiRequirements.forEach(req -> jeiRequirements.add(req.asJson()));
     json.add("recipeRequirements", recipeRequirements);
+    json.add("jeiRequirements", jeiRequirements);
     json.addProperty("configuredPriority", configuredPriority);
     json.addProperty("voidPerTickFailure", voidPerTickFailure);
     json.addProperty("shouldRenderProgress", shouldRenderProgress);
     json.add("progressPosition", progressPosition.asJson());
     json.addProperty("modifiedByAU", modified);
+    json.addProperty("hidden", hidden);
     return json;
   }
 
@@ -174,11 +199,14 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     private int prio;
     private boolean shouldRenderProgress;
     private final List<RecipeRequirement<?, ?>> requirements;
+    private final List<RecipeRequirement<?, ?>> jeiRequirements;
     private boolean voidF;
     private boolean modified;
+    private boolean hidden;
 
     public MachineRecipeBuilder(ResourceLocation machine, int time, int width, int height, PositionedRequirement progressPosition) {
       this.requirements = Lists.newArrayList();
+      this.jeiRequirements = Lists.newArrayList();
       this.machine = machine;
       this.time = time;
       this.progressPosition = progressPosition;
@@ -202,6 +230,10 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
       this.shouldRenderProgress = v;
     }
 
+    public void hide() {
+      this.hidden = true;
+    }
+
     public void addRequirement(RecipeRequirement<?, ?> requirement) {
       requirements.add(requirement);
       if (requirement.isModified())
@@ -209,13 +241,32 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     }
 
     public MachineRecipeBuilder(ResourceLocation machine, int time, List<RecipeRequirement<?, ?>> requirements,
-                                int prio, boolean voidF, int width, int height,
+                                int prio, boolean hidden, boolean voidF, int width, int height,
                                 boolean shouldRenderProgress, PositionedRequirement progressPosition) {
       this.machine = machine;
       this.time = time;
       this.requirements = requirements;
+      this.jeiRequirements = Lists.newArrayList();
       this.prio = prio;
       this.voidF = voidF;
+      this.progressPosition = progressPosition;
+      this.shouldRenderProgress = shouldRenderProgress;
+      this.width = width;
+      this.height = height;
+      this.hidden = hidden;
+    }
+
+    public MachineRecipeBuilder(ResourceLocation machine, int time, List<RecipeRequirement<?, ?>> requirements,
+                                List<RecipeRequirement<?, ?>> jeiRequirements,
+                                int prio, boolean hidden, boolean voidF, int width, int height,
+                                boolean shouldRenderProgress, PositionedRequirement progressPosition) {
+      this.machine = machine;
+      this.time = time;
+      this.requirements = requirements;
+      this.jeiRequirements = jeiRequirements;
+      this.prio = prio;
+      this.voidF = voidF;
+      this.hidden = hidden;
       this.progressPosition = progressPosition;
       this.shouldRenderProgress = shouldRenderProgress;
       this.width = width;
@@ -223,7 +274,8 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     }
 
     public MachineRecipeBuilder(MachineRecipe recipe) {
-      this(recipe.getOwningMachineIdentifier(), recipe.tickTime, recipe.recipeRequirements, recipe.configuredPriority,
+      this(recipe.getOwningMachineIdentifier(), recipe.tickTime, recipe.recipeRequirements,
+          recipe.jeiRequirements, recipe.configuredPriority, recipe.hidden,
           recipe.voidPerTickFailure, recipe.width, recipe.height, recipe.shouldRenderProgress,
           recipe.progressPosition);
       modified(recipe.modified);
@@ -234,13 +286,20 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
         MMRLogger.INSTANCE.info("Building recipe...");
         MachineRecipe recipe = new MachineRecipe(machine, time, prio, voidF, width, height, shouldRenderProgress, progressPosition);
         requirements.forEach(recipe::addRequirement);
+        jeiRequirements.forEach(recipe::addJeiRequirement);
         if (!recipe.modified)
           recipe.setModified(modified);
+        recipe.hide(hidden);
         MMRLogger.INSTANCE.info("Finished building recipe {}", recipe);
         return recipe;
-      } catch (Exception ignored) {
+      } catch (Exception ex) {
+        MMRLogger.INSTANCE.error("Error while building recipe for machine: {}", machine, ex);
       }
       return null;
+    }
+
+    public void addJeiRequirements(List<RecipeRequirement<?,?>> requirements) {
+      this.jeiRequirements.addAll(requirements);
     }
   }
 }

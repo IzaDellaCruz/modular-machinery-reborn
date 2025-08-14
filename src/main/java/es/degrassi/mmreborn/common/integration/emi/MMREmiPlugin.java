@@ -63,6 +63,7 @@ public class MMREmiPlugin implements EmiPlugin {
       recipes.stream()
           .filter(recipe -> recipe.value().getOwningMachine() != null)
           .filter(recipe -> recipe.value().getOwningMachine().getRegistryName().equals(id))
+          .filter(recipe -> !recipe.value().isHidden())
           .forEach(recipe -> registry.addDeferredRecipes(x -> x.accept(new MMREmiRecipe(category, recipe))));
       registry.addExclusionArea(ControllerScreen.class, (screen, consumer) -> {
         int x = screen.getGuiLeft(), y = screen.getGuiTop();

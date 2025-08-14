@@ -19,6 +19,10 @@ public interface DurabilityRequirementJS extends RecipeJSBuilder {
     return addRequirement(new RecipeRequirement<>(requirement, 1));
   }
 
+  default MachineRecipeBuilderJS damageItem(Ingredient ingredient) {
+    return damageItem(ingredient, 1, 0, 0);
+  }
+
   default MachineRecipeBuilderJS damageItem(Ingredient ingredient, int amount) {
     return damageItem(ingredient, amount, 0, 0);
   }
@@ -29,6 +33,10 @@ public interface DurabilityRequirementJS extends RecipeJSBuilder {
 
   default MachineRecipeBuilderJS repairItem(Ingredient ingredient, int amount) {
     return repairItem(ingredient, amount, 0, 0);
+  }
+
+  default MachineRecipeBuilderJS repairItem(Ingredient ingredient) {
+    return repairItem(ingredient, 1, 0, 0);
   }
 
   default MachineRecipeBuilderJS repairItem(Ingredient ingredient, int x, int y) {

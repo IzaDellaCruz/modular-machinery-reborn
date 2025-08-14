@@ -79,13 +79,12 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
     recipe.chanceTexts.clear();
     if (recipe.isShouldRenderProgress()) {
       new JeiDurationComponent(
-          new RecipeRequirement<>(new RequirementDuration(recipe.getRecipeTotalTickTime(),
-              recipe.getProgressPosition()), 1),
+          new RecipeRequirement<>(new RequirementDuration(recipe.getRecipeTotalTickTime(), recipe.getProgressPosition())),
           20, IDrawableAnimated.StartDirection.LEFT
       ).setRecipe(this, builder, recipe, focuses);
     }
 
-    recipe.getRequirements()
+    (recipe.getJeiRequirements().isEmpty() ? recipe.getRequirements() : recipe.getJeiRequirements())
         .stream()
         .filter(component -> JeiComponentRegistry.hasJeiComponent(component.getType()))
         .map(requirement -> requirement.castRequirement(requirement))
