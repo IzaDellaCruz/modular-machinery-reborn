@@ -4,7 +4,6 @@ import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.ItemDroppeable;
-import es.degrassi.mmreborn.common.util.IEntitySynchronizable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -13,8 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -52,16 +49,6 @@ public abstract class BlockMachineComponent extends Block implements BlockDynami
   @Override
   public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
     return new ColorableMachineComponentEntity(blockPos, blockState);
-  }
-
-  @Nullable
-  @Override
-  public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
-    return (level, pos, state, blockEntity) -> {
-      if (blockEntity.getType() == pBlockEntityType && blockEntity instanceof IEntitySynchronizable entity) {
-        entity.tick();
-      }
-    };
   }
 
   @Override

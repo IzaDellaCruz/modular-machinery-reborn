@@ -36,7 +36,7 @@ import java.util.Optional;
 @Getter
 @Setter
 public abstract class FluidTankEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<FluidComponent>, ControllerAccessible,
-    TextureableMachineEntity, CapabilityInventoryEntity<IFluidHandlerItem> {
+    TextureableMachineEntity, CapabilityInventoryEntity<IFluidHandlerItem>, ITickEntity, IServerTickEntity {
   private HybridTank tank;
   private IOType ioType;
   private FluidHatchSize hatchSize;
@@ -81,8 +81,8 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
   }
 
   @Override
-  public void tick() {
-    super.tick();
+  public void doRestrictedTick() {
+    IServerTickEntity.super.doRestrictedTick();
     tickInventory();
   }
 

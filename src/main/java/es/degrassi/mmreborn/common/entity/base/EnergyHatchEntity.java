@@ -37,7 +37,7 @@ import java.util.Optional;
 
 public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity implements IEnergyHandler,
     MachineComponentEntity<EnergyComponent>, ControllerAccessible, TextureableMachineEntity,
-    CapabilityInventoryEntity<IEnergyStorage> {
+    CapabilityInventoryEntity<IEnergyStorage>, ITickEntity, IServerTickEntity {
 
   protected long energy = 0;
   protected EnergyHatchSize size;
@@ -87,8 +87,8 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   }
 
   @Override
-  public void tick() {
-    super.tick();
+  public void doRestrictedTick() {
+    IServerTickEntity.super.doRestrictedTick();
     tickInventory();
   }
 

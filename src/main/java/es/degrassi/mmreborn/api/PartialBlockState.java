@@ -58,6 +58,19 @@ public class PartialBlockState implements Predicate<BlockInWorld> {
     }
   };
 
+  public static final PartialBlockState NOT_MACHINE = new PartialBlockState(Blocks.AIR.defaultBlockState(),
+      Collections.emptyList(), null) {
+    @Override
+    public boolean test(BlockInWorld cachedBlockInfo) {
+      return !(cachedBlockInfo.getState().getBlock() instanceof BlockController) && !(cachedBlockInfo.getEntity() instanceof MachineControllerEntity);
+    }
+
+    @Override
+    public String toString() {
+      return "NOT_MACHINE";
+    }
+  };
+
   public static final NamedCodec<PartialBlockState> CODEC = NamedCodec.STRING.comapFlatMap(s -> {
     try {
       BlockStateParser.BlockResult result = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), s, true);

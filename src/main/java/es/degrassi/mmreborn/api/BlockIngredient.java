@@ -43,6 +43,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState> {
   public static final BlockIngredient AIR = new BlockIngredient(PartialBlockState.AIR);
   public static final BlockIngredient ANY = new BlockIngredient(PartialBlockState.ANY);
   public static final BlockIngredient MACHINE = new BlockIngredient(PartialBlockState.MACHINE);
+  public static final BlockIngredient NOT_MACHINE = new BlockIngredient(PartialBlockState.NOT_MACHINE);
 
   public static final NamedCodec<BlockIngredient> TAG_CODEC = NamedCodec.STRING.comapFlatMap(string -> {
     try {
@@ -220,7 +221,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState> {
   }
 
   public boolean isNotMachine() {
-    return !this.equals(BlockIngredient.MACHINE) && this.getAll().stream().noneMatch(state -> state.equals(PartialBlockState.MACHINE));
+    return this.equals(BlockIngredient.NOT_MACHINE) && this.getAll().stream().allMatch(state -> state.equals(PartialBlockState.NOT_MACHINE));
   }
 
   public MutableComponent getNamesUnified() {

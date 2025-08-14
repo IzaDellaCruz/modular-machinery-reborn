@@ -38,7 +38,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 public abstract class ExperienceHatchEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<ExperienceComponent>,
-    ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IExperienceHandler> {
+    ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IExperienceHandler>, ITickEntity, IServerTickEntity {
   protected ExperienceHatchSize size;
   protected IOType ioType;
   @Getter
@@ -74,8 +74,8 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
   }
 
   @Override
-  public void tick() {
-    super.tick();
+  public void doRestrictedTick() {
+    IServerTickEntity.super.doRestrictedTick();
     tickInventory();
   }
 

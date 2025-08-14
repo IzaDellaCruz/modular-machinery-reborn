@@ -12,6 +12,4 @@ public interface IEntitySynchronizable {
   @Nullable Level getLevel();
 
   BlockPos getBlockPos();
-
-  void tick();
 }

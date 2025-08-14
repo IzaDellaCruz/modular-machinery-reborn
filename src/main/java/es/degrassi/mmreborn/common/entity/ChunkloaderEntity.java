@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.common.entity;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
 import es.degrassi.mmreborn.common.entity.base.BlockEntityRestrictedTick;
+import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
@@ -29,7 +30,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @MethodsReturnNonnullByDefault
 @Getter
 @Setter
-public class ChunkloaderEntity extends BlockEntityRestrictedTick implements MachineComponentEntity<ChunkloadComponent>, TextureableMachineEntity {
+public class ChunkloaderEntity extends BlockEntityRestrictedTick implements MachineComponentEntity<ChunkloadComponent>, TextureableMachineEntity,
+    IServerTickEntity {
   private ResourceLocation baseTexture;
   private ResourceLocation overlayTexture;
   private static final ResourceLocation defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_chunkloader");

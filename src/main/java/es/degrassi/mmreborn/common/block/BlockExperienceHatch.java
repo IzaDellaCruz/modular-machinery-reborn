@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BlockExperienceHatch extends BlockMachineComponent {
+public class BlockExperienceHatch extends BlockMachineComponent implements BlockTickEntity {
   protected final ExperienceHatchSize size;
 
   public BlockExperienceHatch(ExperienceHatchSize size) {

@@ -16,6 +16,8 @@ import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.base.BlockEntityRestrictedTick;
 import es.degrassi.mmreborn.common.entity.base.BlockEntitySynchronized;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
+import es.degrassi.mmreborn.common.entity.base.IClientTickEntity;
+import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
@@ -62,7 +64,8 @@ import java.util.function.Consumer;
 @Setter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MachineControllerEntity extends BlockEntityRestrictedTick implements ComponentMapper, ISyncableStuff {
+public class MachineControllerEntity extends BlockEntityRestrictedTick implements ComponentMapper, ISyncableStuff,
+    IServerTickEntity, IClientTickEntity {
   @Setter
   private CraftingStatus craftingStatus = CraftingStatus.MISSING_STRUCTURE;
   private boolean isPaused = false;

@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockEnergyHatch extends BlockMachineComponent {
+public class BlockEnergyHatch extends BlockMachineComponent implements BlockTickEntity {
   protected final EnergyHatchSize type;
   public BlockEnergyHatch(EnergyHatchSize type) {
     super(

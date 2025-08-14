@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-public class BlockChunkloader extends BlockMachineComponent {
+public class BlockChunkloader extends BlockMachineComponent implements BlockTickEntity {
   public BlockChunkloader() {
     super(
       Properties.of()

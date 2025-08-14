@@ -18,7 +18,8 @@ public class ShowRecipesTabWidget extends TabWidget {
   public ShowRecipesTabWidget(@Nullable ItemOrIconButton icon, DynamicMachine machine) {
     super(0, 0, icon, (mouseX, mouseY, button) -> {
       if (Mods.isEMILoaded()) {
-        EmiApi.displayRecipeCategory(MMREmiPlugin.categories.get(machine));
+        if (MMREmiPlugin.categories.containsKey(machine))
+          EmiApi.displayRecipeCategory(MMREmiPlugin.categories.get(machine));
       }
     });
   }

@@ -215,6 +215,7 @@ public class Structure {
     private Builder() {
       this.symbolMap.put(' ', BlockIngredient.ANY);
       this.symbolMap.put('m', BlockIngredient.MACHINE);
+      this.symbolMap.put('_', BlockIngredient.NOT_MACHINE);
     }
 
     /**

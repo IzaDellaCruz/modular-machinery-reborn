@@ -1,7 +1,6 @@
 package es.degrassi.mmreborn.common.entity.base;
 
 import es.degrassi.mmreborn.common.util.IOInventory;
-import es.degrassi.mmreborn.common.util.ItemSlot;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;

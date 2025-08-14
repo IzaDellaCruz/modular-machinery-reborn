@@ -43,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-public class BlockController extends BlockMachineComponent {
+public class BlockController extends BlockMachineComponent implements BlockTickEntity {
   public BlockController() {
     super(
         Properties.of()

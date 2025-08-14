@@ -29,10 +29,6 @@ public class BlockEntitySynchronized extends BlockEntity implements IEntitySynch
     super(type, pos, blockState);
   }
 
-  public void tick() {
-    // Used by overrides with no functionality by default
-  }
-
   @Override
   protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
     super.loadAdditional(nbt, pRegistries);

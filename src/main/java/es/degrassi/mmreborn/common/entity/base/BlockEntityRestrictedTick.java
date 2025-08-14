@@ -9,21 +9,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class BlockEntityRestrictedTick extends ColorableMachineComponentEntity {
+public abstract class BlockEntityRestrictedTick extends ColorableMachineComponentEntity implements ITickEntity {
 
   protected BlockEntityRestrictedTick(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState) {
     super(entityType, pos, blockState);
   }
-
-  public final void tick() {
-    if (getLevel() == null) return;
-    if (getLevel().isClientSide()) {
-      doClientTick();
-      return;
-    }
-    doRestrictedTick();
-  }
-
-  public abstract void doRestrictedTick();
-  public void doClientTick() {}
 }

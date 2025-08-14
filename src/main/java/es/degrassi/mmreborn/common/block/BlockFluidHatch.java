@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class BlockFluidHatch extends BlockMachineComponent {
+public class BlockFluidHatch extends BlockMachineComponent implements BlockTickEntity {
   protected final FluidHatchSize size;
   public BlockFluidHatch(FluidHatchSize size) {
     super(
