@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.DataType;
 import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.manager.crafting.ProcessorType;
@@ -37,6 +38,9 @@ public class RegistrarCodec<V> implements NamedCodec<V> {
    **/
   public static final NamedCodec<RequirementType<? extends IRequirement<?>>> REQUIREMENT_NEW = of(ModularMachineryReborn.getRequirementRegistrar(), true);
   public static final NamedCodec<ComponentType> COMPONENT = of(ModularMachineryReborn.getComponentRegistrar(), true);
+  public static final NamedCodec<EmptyRequirementType> EMPTY_REQUIREMENT_TYPE =
+      of(ModularMachineryReborn.getEmptyRequirementTypeRegistrar(),
+      true);
   public static final NamedCodec<MachineHatchType> HATCH_TYPE = of(ModularMachineryReborn.getMachineHatchTypeRegistrar(), true);
   public static final NamedCodec<DataType<? extends IData<?>, ?>> DATA = of(ModularMachineryReborn.dataRegistrar(), true);
   public static final NamedCodec<ProcessorType<? extends IProcessor>> CRAFTING_PROCESSOR = of(ModularMachineryReborn.processorRegistrar(), true);

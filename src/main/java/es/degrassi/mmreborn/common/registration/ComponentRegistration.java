@@ -46,6 +46,9 @@ public class ComponentRegistration {
   public static final Supplier<ComponentType> COMPONENT_FUNCTION = MACHINE_COMPONENTS.register(rootLC("function"),
       ComponentType::create);
 
+  public static final Supplier<ComponentType> COMPONENT_EMPTY = MACHINE_COMPONENTS.register(rootLC("empty"),
+      ComponentType::create);
+
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);
   }

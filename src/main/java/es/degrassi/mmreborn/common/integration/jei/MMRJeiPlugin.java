@@ -14,6 +14,7 @@ import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTy
 import es.degrassi.mmreborn.common.integration.jei.ingredient.DummyIngredientRenderer;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.IntegerIngredientHelper;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.LongIngredientHelper;
+import es.degrassi.mmreborn.common.integration.jei.ingredient.VoidIngredientHelper;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
@@ -93,6 +94,8 @@ public class MMRJeiPlugin implements IModPlugin {
         new DummyIngredientRenderer<>(), NamedCodec.LONG.codec());
     registration.register(CustomIngredientTypes.INTEGER, Lists.newArrayList(), new IntegerIngredientHelper(),
         new DummyIngredientRenderer<>(), NamedCodec.INT.codec());
+    registration.register(CustomIngredientTypes.VOID, Lists.newArrayList(), new VoidIngredientHelper(),
+        new DummyIngredientRenderer<>(), NamedCodec.VOID.codec());
   }
 
   @Override

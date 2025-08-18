@@ -18,6 +18,7 @@ public class Registration {
     MachineHatchTypeRegistration.register(bus);
     DataRegistration.register(bus);
     ProcessorTypeRegistration.register(bus);
+    EmptyRequirementTypeRegistration.register(bus);
     RequirementTypeRegistration.register(bus);
     BlockRegistration.register(bus);
     ItemRegistration.register(bus);

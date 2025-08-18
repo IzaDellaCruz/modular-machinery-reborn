@@ -485,6 +485,22 @@ public interface NamedCodec<A> {
       return "Integer";
     }
   };
+  NamedCodec<Void> VOID = new NamedCodec<>() {
+    @Override
+    public <T> DataResult<Pair<Void, T>> decode(DynamicOps<T> ops, T input) {
+      return DataResult.success(null);
+    }
+
+    @Override
+    public <T> DataResult<T> encode(DynamicOps<T> ops, Void input, T prefix) {
+      return DataResult.success(prefix);
+    }
+
+    @Override
+    public String name() {
+      return "Void";
+    }
+  };
   NamedCodec<Long> LONG = new NumberCodec<>() {
     @Override
     public <T> DataResult<Long> parse(DynamicOps<T> ops, T input) {

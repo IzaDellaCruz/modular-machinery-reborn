@@ -17,6 +17,7 @@ import es.degrassi.mmreborn.common.integration.kubejs.requirement.BiomeRequireme
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.ChunkloadRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.DimensionRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.DurabilityRequirementJS;
+import es.degrassi.mmreborn.common.integration.kubejs.requirement.EmptyRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.EnergyRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.ExperienceRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.FluidRequirementJS;
@@ -27,8 +28,8 @@ import es.degrassi.mmreborn.common.integration.kubejs.requirement.LootTableRequi
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.TimeRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.WeatherRequirementJS;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
-import com.google.common.collect.Lists;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
 
@@ -37,10 +38,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilder,
   EnergyRequirementJS, ItemRequirementJS, FluidRequirementJS, DimensionRequirementJS, BiomeRequirementJS,
   WeatherRequirementJS, TimeRequirementJS, ChunkloadRequirementJS, LootTableRequirementJS, ExperienceRequirementJS,
-  HeightRequirementJS, FunctionRequirementJS, DurabilityRequirementJS
+  HeightRequirementJS, FunctionRequirementJS, DurabilityRequirementJS, EmptyRequirementJS
 {
 
   @HideFromJS

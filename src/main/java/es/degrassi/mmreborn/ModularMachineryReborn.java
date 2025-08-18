@@ -19,6 +19,7 @@ import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.command.MMRCommand;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.data.MMRConfig;
@@ -31,6 +32,7 @@ import es.degrassi.mmreborn.common.network.server.SLootTablesPacket;
 import es.degrassi.mmreborn.common.network.server.SSyncMachinesPacket;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.DataRegistration;
+import es.degrassi.mmreborn.common.registration.EmptyRequirementTypeRegistration;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.registration.ProcessorTypeRegistration;
@@ -258,6 +260,10 @@ public class ModularMachineryReborn {
   }
   public static Registry<MachineHatchType> getMachineHatchTypeRegistrar() {
     return MachineHatchTypeRegistration.MachineHatchType_REGISTRY;
+  }
+
+  public static Registry<EmptyRequirementType> getEmptyRequirementTypeRegistrar() {
+    return EmptyRequirementTypeRegistration.EMPTY_REQUIREMENT_REGISTRY;
   }
 
   public static Registry<DataType<? extends IData<?>, ?>> dataRegistrar() {
