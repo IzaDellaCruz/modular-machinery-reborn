@@ -2,7 +2,7 @@
   "itemgroup.modular_machinery_reborn.group": "Modular Machinery Reborn",
   "item.modular_machinery_reborn.structure_creator": "Создатель мульти-структуры",
   "modular_machinery_reborn.command.reload.machines": "Успешно перезагружены мульти-структуры!",
-  "modular_machinery_reborn.command.reload.recipes": "Successfully reloaded modular machinery recipes !",
+  "modular_machinery_reborn.command.reload.recipes": "Успешно обновлены рецепты мульти-структур!",
   "modular_machinery_reborn.structure_creator.mode.change.tooltip": "Нажмите [%s] с предметом в руке (не в инвентаре), чтобы сменить режим работы",
   "modular_machinery_reborn.structure_creator.mode.change": "Сменить режим с %s на %s",
   "modular_machinery_reborn.structure_creator.mode.single": "Блочное выделение",
@@ -354,3 +354,4 @@
   "emi.tooltip.show.recipes": "Показать рецепты",
   "mmr.emi.no_items": "В рецепте нет предметов"
 }
+
