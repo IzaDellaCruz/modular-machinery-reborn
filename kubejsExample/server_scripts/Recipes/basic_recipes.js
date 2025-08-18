@@ -74,3 +74,17 @@ ServerEvents.recipes(event => {
     .requireItem("minecraft:oak_boat", 10, 10)
     .produceItem("minecraft:oak_log", 40, 10)
 })
+
+/*
+You can also customize the size of the recipe viewer tab
+*/
+
+ServerEvents.recipes(event => {
+    const time = 20 //in ticks (20 ticks = 1 second)
+    const machine_id = "mmr:lcr6"
+    event.recipes.modular_machinery_reborn.machine_recipe(machine_id, time)
+    .width(110)
+    .height(60)
+    .requireItem("minecraft:jungle_boat", 10, 10)
+    .produceItem("minecraft:oak_log", 40, 10)
+})
