@@ -48,7 +48,7 @@ ServerEvents.recipes(event => {
     const machine_id = "mmr:lcr6"
     event.recipes.modular_machinery_reborn.machine_recipe(machine_id, time)
     .requireItem("minecraft:spruce_boat", 10, 10)
-    .produceItem("minecraft:oak_log", 40, 10)
+    .produceItem("minecraft:oak_log", 0.1, 40, 10)
 })
 
 /*
