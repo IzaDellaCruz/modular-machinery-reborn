@@ -1,3 +1,6 @@
+//If you need more information you can check the wiki
+//https://wikis.degrassi.es/docs/modular-machinery-reborn
+
 /*
 You can specify more requirements to your recipes
 

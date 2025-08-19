@@ -1,3 +1,6 @@
+//If you need more information you can check the wiki
+//https://wikis.degrassi.es/docs/modular-machinery-reborn
+
 /*
 Using the machine from basic_structure.js, we can change it
 to make it useful

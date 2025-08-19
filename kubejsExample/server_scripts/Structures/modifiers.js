@@ -1,3 +1,6 @@
+//If you need more information you can check the wiki
+//https://wikis.degrassi.es/docs/modular-machinery-reborn
+
 /*
 Now, you want to customize even more your machine?
 Well, lets start with the controller

@@ -1,3 +1,6 @@
+//If you need more information you can check the wiki
+//https://wikis.degrassi.es/docs/modular-machinery-reborn
+
 /*
 What if we want to add a recipe for our multiblock?
 Easy, just as the follow

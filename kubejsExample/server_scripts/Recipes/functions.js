@@ -1,3 +1,6 @@
+//If you need more information you can check the wiki
+//https://wikis.degrassi.es/docs/modular-machinery-reborn
+
 /*
 Functions are a way to change recipes on demand instead of hardcoding them
 There are 4 Functions:
@@ -24,7 +27,7 @@ ServerEvents.recipes(event => {
 })
 
 MMREvents.recipeFunction("boat_chooser", event => {
-    let controller = event.machine; //This has more useful functions, more here https://wikis.degrassi.es/docs/modular-machinery-reborn/section/creating-a-new-recipe/article/machine
+    let controller = event.machine; //This has more useful functions, more can be found here https://wikis.degrassi.es/docs/modular-machinery-reborn/section/creating-a-new-recipe/article/machine
     let level = event.getTile().getLevel(); //Allows to get to the Level class, useful to do commands or more
     let pos = event.getTile().getBlockPos(); //Controller position
     let speed = event.baseSpeed; //speed of the recipe
