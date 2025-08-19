@@ -2,7 +2,7 @@
   "itemgroup.modular_machinery_reborn.group": "Modular Machinery Reborn",
   "item.modular_machinery_reborn.structure_creator": "Создатель мульти-структуры",
   "modular_machinery_reborn.command.reload.machines": "Успешно перезагружены мульти-структуры!",
-  "modular_machinery_reborn.command.reload.recipes": "Успешно обновлены рецепты мульти-структур!",
+  "modular_machinery_reborn.command.reload.recipes": "Successfully reloaded modular machinery recipes !",
   "modular_machinery_reborn.structure_creator.mode.change.tooltip": "Нажмите [%s] с предметом в руке (не в инвентаре), чтобы сменить режим работы",
   "modular_machinery_reborn.structure_creator.mode.change": "Сменить режим с %s на %s",
   "modular_machinery_reborn.structure_creator.mode.single": "Блочное выделение",
@@ -157,7 +157,7 @@
   "tooltip.energyhatch.gregtech.voltage.out": "Выходное Напряжение: §a%s §7(§a%s§7)",
   "tooltip.energyhatch.gregtech.amperage": "Сила тока: §e%s",
   "tooltip.energyhatch.gregtech.storage": "Внутренняя энергоёмкость: §9%s",
-  "tooltip.parallelhatch.size": "Может увеличить производительность мульти-структура до % по рецептам",
+  "tooltip.parallelhatch.size": "Позволяет параллельно создавать до %s рецептов одновременно.",
   "tooltip.ic2.powertier.0.name": "ULV",
   "tooltip.ic2.powertier.1.name": "LV",
   "tooltip.ic2.powertier.2.name": "MV",
@@ -181,7 +181,7 @@
   "mmr.gui.tooltip.experience.button.insert_1": "Положить 1 уровень ",
   "mmr.gui.tooltip.experience.button.insert_10": "Положить 10 уровень ",
   "mmr.gui.tooltip.experience.button.insert_all": "Положить все",
-  "item.modular_machinery_reborn.blueprint": "мульти-структуры чертеж",
+  "item.modular_machinery_reborn.blueprint": "Мульти-структуры чертеж",
   "item.modular_machinery_reborn.modularium": "Модулариум",
   "block.modular_machinery_reborn.controller": "мульти-структуры Контроллер",
   "block.modular_machinery_reborn.casing_plain": "Мульти-структуры Корпус",
@@ -354,4 +354,3 @@
   "emi.tooltip.show.recipes": "Показать рецепты",
   "mmr.emi.no_items": "В рецепте нет предметов"
 }
-
