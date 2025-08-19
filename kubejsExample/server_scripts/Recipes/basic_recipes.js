@@ -5,22 +5,22 @@ Easy, just as the follow
 You can do the following (inputs):
 
 - requireItem
-- requireFluid
+- requireFluid -> in mB, not Buckets
 - requireEnergy -> Per tick
-- requireExperience
-- requireChemical (needs Modular Machinery Reborn Mekanism addon)
-- requireKinetic (needs Modular Machinery Reborn Create addon)
-- requireSource (needs Modular Machinery Reborn Ars addon)
+- requireExperience -> In XP points (it will converted to levels in the recipe viewer)
+- requireChemical -> In mB, not Buckets (needs Modular Machinery Reborn Mekanism addon)
+- requireKinetic -> In SU (needs Modular Machinery Reborn Create addon)
+- requireSource -> In source (needs Modular Machinery Reborn Ars addon)
 
 You can do the following (outputs):
 
 - produceItem
-- produceFluid
+- produceFluid -> in mB, not Buckets
 - produceEnergy -> In total
-- produceExperience
-- produceChemical (needs Modular Machinery Reborn Mekanism addon)
-- produceKinetic (needs Modular Machinery Reborn Create addon)
-- produceSource (needs Modular Machinery Reborn Ars addon)
+- produceExperience -> In XP points (it will converted to levels in the recipe viewer)
+- produceChemical -> In mB, not Buckets (needs Modular Machinery Reborn Mekanism addon)
+- produceKinetic -> In SU (needs Modular Machinery Reborn Create addon)
+- produceSource -> In source (needs Modular Machinery Reborn Ars addon)
 
 */
 ServerEvents.recipes(event => {
@@ -77,6 +77,8 @@ ServerEvents.recipes(event => {
 
 /*
 You can also customize the size of the recipe viewer tab
+
+By default, it's 256, 256
 */
 
 ServerEvents.recipes(event => {
