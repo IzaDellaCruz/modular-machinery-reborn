@@ -1,6 +1,7 @@
 package es.degrassi.mmreborn.common.entity;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.client.machine.SoundManagerEntity;
 import es.degrassi.mmreborn.api.controller.ComponentMapper;
 import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.network.ISyncable;
@@ -65,7 +66,7 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class MachineControllerEntity extends BlockEntityRestrictedTick implements ComponentMapper, ISyncableStuff,
-    IServerTickEntity, IClientTickEntity {
+    IServerTickEntity, IClientTickEntity, SoundManagerEntity {
   @Setter
   private CraftingStatus craftingStatus = CraftingStatus.MISSING_STRUCTURE;
   private boolean isPaused = false;

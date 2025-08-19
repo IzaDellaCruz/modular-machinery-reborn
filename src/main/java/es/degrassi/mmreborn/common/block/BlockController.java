@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.network.server.SAddControllerRenderer;
 import es.degrassi.mmreborn.common.network.server.SMachineUpdatePacket;
 import es.degrassi.mmreborn.common.network.server.SRemoveControllerRenderer;
+import es.degrassi.mmreborn.common.network.server.SStopSoundInstancePacket;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -109,6 +110,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
   public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
     BlockEntity te = level.getBlockEntity(pos);
     if (te instanceof MachineControllerEntity entity) {
+      PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level, new ChunkPos(pos), new SStopSoundInstancePacket(pos));
       PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level, new ChunkPos(pos), new SRemoveControllerRenderer(pos));
     }
     super.playerDestroy(level, player, pos, state, blockEntity, tool);
@@ -117,6 +119,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
   @Override
   public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
     if (player.getAbilities().instabuild && level instanceof ServerLevel serverLevel && level.getBlockEntity(pos) instanceof MachineControllerEntity entity) {
+      PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), new SStopSoundInstancePacket(pos));
       PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), new SRemoveControllerRenderer(pos));
     }
     return super.playerWillDestroy(level, pos, state, player);
@@ -188,7 +191,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
   public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
     return Optional.ofNullable(level.getBlockEntity(pos))
         .filter(blockEntity -> blockEntity instanceof MachineControllerEntity)
-        .map(tile -> ((MachineControllerEntity)tile).getInteractionSound())
+        .map(tile -> ((MachineControllerEntity) tile).getInteractionSound())
         .orElse(super.getSoundType(state));
   }
 }
