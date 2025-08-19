@@ -13,20 +13,16 @@ public class EmptyRequirementType {
       ResourceKey.createRegistryKey(ModularMachineryReborn.rl("empty_requirement_type"));
 
   private final int uOffset, vOffset, width, height;
-  private final EmiConsumer emiConsumer;
-  private final JeiConsumer jeiConsumer;
 
-  protected EmptyRequirementType(int uOffset, int vOffset, int width, int height, EmiConsumer emiConsumer, JeiConsumer jeiConsumer) {
+  protected EmptyRequirementType(int uOffset, int vOffset, int width, int height) {
     this.uOffset = uOffset;
     this.vOffset = vOffset;
     this.width = width;
     this.height = height;
-    this.emiConsumer = emiConsumer;
-    this.jeiConsumer = jeiConsumer;
   }
 
-  public static EmptyRequirementType create(int uOffset, int vOffset, int width, int height, EmiConsumer emiConsumer, JeiConsumer jeiConsumer) {
-    return new EmptyRequirementType(uOffset, vOffset, width, height, emiConsumer, jeiConsumer);
+  public static EmptyRequirementType create(int uOffset, int vOffset, int width, int height) {
+    return new EmptyRequirementType(uOffset, vOffset, width, height);
   }
   public ResourceLocation getId() {
     return ModularMachineryReborn.getEmptyRequirementTypeRegistrar().getKey(this);

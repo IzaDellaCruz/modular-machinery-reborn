@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.crafting.requirement.emi;
 
 import dev.emi.emi.api.widget.WidgetHolder;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
+import es.degrassi.mmreborn.common.integration.emi.EmiEmptyRequirementRegistry;
 import es.degrassi.mmreborn.common.integration.emi.recipe.MMREmiRecipe;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEmpty;
@@ -51,6 +52,8 @@ public class EmiEmptyComponent extends EmiComponent<Void, RecipeRequirement<Empt
 
   @Override
   public void addWidgets(WidgetHolder widgets, MMREmiRecipe recipe) {
-    this.type.getEmiConsumer().execute(this, widgets, recipe);
+    if (EmiEmptyRequirementRegistry.hasEmiConsumer(type)) {
+      EmiEmptyRequirementRegistry.getConsumer(type).execute(this, widgets, recipe);
+    }
   }
 }

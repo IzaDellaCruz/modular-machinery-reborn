@@ -6,6 +6,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import es.degrassi.mmreborn.api.TagUtil;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.api.integration.emi.RegisterEmiComponentEvent;
+import es.degrassi.mmreborn.api.integration.emi.RegisterEmiEmptyRequirementEvent;
 import es.degrassi.mmreborn.api.integration.emi.RegisterEmiRequirementToIngredientEvent;
 import es.degrassi.mmreborn.api.integration.emi.RegisterEmiRequirementToStackEvent;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurability;
@@ -24,10 +25,12 @@ import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiLootTableComponen
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiTimeComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiWeatherComponent;
 import es.degrassi.mmreborn.common.integration.emi.EmiComponentRegistry;
+import es.degrassi.mmreborn.common.integration.emi.EmiEmptyRequirementRegistry;
 import es.degrassi.mmreborn.common.integration.emi.EmiIngredientRegistry;
 import es.degrassi.mmreborn.common.integration.emi.EmiStackRegistry;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.registration.EmptyRequirementTypeRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import es.degrassi.mmreborn.common.util.LootTableHelper;
 import net.minecraft.tags.TagKey;
@@ -46,6 +49,23 @@ public class MMREmiClientIntegration {
     EmiComponentRegistry.init();
     EmiStackRegistry.init();
     EmiIngredientRegistry.init();
+    EmiEmptyRequirementRegistry.init();
+  }
+
+  @SubscribeEvent
+  public void registerEmiEmptyRequirement(final RegisterEmiEmptyRequirementEvent event) {
+    event.register(
+        EmptyRequirementTypeRegistration.ITEM.get(),
+        (component, widgets, recipe) -> widgets.add(component)
+    );
+    event.register(
+        EmptyRequirementTypeRegistration.FLUID.get(),
+        (component, widgets, recipe) -> widgets.add(component)
+    );
+    event.register(
+        EmptyRequirementTypeRegistration.ENERGY.get(),
+        (component, widgets, recipe) -> widgets.add(component)
+    );
   }
 
   @SubscribeEvent

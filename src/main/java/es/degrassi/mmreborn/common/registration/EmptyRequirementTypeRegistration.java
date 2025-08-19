@@ -1,8 +1,6 @@
 package es.degrassi.mmreborn.common.registration;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.common.integration.jei.MMRJeiPlugin;
-import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;
@@ -29,14 +27,7 @@ public class EmptyRequirementTypeRegistration {
               36,
               0,
               16,
-              16,
-              (component, widgets, recipe) -> {
-                widgets.add(component);
-              },
-              (component, category, builder, recipe, focuses) -> {
-                builder.addSlot(component.role(), component.getPosition().x(), component.getPosition().y())
-                    .setStandardSlotBackground();
-              }
+              16
           ));
 
   public static final Supplier<EmptyRequirementType> FLUID =
@@ -45,23 +36,7 @@ public class EmptyRequirementTypeRegistration {
               0,
               18,
               16,
-              16,
-              (component, widgets, recipe) -> {
-                widgets.add(component);
-              },
-              (component, category, builder, recipe, focuses) -> {
-                builder.addSlot(component.role(), component.getPosition().x(), component.getPosition().y())
-                    .setOverlay(
-                        MMRJeiPlugin.jeiHelpers.getGuiHelper().createDrawable(
-                            component.texture(),
-                            component.getUOffset(),
-                            component.getVOffset(),
-                            component.getWidth() + 2,
-                            component.getHeight() + 2),
-                        -1,
-                        -1
-                    );
-              }
+              16
           ));
 
   public static final Supplier<EmptyRequirementType> ENERGY =
@@ -70,16 +45,7 @@ public class EmptyRequirementTypeRegistration {
               18,
               54,
               16,
-              52,
-              (component, widgets, recipe) -> {
-                widgets.add(component);
-              },
-              (component, category, builder, recipe, focuses) -> {
-                builder
-                    .addSlot(component.role(), component.getPosition().x(), component.getPosition().y())
-                    .setCustomRenderer(CustomIngredientTypes.VOID, component)
-                    .addIngredients(CustomIngredientTypes.VOID, component.ingredients());
-              }
+              52
           ));
 
   public static void register(final IEventBus bus) {

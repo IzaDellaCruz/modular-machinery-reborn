@@ -2,12 +2,10 @@ package es.degrassi.mmreborn.common.crafting.requirement.jei;
 
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
-import es.degrassi.mmreborn.common.registration.EmptyRequirementTypeRegistration;
+import es.degrassi.mmreborn.common.integration.jei.JeiEmptyRequirementRegistry;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEmpty;
-import es.degrassi.mmreborn.common.integration.jei.MMRJeiPlugin;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
-import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
 import es.degrassi.mmreborn.common.machine.component.EmptyComponent;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -59,7 +57,9 @@ public class JeiEmptyComponent extends JeiComponent<Void, RecipeRequirement<Empt
 
   @Override
   public void setRecipe(MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
-    type.getJeiConsumer().execute(this, category, builder, recipe, focuses);
+    if (JeiEmptyRequirementRegistry.hasJeiConsumer(type)) {
+      JeiEmptyRequirementRegistry.getConsumer(type).execute(this, category, builder, recipe, focuses);
+    }
   }
 
   @Override

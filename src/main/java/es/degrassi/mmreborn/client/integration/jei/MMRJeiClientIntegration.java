@@ -1,6 +1,7 @@
 package es.degrassi.mmreborn.client.integration.jei;
 
 import es.degrassi.mmreborn.api.integration.jei.RegisterJeiComponentEvent;
+import es.degrassi.mmreborn.api.integration.jei.RegisterJeiEmptyRequirementEvent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiBiomeComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiChunkloadComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiDimensionComponent;
@@ -15,6 +16,10 @@ import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiLootTableComponen
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiTimeComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiWeatherComponent;
 import es.degrassi.mmreborn.common.integration.jei.JeiComponentRegistry;
+import es.degrassi.mmreborn.common.integration.jei.JeiEmptyRequirementRegistry;
+import es.degrassi.mmreborn.common.integration.jei.MMRJeiPlugin;
+import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
+import es.degrassi.mmreborn.common.registration.EmptyRequirementTypeRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,6 +28,42 @@ public class MMRJeiClientIntegration {
   public MMRJeiClientIntegration(IEventBus bus) {
     bus.register(this);
     JeiComponentRegistry.init();
+    JeiEmptyRequirementRegistry.init();
+  }
+
+  @SubscribeEvent
+  public void registerJeiEmptyRequirement(final RegisterJeiEmptyRequirementEvent event) {
+    event.register(
+        EmptyRequirementTypeRegistration.ITEM.get(),
+        (component, category, builder, recipe, focuses) ->
+            builder
+                .addSlot(component.role(), component.getPosition().x(), component.getPosition().y())
+                .setStandardSlotBackground()
+    );
+    event.register(
+        EmptyRequirementTypeRegistration.FLUID.get(),
+        (component, category, builder, recipe, focuses) ->
+            builder
+                .addSlot(component.role(), component.getPosition().x(), component.getPosition().y())
+                .setOverlay(
+                    MMRJeiPlugin.jeiHelpers.getGuiHelper().createDrawable(
+                        component.texture(),
+                        component.getUOffset(),
+                        component.getVOffset(),
+                        component.getWidth() + 2,
+                        component.getHeight() + 2),
+                    -1,
+                    -1
+                )
+    );
+    event.register(
+        EmptyRequirementTypeRegistration.ENERGY.get(),
+        (component, category, builder, recipe, focuses) ->
+            builder
+                .addSlot(component.role(), component.getPosition().x(), component.getPosition().y())
+                .setCustomRenderer(CustomIngredientTypes.VOID, component)
+                .addIngredients(CustomIngredientTypes.VOID, component.ingredients())
+    );
   }
 
   @SubscribeEvent
