@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.client.screen.popup;
 
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
-import es.degrassi.mmreborn.client.screen.widget.Icon;
+import es.degrassi.mmreborn.api.client.Icon;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.common.crafting.helper.CraftingStatus;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;

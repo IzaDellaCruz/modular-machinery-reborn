@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.client.screen.widget.tabs;
 
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.popup.CoreGridPopupScreen;
-import es.degrassi.mmreborn.client.screen.widget.Icon;
+import es.degrassi.mmreborn.api.client.Icon;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

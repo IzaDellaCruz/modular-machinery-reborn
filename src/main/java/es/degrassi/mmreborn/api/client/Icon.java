@@ -1,7 +1,6 @@
-package es.degrassi.mmreborn.client.screen.widget;
+package es.degrassi.mmreborn.api.client;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.api.client.Blitter;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;

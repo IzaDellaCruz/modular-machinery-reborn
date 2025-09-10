@@ -1,4 +1,4 @@
-package es.degrassi.mmreborn.common.util;
+package es.degrassi.mmreborn.api.integration.jei;
 
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;

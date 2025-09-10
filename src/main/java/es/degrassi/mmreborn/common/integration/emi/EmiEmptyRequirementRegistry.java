@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.common.integration.emi;
 
 import es.degrassi.mmreborn.api.integration.emi.RegisterEmiEmptyRequirementEvent;
-import es.degrassi.mmreborn.common.util.EmiConsumer;
+import es.degrassi.mmreborn.api.integration.emi.EmiConsumer;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import net.neoforged.fml.ModLoader;
 

@@ -1,4 +1,4 @@
-package es.degrassi.mmreborn.common.util;
+package es.degrassi.mmreborn.api.integration.emi;
 
 import dev.emi.emi.api.widget.WidgetHolder;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;

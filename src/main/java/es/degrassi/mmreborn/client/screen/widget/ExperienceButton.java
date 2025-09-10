@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.client.screen.widget;
 
+import es.degrassi.mmreborn.api.client.ExperienceButtonType;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 

@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.network.client;
 
 import es.degrassi.experiencelib.util.ExperienceUtils;
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.client.screen.widget.ExperienceButtonType;
+import es.degrassi.mmreborn.api.client.ExperienceButtonType;
 import es.degrassi.mmreborn.common.entity.base.ExperienceHatchEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;

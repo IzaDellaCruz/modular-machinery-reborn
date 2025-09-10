@@ -2,7 +2,6 @@ package es.degrassi.mmreborn.api.integration.emi;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import es.degrassi.mmreborn.common.util.EmiConsumer;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;

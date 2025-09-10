@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.client.screen.widget;
 
 import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.api.client.Blitter;
+import es.degrassi.mmreborn.api.client.Icon;
 import es.degrassi.mmreborn.api.client.screen.TooltipRender;
 import lombok.Getter;
 import lombok.Setter;

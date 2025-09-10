@@ -1,6 +1,7 @@
 package es.degrassi.mmreborn.client.screen.widget;
 
 import com.google.common.collect.Lists;
+import es.degrassi.mmreborn.api.client.CoreActionType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;

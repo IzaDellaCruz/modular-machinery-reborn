@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.integration.jei;
 
 import es.degrassi.mmreborn.api.integration.jei.RegisterJeiEmptyRequirementEvent;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
-import es.degrassi.mmreborn.common.util.JeiConsumer;
+import es.degrassi.mmreborn.api.integration.jei.JeiConsumer;
 import net.neoforged.fml.ModLoader;
 
 import java.util.Map;

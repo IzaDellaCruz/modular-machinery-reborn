@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.container.ExperienceHatchContainer;
 import es.degrassi.mmreborn.client.screen.widget.ExperienceButton;
-import es.degrassi.mmreborn.client.screen.widget.ExperienceButtonType;
+import es.degrassi.mmreborn.api.client.ExperienceButtonType;
 import es.degrassi.mmreborn.client.screen.widget.ExperienceWidget;
 import es.degrassi.mmreborn.common.entity.ExperienceInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.ExperienceOutputHatchEntity;
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, ExperienceHatchEntity> {
   private ExperienceWidget experienceWidget;
-  private final Map<ExperienceButtonType, ExperienceButton> experienceButtons = Maps.newHashMap();
+  private final Map<ExperienceButtonType, ExperienceButton> experienceButtons = Maps.newEnumMap(ExperienceButtonType.class);
 
   public ExperienceHatchScreen(ExperienceHatchContainer menu, Inventory playerInventory, Component title) {
     super(menu, playerInventory, title, false);

@@ -3,7 +3,6 @@ package es.degrassi.mmreborn.api.integration.jei;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
-import es.degrassi.mmreborn.common.util.JeiConsumer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 

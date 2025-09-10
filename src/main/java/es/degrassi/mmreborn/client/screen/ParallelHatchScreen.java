@@ -4,7 +4,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.screen.TooltipRender;
 import es.degrassi.mmreborn.client.container.ParallelHatchContainer;
 import es.degrassi.mmreborn.client.screen.widget.CoreActionButton;
-import es.degrassi.mmreborn.client.screen.widget.CoreActionType;
+import es.degrassi.mmreborn.api.client.CoreActionType;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
 import es.degrassi.mmreborn.common.network.client.CCoreButtonClickedPacked;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;

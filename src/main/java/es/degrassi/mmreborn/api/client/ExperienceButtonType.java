@@ -1,4 +1,4 @@
-package es.degrassi.mmreborn.client.screen.widget;
+package es.degrassi.mmreborn.api.client;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
