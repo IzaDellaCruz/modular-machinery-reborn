@@ -17,12 +17,17 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -94,16 +99,36 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
         if (ioType == IOType.NONE) return;
         if (ioType.isInput()) {
           if (this.getTank().getFluidAmount() >= this.getTank().getCapacity()) return;
-          FluidStack simulatedCap = cap.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
-          int simulatedInsert = getTank().fill(simulatedCap.copy(), IFluidHandler.FluidAction.SIMULATE);
-          cap.drain(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
-          getTank().fill(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
+          if (slot.getItemStack().getItem() instanceof BucketItem bucket) {
+            if (bucket.content.isSame(Fluids.EMPTY)) return;
+            FluidStack fluid = new FluidStack(bucket.content, 1000);
+            int simulatedInsert = getTank().fill(fluid.copy(), IFluidHandler.FluidAction.SIMULATE);
+            if (simulatedInsert < 1000) return;
+            slot.setItemStack(new ItemStack(Items.BUCKET));
+            getTank().fill(fluid.copy(), IFluidHandler.FluidAction.EXECUTE);
+          } else {
+            FluidStack simulatedCap = cap.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+            int simulatedInsert = getTank().fill(simulatedCap.copy(), IFluidHandler.FluidAction.SIMULATE);
+            cap.drain(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
+            getTank().fill(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
+          }
         } else if (ioType.isOutput()) {
           if (this.getTank().getFluidAmount() == 0) return;
-          FluidStack simulatedExtract = getTank().drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
-          int simulatedCap = cap.fill(simulatedExtract.copy(), IFluidHandler.FluidAction.SIMULATE);
-          cap.fill(simulatedExtract.copyWithAmount(simulatedCap), IFluidHandler.FluidAction.EXECUTE);
-          getTank().drain(simulatedExtract.copyWithAmount(simulatedCap), IFluidHandler.FluidAction.EXECUTE);
+          if (slot.getItemStack().getItem() instanceof BucketItem bucket) {
+            if (!bucket.content.isSame(Fluids.EMPTY)) return;
+            FluidStack simulatedExtract = getTank().drain(1000, IFluidHandler.FluidAction.SIMULATE);
+            ItemStack fluidStack = BuiltInRegistries.ITEM.stream()
+                .filter(item -> item instanceof BucketItem b && b.content.isSame(simulatedExtract.getFluid()))
+                .findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
+            if (fluidStack.isEmpty() || simulatedExtract.isEmpty() || simulatedExtract.getAmount() < 1000) return;
+            slot.setItemStack(fluidStack);
+            getTank().drain(simulatedExtract, IFluidHandler.FluidAction.EXECUTE);
+          } else {
+            FluidStack simulatedExtract = getTank().drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+            int simulatedCap = cap.fill(simulatedExtract.copy(), IFluidHandler.FluidAction.SIMULATE);
+            cap.fill(simulatedExtract.copyWithAmount(simulatedCap), IFluidHandler.FluidAction.EXECUTE);
+            getTank().drain(simulatedExtract.copyWithAmount(simulatedCap), IFluidHandler.FluidAction.EXECUTE);
+          }
         }
       });
     });
