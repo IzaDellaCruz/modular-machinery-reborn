@@ -320,6 +320,7 @@
 
   "config.jade.plugin_modular_machinery_reborn.machine_component_provider": "Modular Machinery Reborn provider",
 
+  "modular_machinery_reborn.ingredient.perTick": "por tick",
   "modular_machinery_reborn.ingredient.chance.input": "Probabilidad de ser consumido: %s%s",
   "modular_machinery_reborn.ingredient.chance.output": "Probabilidad de ser producido: %s%s",
   "modular_machinery_reborn.ingredient.chance.not_consumed": "No se consume",

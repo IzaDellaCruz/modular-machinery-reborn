@@ -21,6 +21,7 @@ import es.degrassi.mmreborn.common.integration.kubejs.requirement.EmptyRequireme
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.EnergyPerTickRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.EnergyRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.ExperienceRequirementJS;
+import es.degrassi.mmreborn.common.integration.kubejs.requirement.FluidPerTickRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.FluidRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.FunctionRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.HeightRequirementJS;
@@ -40,9 +41,23 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilder, EnergyPerTickRequirementJS, EnergyRequirementJS, ItemRequirementJS,
-    FluidRequirementJS, DimensionRequirementJS, BiomeRequirementJS, WeatherRequirementJS, TimeRequirementJS, ChunkloadRequirementJS, LootTableRequirementJS,
-    ExperienceRequirementJS, HeightRequirementJS, FunctionRequirementJS, DurabilityRequirementJS, EmptyRequirementJS
+public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilder,
+    EnergyPerTickRequirementJS,
+    EnergyRequirementJS,
+    ItemRequirementJS,
+    FluidRequirementJS,
+    FluidPerTickRequirementJS,
+    DimensionRequirementJS,
+    BiomeRequirementJS,
+    WeatherRequirementJS,
+    TimeRequirementJS,
+    ChunkloadRequirementJS,
+    LootTableRequirementJS,
+    ExperienceRequirementJS,
+    HeightRequirementJS,
+    FunctionRequirementJS,
+    DurabilityRequirementJS,
+    EmptyRequirementJS
 {
 
   @HideFromJS

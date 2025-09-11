@@ -1,0 +1,57 @@
+package es.degrassi.mmreborn.common.integration.kubejs.requirement;
+
+import es.degrassi.mmreborn.api.FluidIngredient;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
+import es.degrassi.mmreborn.common.crafting.requirement.PositionedRequirement;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluidPerTick;
+import es.degrassi.mmreborn.common.integration.kubejs.MachineRecipeBuilderJS;
+import es.degrassi.mmreborn.common.integration.kubejs.RecipeJSBuilder;
+import es.degrassi.mmreborn.common.machine.IOType;
+import net.neoforged.neoforge.fluids.FluidStack;
+
+public interface FluidPerTickRequirementJS extends RecipeJSBuilder {
+
+  default MachineRecipeBuilderJS requireFluidPerTick(FluidStack stack, int x, int y) {
+    return requireFluidPerTick(stack, 1, x, y);
+  }
+
+  default MachineRecipeBuilderJS produceFluidPerTick(FluidStack stack, int x, int y) {
+    return produceFluidPerTick(stack, 1, x, y);
+  }
+
+  default MachineRecipeBuilderJS requireFluidPerTick(FluidStack stack) {
+    return requireFluidPerTick(stack, 1, 0, 0);
+  }
+
+  default MachineRecipeBuilderJS produceFluidPerTick(FluidStack stack) {
+    return produceFluidPerTick(stack, 1, 0, 0);
+  }
+
+  default MachineRecipeBuilderJS requireFluidPerTick(FluidStack stack, float chance, int x, int y) {
+    if (chance < 0)
+      return this.error("Chance can not bellow 0");
+    if (chance > 1)
+      return this.error("Chance can not be greater than 1");
+    RequirementFluidPerTick requirement = new RequirementFluidPerTick(IOType.INPUT, new FluidIngredient(stack.getFluid()),
+        stack.getAmount(), new PositionedRequirement(x, y));
+    return addRequirement(new RecipeRequirement<>(requirement, chance));
+  }
+
+  default MachineRecipeBuilderJS produceFluidPerTick(FluidStack stack, float chance, int x, int y) {
+    if (chance < 0)
+      return this.error("Chance can not bellow 0");
+    if (chance > 1)
+      return this.error("Chance can not be greater than 1");
+    RequirementFluidPerTick requirement = new RequirementFluidPerTick(IOType.OUTPUT, new FluidIngredient(stack.getFluid()),
+        stack.getAmount(), new PositionedRequirement(x, y));
+    return addRequirement(new RecipeRequirement<>(requirement, chance));
+  }
+
+  default MachineRecipeBuilderJS requireFluidPerTick(FluidStack stack, float chance) {
+    return requireFluidPerTick(stack, chance, 0, 0);
+  }
+
+  default MachineRecipeBuilderJS produceFluidPerTick(FluidStack stack, float chance) {
+    return produceFluidPerTick(stack, chance, 0, 0);
+  }
+}
