@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurability;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDuration;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEmpty;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementExperience;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluid;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFunction;
@@ -46,9 +47,12 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementFluid>> FLUID =
       MACHINE_REQUIREMENTS.register(rootLC("fluid"),
       () -> RequirementType.inventory(RequirementFluid.CODEC));
+  public static final Supplier<RequirementType<RequirementEnergyPerTick>> ENERGY_PER_TICK =
+      MACHINE_REQUIREMENTS.register(rootLC("energy_per_tick"),
+      () -> RequirementType.inventory(RequirementEnergyPerTick.CODEC));
   public static final Supplier<RequirementType<RequirementEnergy>> ENERGY =
       MACHINE_REQUIREMENTS.register(rootLC("energy"),
-      () -> RequirementType.inventory(RequirementEnergy.CODEC));
+          () -> RequirementType.inventory(RequirementEnergy.CODEC));
   public static final Supplier<RequirementType<RequirementDuration>> SPEED =
       MACHINE_REQUIREMENTS.register(rootLC("speed"),
       () -> RequirementType.inventory(RequirementDuration.CODEC));

@@ -11,7 +11,7 @@ import es.degrassi.mmreborn.api.codec.NamedMapCodec;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.PositionedRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.PositionedSizedRequirement;
-import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
 import es.degrassi.mmreborn.common.util.MMRLogger;
@@ -91,9 +91,9 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
   }
 
   public void addRequirement(RecipeRequirement<?, ?> requirement) {
-    if (requirement.requirement() instanceof RequirementEnergy) {
+    if (requirement.requirement() instanceof RequirementEnergyPerTick) {
       for (RecipeRequirement<?, ?> req : this.getRequirements()) {
-        if (req.requirement() instanceof RequirementEnergy && req.requirement().getMode() == requirement.requirement().getMode()) {
+        if (req.requirement() instanceof RequirementEnergyPerTick && req.requirement().getMode() == requirement.requirement().getMode()) {
           throw new IllegalStateException("Tried to add multiple energy requirements for the same ioType! Please only add one for each ioType!");
         }
       }
@@ -103,9 +103,9 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
   }
 
   public void addJeiRequirement(RecipeRequirement<?, ?> requirement) {
-    if (requirement.requirement() instanceof RequirementEnergy) {
+    if (requirement.requirement() instanceof RequirementEnergyPerTick) {
       for (RecipeRequirement<?, ?> req : this.getJeiRequirements()) {
-        if (req.requirement() instanceof RequirementEnergy && req.requirement().getMode() == requirement.requirement().getMode()) {
+        if (req.requirement() instanceof RequirementEnergyPerTick && req.requirement().getMode() == requirement.requirement().getMode()) {
           throw new IllegalStateException("Tried to add multiple energy requirements for the same ioType! Please only add one for each ioType!");
         }
       }

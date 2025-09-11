@@ -73,6 +73,8 @@ public class MachineControllerJS {
 
   /** ENERGY STUFF **/
 
+  // TODO: add energy capacity
+
   public long getEnergyStored(IOType mode) {
     return this.internal.getComponentManager()
         .getFoundComponentsList()

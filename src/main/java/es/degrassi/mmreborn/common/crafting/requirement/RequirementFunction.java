@@ -73,7 +73,7 @@ public class RequirementFunction implements IRequirement<FunctionComponent> {
       if(ModList.get().isLoaded("kubejs"))
         return KubeJSIntegration.sendFunctionRequirementEvent(this.identifier, context);
       else
-        throw new IllegalStateException("Trying to process function requirement for identifier: " + this.identifier + " without KubeJS installed !");
+        throw new IllegalStateException("Trying to process function requirement for identifier: " + this.identifier + " without KubeJS installed!");
     } catch (Throwable error) {
       errors.add(this);
       if(ModList.get().isLoaded("kubejs"))

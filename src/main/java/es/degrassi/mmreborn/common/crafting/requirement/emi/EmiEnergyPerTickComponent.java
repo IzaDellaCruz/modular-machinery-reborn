@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.crafting.requirement.emi;
 
 import dev.emi.emi.api.widget.WidgetHolder;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
-import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
 import es.degrassi.mmreborn.common.integration.emi.recipe.MMREmiRecipe;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
 import es.degrassi.mmreborn.common.util.Utils;
@@ -15,12 +15,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-public class EmiEnergyComponent extends EmiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergy>> {
+public class EmiEnergyPerTickComponent extends EmiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergyPerTick>> {
   private int width = 16;
   private int height = 52;
   private int recipeTime;
 
-  public EmiEnergyComponent(RecipeRequirement<EnergyComponent, RequirementEnergy> requirement) {
+  public EmiEnergyPerTickComponent(RecipeRequirement<EnergyComponent, RequirementEnergyPerTick> requirement) {
     super(requirement, 18, 0);
   }
 
@@ -36,7 +36,7 @@ public class EmiEnergyComponent extends EmiComponent<Long, RecipeRequirement<Ene
 
   @Override
   public List<Long> ingredients() {
-    return Collections.singletonList(requirement.requirement().getRequiredEnergy());
+    return Collections.singletonList(requirement.requirement().getRequiredEnergyPerTick());
   }
 
   @Override
@@ -54,9 +54,9 @@ public class EmiEnergyComponent extends EmiComponent<Long, RecipeRequirement<Ene
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(
         Component.translatable(
-          "modular_machinery_reborn.jei.ingredient.energy." + mode,
-          Utils.format(requirement.requirement().requirement * recipeTime),
-          Utils.format(requirement.requirement().requirement)
+          "modular_machinery_reborn.jei.ingredient.energy.total." + mode,
+          Utils.format(requirement.requirement().requirementPerTick * recipeTime),
+          Utils.format(requirement.requirement().requirementPerTick)
       )
     );
     return tooltip;

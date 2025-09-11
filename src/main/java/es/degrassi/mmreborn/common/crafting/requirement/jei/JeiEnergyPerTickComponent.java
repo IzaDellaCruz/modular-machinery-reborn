@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.crafting.requirement.jei;
 
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
-import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
@@ -18,12 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
-public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergy>> {
+public class JeiEnergyPerTickComponent extends JeiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergyPerTick>> {
   private int width = 16;
   private int height = 52;
   private int recipeTime;
 
-  public JeiEnergyComponent(RecipeRequirement<EnergyComponent, RequirementEnergy> requirement) {
+  public JeiEnergyPerTickComponent(RecipeRequirement<EnergyComponent, RequirementEnergyPerTick> requirement) {
     super(requirement, 18, 0);
   }
 
@@ -39,7 +39,7 @@ public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<Ene
 
   @Override
   public List<Long> ingredients() {
-    return Collections.singletonList(requirement.requirement().getRequiredEnergy());
+    return Collections.singletonList(requirement.requirement().getRequiredEnergyPerTick());
   }
 
   @Override
@@ -58,9 +58,9 @@ public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<Ene
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(
         Component.translatable(
-            "modular_machinery_reborn.jei.ingredient.energy." + mode,
-            Utils.format(requirement.requirement().requirement * recipeTime),
-            Utils.format(requirement.requirement().requirement)
+            "modular_machinery_reborn.jei.ingredient.energy.total." + mode,
+            Utils.format(requirement.requirement().requirementPerTick * recipeTime),
+            Utils.format(requirement.requirement().requirementPerTick)
         )
     );
     return tooltip;

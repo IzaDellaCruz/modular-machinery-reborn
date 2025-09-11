@@ -17,31 +17,31 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class RequirementEnergy implements IRequirement<EnergyComponent> {
-  public static final NamedMapCodec<RequirementEnergy> CODEC = NamedCodec.record(instance -> instance.group(
-      NamedCodec.longRange(0, Long.MAX_VALUE).fieldOf("amount").forGetter(req -> req.requirement),
+public class RequirementEnergyPerTick implements IRequirement<EnergyComponent> {
+  public static final NamedMapCodec<RequirementEnergyPerTick> CODEC = NamedCodec.record(instance -> instance.group(
+      NamedCodec.longRange(0, Long.MAX_VALUE).fieldOf("amount").forGetter(req -> req.requirementPerTick),
       NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
       PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
-  ).apply(instance, (amount, type, position) -> new RequirementEnergy(type, amount, position)), "EnergyRequirement");
+  ).apply(instance, (amount, type, position) -> new RequirementEnergyPerTick(type, amount, position)), "EnergyRequirement");
   @Getter
   private final IOType mode;
   @Getter
   private final PositionedRequirement position;
-  public final long requirement;
+  public final long requirementPerTick;
 
-  public RequirementEnergy(IOType ioType, long requirement, PositionedRequirement position) {
-    this.requirement = requirement;
+  public RequirementEnergyPerTick(IOType ioType, long requirementPerTick, PositionedRequirement position) {
+    this.requirementPerTick = requirementPerTick;
     this.position = position;
     this.mode = ioType;
   }
 
-  public long getRequiredEnergy() {
-    return requirement;
+  public long getRequiredEnergyPerTick() {
+    return requirementPerTick;
   }
 
   @Override
-  public RequirementType<RequirementEnergy> getType() {
-    return RequirementTypeRegistration.ENERGY.get();
+  public RequirementType<RequirementEnergyPerTick> getType() {
+    return RequirementTypeRegistration.ENERGY_PER_TICK.get();
   }
 
   @Override
@@ -53,8 +53,8 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
   public boolean test(EnergyComponent component, ICraftingContext context) {
     IEnergyHandler handler = component.getContainerProvider();
     return switch (mode) {
-      case INPUT -> handler.getCurrentEnergy() >= requirement;
-      case OUTPUT -> handler.getMaxEnergy() >= handler.getCurrentEnergy() + requirement;
+      case INPUT -> handler.getCurrentEnergy() >= requirementPerTick;
+      case OUTPUT -> handler.getMaxEnergy() >= handler.getCurrentEnergy() + requirementPerTick;
       case NONE -> true;
     };
   }
@@ -62,14 +62,14 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
   @Override
   public void gatherRequirements(IRequirementList<EnergyComponent> list) {
     if (mode.isInput()) {
-      list.processOnStart(this::processInputs);
+      list.processEachTick(this::processInputs);
     } else {
-      list.processOnEnd(this::processOutputs);
+      list.processEachTick(this::processOutputs);
     }
   }
 
   private CraftingResult processInputs(EnergyComponent component, ICraftingContext context) {
-    int amount = (int)context.getIntegerModifiedValue(this.requirement, this);
+    int amount = (int)context.getPerTickIntegerModifiedValue(this.requirementPerTick, this);
     component.getContainerProvider().setCanExtract(true);
     int canExtract = component.getContainerProvider().extractEnergy(amount, true);
     if(canExtract == amount) {
@@ -79,12 +79,12 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
     }
     component.getContainerProvider().setCanExtract(false);
     return CraftingResult.error(Component.translatable(
-        "craftcheck.failure.energy.input", requirement, component.getContainerProvider().getCurrentEnergy()
+        "craftcheck.failure.energy.input", requirementPerTick, component.getContainerProvider().getCurrentEnergy()
     ));
   }
 
   private CraftingResult processOutputs(EnergyComponent component, ICraftingContext context) {
-    int amount = (int)context.getIntegerModifiedValue(this.requirement, this);
+    int amount = (int)context.getPerTickIntegerModifiedValue(this.requirementPerTick, this);
     component.getContainerProvider().setCanInsert(true);
     int canReceive = component.getContainerProvider().receiveEnergy(amount, true);
     if(canReceive == amount) {
@@ -94,7 +94,7 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
     }
     component.getContainerProvider().setCanInsert(false);
     return CraftingResult.error(Component.translatable(
-        "craftcheck.failure.energy.output", requirement, component.getContainerProvider().getRemainingCapacity()
+        "craftcheck.failure.energy.output", requirementPerTick, component.getContainerProvider().getRemainingCapacity()
     ));
   }
 
@@ -102,7 +102,7 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
   public JsonObject asJson() {
     JsonObject json = IRequirement.super.asJson();
     json.addProperty("actionType", mode.name());
-    json.addProperty("amount", requirement);
+    json.addProperty("amount", requirementPerTick);
     return json;
   }
 
