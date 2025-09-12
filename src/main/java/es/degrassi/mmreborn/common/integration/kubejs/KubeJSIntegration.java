@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.Resource;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,10 +53,10 @@ public class KubeJSIntegration {
     return machines;
   }
 
-  public static CraftingResult sendFunctionRequirementEvent(String id, ICraftingContext context) {
+  public static CraftingResult sendFunctionRequirementEvent(String id, ICraftingContext context, List<String> args) {
     if(!MMRKubeJSPlugin.FUNCTIONS.hasListeners(id))
       return CraftingResult.error(Component.translatable("craftcheck.failure.function.no_listener", id));
-    EventResult result = MMRKubeJSPlugin.FUNCTIONS.post(new FunctionKubeEvent(context), id);
+    EventResult result = MMRKubeJSPlugin.FUNCTIONS.post(new FunctionKubeEvent(context, args), id);
     if(result.interruptTrue() || result.interruptDefault() || result.pass())
       return CraftingResult.success();
     else if(result.value() instanceof Component error)

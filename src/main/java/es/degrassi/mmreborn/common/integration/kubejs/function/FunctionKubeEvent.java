@@ -10,15 +10,25 @@ import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
+
 public class FunctionKubeEvent implements KubeEvent {
 
   private final ICraftingContext internal;
   @Getter
   private final MachineControllerJS machine;
+  private final List<String> args;
 
-  public FunctionKubeEvent(ICraftingContext internal) {
+  public FunctionKubeEvent(ICraftingContext internal, List<String> args) {
     this.internal = internal;
     this.machine = new MachineControllerJS(getTile());
+    this.args = args;
+  }
+
+  public Object get(int index) {
+    if (index < 0 || index >= args.size()) throw new IllegalArgumentException(String.format("Args index can not be less " +
+        "than 0 or greater than %s", args.size() - 1));
+    return args.get(index);
   }
 
   public FunctionKubeEvent getContext() {

@@ -24,16 +24,20 @@ public class RequirementFunction implements IRequirement<FunctionComponent> {
   public static final NamedCodec<RequirementFunction> CODEC = NamedCodec.record(functionRequirementInstance ->
       functionRequirementInstance.group(
           NamedCodec.enumCodec(Phase.class).fieldOf("phase").forGetter(RequirementFunction::getPhase),
-          NamedCodec.STRING.fieldOf("id").forGetter(RequirementFunction::getIdentifier)
+          NamedCodec.STRING.fieldOf("id").forGetter(RequirementFunction::getIdentifier),
+          NamedCodec.STRING.listOf().fieldOf("args").forGetter(RequirementFunction::getArgs)
       ).apply(functionRequirementInstance, RequirementFunction::new), "Function requirement"
   );
   public static final List<RequirementFunction> errors = new ArrayList<>();
 
   private final Phase phase;
   private final String identifier;
-  public RequirementFunction(Phase phase, String id) {
+  private final List<String> args;
+
+  public RequirementFunction(Phase phase, String id, List<String> args) {
     this.phase = phase;
     this.identifier = id;
+    this.args = args;
   }
 
   @Override
@@ -71,7 +75,7 @@ public class RequirementFunction implements IRequirement<FunctionComponent> {
 
     try {
       if(ModList.get().isLoaded("kubejs"))
-        return KubeJSIntegration.sendFunctionRequirementEvent(this.identifier, context);
+        return KubeJSIntegration.sendFunctionRequirementEvent(this.identifier, context, this.args);
       else
         throw new IllegalStateException("Trying to process function requirement for identifier: " + this.identifier + " without KubeJS installed!");
     } catch (Throwable error) {

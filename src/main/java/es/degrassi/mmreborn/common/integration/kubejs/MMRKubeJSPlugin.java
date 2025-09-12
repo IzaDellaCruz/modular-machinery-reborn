@@ -25,7 +25,10 @@ import net.minecraft.network.chat.Component;
 public class MMRKubeJSPlugin implements KubeJSPlugin {
   public static final EventGroup MMR_EVENTS = EventGroup.of("MMREvents");
   public static final EventHandler MACHINES = MMR_EVENTS.server("machines", () -> MachineKubeEvent.class);
-  public static final TargetedEventHandler<String> FUNCTIONS = MMR_EVENTS.server("recipeFunction", () -> FunctionKubeEvent.class).hasResult(TypeInfo.of(Component.class)).requiredTarget(EventTargetType.STRING);
+  public static final TargetedEventHandler<String> FUNCTIONS = MMR_EVENTS
+      .server("recipeFunction", () -> FunctionKubeEvent.class)
+      .hasResult(TypeInfo.of(Component.class))
+      .requiredTarget(EventTargetType.STRING);
 
   @Override
   public void registerRecipeSchemas(RecipeSchemaRegistry event) {

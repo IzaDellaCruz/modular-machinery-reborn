@@ -575,7 +575,7 @@ public interface NamedCodec<A> {
     }
   };
 
-  NamedCodec<Dynamic<?>> PASSTHROUGH = new NamedCodec<Dynamic<?>>() {
+  NamedCodec<Dynamic<?>> PASSTHROUGH = new NamedCodec<>() {
     @Override
     public <T> DataResult<Pair<Dynamic<?>, T>> decode(final DynamicOps<T> ops, final T input) {
       return DataResult.success(Pair.of(new Dynamic<>(ops, input), ops.empty()));
