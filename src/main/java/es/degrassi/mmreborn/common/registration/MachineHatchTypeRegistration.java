@@ -1,7 +1,6 @@
 package es.degrassi.mmreborn.common.registration;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;
