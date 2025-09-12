@@ -11,6 +11,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementEmpty;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementExperience;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementExperiencePerTick;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluid;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluidPerTick;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFunction;
@@ -84,6 +85,9 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementExperience>> EXPERIENCE =
       MACHINE_REQUIREMENTS.register(rootLC("experience"),
       () -> RequirementType.inventory(RequirementExperience.CODEC));
+  public static final Supplier<RequirementType<RequirementExperiencePerTick>> EXPERIENCE_PER_TICK =
+      MACHINE_REQUIREMENTS.register(rootLC("experience_per_tick"),
+          () -> RequirementType.inventory(RequirementExperiencePerTick.CODEC));
   public static final Supplier<RequirementType<RequirementFunction>> FUNCTION =
       MACHINE_REQUIREMENTS.register(rootLC("function"),
       () -> RequirementType.world(RequirementFunction.CODEC));
