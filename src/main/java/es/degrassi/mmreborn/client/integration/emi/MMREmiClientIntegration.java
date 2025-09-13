@@ -15,6 +15,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiBiomeComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiChunkloadComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiDimensionComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiDurabilityComponent;
+import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiDurabilityPerTickComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiEmptyComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiEnergyComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiEnergyPerTickComponent;
@@ -79,6 +80,7 @@ public class MMREmiClientIntegration {
     event.register(RequirementTypeRegistration.EXPERIENCE_PER_TICK.get(), EmiExperiencePerTickComponent::new);
     event.register(RequirementTypeRegistration.ITEM.get(), EmiItemComponent::new);
     event.register(RequirementTypeRegistration.DURABILITY.get(), EmiDurabilityComponent::new);
+    event.register(RequirementTypeRegistration.DURABILITY_PER_TICK.get(), EmiDurabilityPerTickComponent::new);
     event.register(RequirementTypeRegistration.FLUID.get(), EmiFluidComponent::new);
     event.register(RequirementTypeRegistration.FLUID_PER_TICK.get(), EmiFluidPerTickComponent::new);
     event.register(RequirementTypeRegistration.BIOME.get(), EmiBiomeComponent::new);

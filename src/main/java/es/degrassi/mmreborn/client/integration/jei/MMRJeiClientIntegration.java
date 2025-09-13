@@ -6,6 +6,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiBiomeComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiChunkloadComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiDimensionComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiDurabilityComponent;
+import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiDurabilityPerTickComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiEmptyComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiEnergyComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiEnergyPerTickComponent;
@@ -79,6 +80,7 @@ public class MMRJeiClientIntegration {
     event.register(RequirementTypeRegistration.FLUID_PER_TICK.get(), JeiFluidPerTickComponent::new);
     event.register(RequirementTypeRegistration.ITEM.get(), JeiItemComponent::new);
     event.register(RequirementTypeRegistration.DURABILITY.get(), JeiDurabilityComponent::new);
+    event.register(RequirementTypeRegistration.DURABILITY_PER_TICK.get(), JeiDurabilityPerTickComponent::new);
     event.register(RequirementTypeRegistration.TIME.get(), JeiTimeComponent::new);
     event.register(RequirementTypeRegistration.HEIGHT.get(), JeiHeightComponent::new);
     event.register(RequirementTypeRegistration.BIOME.get(), JeiBiomeComponent::new);

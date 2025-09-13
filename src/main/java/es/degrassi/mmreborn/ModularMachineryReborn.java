@@ -258,6 +258,7 @@ public class ModularMachineryReborn {
   public static Registry<ComponentType> getComponentRegistrar() {
     return ComponentRegistration.COMPONENTS_REGISTRY;
   }
+
   public static Registry<MachineHatchType> getMachineHatchTypeRegistrar() {
     return MachineHatchTypeRegistration.MachineHatchType_REGISTRY;
   }
