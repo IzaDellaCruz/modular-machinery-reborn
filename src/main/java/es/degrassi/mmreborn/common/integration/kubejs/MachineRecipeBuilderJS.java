@@ -21,6 +21,7 @@ import es.degrassi.mmreborn.common.integration.kubejs.requirement.DurabilityRequ
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.EmptyRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.EnergyPerTickRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.EnergyRequirementJS;
+import es.degrassi.mmreborn.common.integration.kubejs.requirement.ExperiencePerTickRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.ExperienceRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.FluidPerTickRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.FluidRequirementJS;
@@ -55,6 +56,7 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
     ChunkloadRequirementJS,
     LootTableRequirementJS,
     ExperienceRequirementJS,
+    ExperiencePerTickRequirementJS,
     HeightRequirementJS,
     FunctionRequirementJS,
     DurabilityRequirementJS,
