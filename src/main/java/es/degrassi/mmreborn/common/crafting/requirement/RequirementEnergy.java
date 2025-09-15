@@ -53,9 +53,19 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
   public boolean test(EnergyComponent component, ICraftingContext context) {
     IEnergyHandler handler = component.getContainerProvider();
     return switch (mode) {
-      case INPUT -> handler.getCurrentEnergy() >= requirement;
-      case OUTPUT -> handler.getMaxEnergy() >= handler.getCurrentEnergy() + requirement;
-      case NONE -> true;
+      case INPUT -> {
+        handler.setCanExtract(true);
+        int extracted = handler.extractEnergy((int) this.requirement, true);
+        component.getContainerProvider().setCanExtract(false);
+        yield extracted >= this.requirement;
+      }
+      case OUTPUT -> {
+        handler.setCanInsert(true);
+        int received = handler.receiveEnergy((int) this.requirement, true);
+        handler.setCanInsert(false);
+        yield received >= this.requirement;
+      }
+      case NONE -> false;
     };
   }
 
@@ -72,7 +82,7 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
     int amount = (int)context.getIntegerModifiedValue(this.requirement, this);
     component.getContainerProvider().setCanExtract(true);
     int canExtract = component.getContainerProvider().extractEnergy(amount, true);
-    if(canExtract == amount) {
+    if(canExtract >= amount) {
       component.getContainerProvider().extractEnergy(amount, false);
       component.getContainerProvider().setCanExtract(false);
       return CraftingResult.success();
@@ -87,7 +97,7 @@ public class RequirementEnergy implements IRequirement<EnergyComponent> {
     int amount = (int)context.getIntegerModifiedValue(this.requirement, this);
     component.getContainerProvider().setCanInsert(true);
     int canReceive = component.getContainerProvider().receiveEnergy(amount, true);
-    if(canReceive == amount) {
+    if(canReceive >= amount) {
       component.getContainerProvider().receiveEnergy(amount, false);
       component.getContainerProvider().setCanInsert(false);
       return CraftingResult.success();

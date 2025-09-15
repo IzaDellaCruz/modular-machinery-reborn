@@ -154,10 +154,10 @@ public class MMREmiClientIntegration {
     for (Ingredient.Value value : requirement.requirement().getIngredient().ingredient().values) {
       if (value instanceof Ingredient.TagValue(TagKey<Item> tag)) {
         for (Item stack : TagUtil.getItems(tag).toList()) {
-          stacks.add(EmiStack.of(stack, requirement.requirement().ingredient.count()));
+          stacks.add(EmiStack.of(new ItemStack(stack, requirement.requirement().ingredient.count()), requirement.requirement().ingredient.count()));
         }
       } else if (value instanceof Ingredient.ItemValue(ItemStack item)) {
-        stacks.add(EmiStack.of(item, requirement.requirement().ingredient.count()));
+        stacks.add(EmiStack.of(item.copyWithCount(requirement.requirement().ingredient.count()), requirement.requirement().ingredient.count()));
       }
     }
     return stacks;

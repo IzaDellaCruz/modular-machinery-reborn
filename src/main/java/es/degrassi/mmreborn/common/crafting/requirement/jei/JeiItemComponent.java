@@ -38,7 +38,9 @@ public class JeiItemComponent extends JeiComponent<ItemStack, RecipeRequirement<
 
   @Override
   public List<ItemStack> ingredients() {
-    return Arrays.stream(requirement.requirement().getIngredient().getItems()).map(ItemStack::copy).toList();
+    return Arrays.stream(requirement.requirement().getIngredient().getItems())
+        .map(stack -> stack.copyWithCount(requirement.requirement().getIngredient().count()))
+        .toList();
   }
 
   @Override

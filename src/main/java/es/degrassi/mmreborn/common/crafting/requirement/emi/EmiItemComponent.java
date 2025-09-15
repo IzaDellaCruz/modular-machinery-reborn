@@ -39,7 +39,7 @@ public class EmiItemComponent extends EmiComponent<ItemStack, RecipeRequirement<
 
   @Override
   public EmiStack getStack() {
-    return EmiStack.of(ingredients().get(item));
+    return EmiStack.of(ingredients().get(item).copyWithCount(requirement.requirement().getIngredient().count()));
   }
 
   @Override
