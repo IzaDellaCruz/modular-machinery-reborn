@@ -329,8 +329,8 @@
   "modular_machinery_reborn.jei.ingredient.long": "%s",
   "modular_machinery_reborn.jei.ingredient.int": "%s",
 
-  "modular_machinery_reborn.jei.ingredient.energy.input": "需要: %s RF/t",
-  "modular_machinery_reborn.jei.ingredient.energy.output": "产出: %s RF/t",
+  "modular_machinery_reborn.jei.ingredient.energy.input": "需要: %s RF",
+  "modular_machinery_reborn.jei.ingredient.energy.output": "产出: %s RF",
   "modular_machinery_reborn.jei.ingredient.energy.total.input": "需要: %s RF @ %s RF/t",
   "modular_machinery_reborn.jei.ingredient.energy.total.output": "产出: %s RF @ %s RF/t",
 

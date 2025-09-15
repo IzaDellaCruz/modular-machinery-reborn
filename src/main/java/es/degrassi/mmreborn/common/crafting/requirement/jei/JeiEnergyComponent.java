@@ -59,7 +59,6 @@ public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<Ene
     tooltip.add(
         Component.translatable(
             "modular_machinery_reborn.jei.ingredient.energy." + mode,
-            Utils.format(requirement.requirement().requirement * recipeTime),
             Utils.format(requirement.requirement().requirement)
         )
     );
