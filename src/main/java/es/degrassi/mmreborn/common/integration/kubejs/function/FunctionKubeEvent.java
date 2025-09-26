@@ -25,7 +25,7 @@ public class FunctionKubeEvent implements KubeEvent {
     this.args = args;
   }
 
-  public Object get(int index) {
+  public String get(int index) {
     if (index < 0 || index >= args.size()) throw new IllegalArgumentException(String.format("Args index can not be less " +
         "than 0 or greater than %s", args.size() - 1));
     return args.get(index);

@@ -73,7 +73,16 @@ public class MachineControllerJS {
 
   /** ENERGY STUFF **/
 
-  // TODO: add energy capacity
+  public long getEnergyCapacity(IOType mode) {
+    return this.internal.getComponentManager()
+        .getFoundComponentsList()
+        .stream()
+        .filter(c -> c instanceof EnergyComponent)
+        .map(c -> (EnergyComponent) c)
+        .filter(c -> c.getIOType().equals(mode))
+        .mapToLong(c -> c.getContainerProvider().getMaxEnergyStored())
+        .sum();
+  }
 
   public long getEnergyStored(IOType mode) {
     return this.internal.getComponentManager()
