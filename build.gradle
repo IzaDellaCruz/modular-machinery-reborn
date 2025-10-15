@@ -1,9 +1,8 @@
 plugins {
   id 'java-library'
-  id 'eclipse'
   id 'idea'
   id 'maven-publish'
-  id 'net.neoforged.gradle.userdev' version '7.0.165'
+  id 'net.neoforged.moddev' version '2.0.105'
   id "es.degrassi.unified-publishing-with-mmr-bot" version "1+"
   id "io.freefair.lombok" version "8.6"
 }
@@ -20,35 +19,48 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 java.withSourcesJar()
 
-File transformer = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
+/*File transformer = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
 
 if (transformer.exists()) {
   minecraft.accessTransformers.file transformer
-}
+}*/
 
-runs {
-  configureEach {
-    systemProperty 'forge.logging.markers', 'REGISTRIES'
-    systemProperty 'forge.logging.console.level', 'debug'
+neoForge {
+  version = project.neo_version
 
-    modSource project.sourceSets.main
+  parchment {
+    mappingsVersion = project.parchment_mappings_version
+    minecraftVersion = project.parchment_minecraft_version
   }
 
-  client {
-    systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+  runs {
+    client {
+      client()
+      systemProperty "neoforge.enabledGameTestNamespaces", project.mod_id
+    }
+    server {
+      server()
+      programArgument "--nogui"
+      systemProperty "neoforge.enabledGameTestNamespaces", project.mod_id
+    }
+    gameTestServer {
+      type = "gameTestServer"
+      systemProperty "neoforge.enabledGameTestNamespaces", project.mod_id
+    }
+    data {
+      data()
+      programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+    configureEach {
+      systemProperty 'forge.logging.markers', 'REGISTRIES'
+      logLevel = org.slf4j.event.Level.DEBUG
+    }
   }
 
-  server {
-    systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-    argument '--nogui'
-  }
-
-  gameTestServer {
-    systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-  }
-
-  data {
-    arguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+  mods {
+    "${mod_id}" {
+      sourceSet(sourceSets.main)
+    }
   }
 }
 
@@ -62,7 +74,13 @@ configurations {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+  maven {
+    url = "https://repo.spongepowered.org/repository/maven-public/"
+  }
+  maven {
+    name = "Forge"
+    url = "https://maven.minecraftforge.net"
+  }
   maven {
     name = "Jared's maven"
     url = "https://maven.blamejared.com/"
@@ -160,7 +178,7 @@ dependencies {
   // lombok
   compileOnly "org.projectlombok:lombok:${project.lombok_version}"
   annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
-  compileOnly localRuntime ("net.neoforged:neoforge:${neo_version}")
+  implementation "net.neoforged:neoforge:${neo_version}"
   compileOnly localRuntime ("es.degrassi:experiencelib:${minecraft_version}-${experiencelib_version}")
 
   // ProbeJS
@@ -216,7 +234,7 @@ dependencies {
   localRuntime("curse.maven:observable-509575:5733591")
 }
 
-tasks.withType(ProcessResources).configureEach {
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
   var replaceProperties = [
       minecraft_version      : minecraft_version,
       minecraft_version_range: minecraft_version_range,
@@ -240,11 +258,13 @@ tasks.withType(ProcessResources).configureEach {
       almostunified_version  : almostunified_version
   ]
   inputs.properties replaceProperties
-
-  filesMatching(['META-INF/neoforge.mods.toml']) {
-    expand replaceProperties
-  }
+  expand replaceProperties
+  from "src/main/templates"
+  into "build/generated/sources/modMetadata"
 }
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
