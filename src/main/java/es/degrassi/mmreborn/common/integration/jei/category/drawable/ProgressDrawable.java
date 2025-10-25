@@ -4,12 +4,10 @@ import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableResource;
 import mezz.jei.common.gui.elements.OffsetDrawable;
-import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 

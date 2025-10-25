@@ -19,8 +19,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
+@Getter
 public class RequirementFluidPerTick implements IRequirement<FluidComponent> {
   public static final NamedMapCodec<RequirementFluidPerTick> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.of(SizedFluidIngredient.FLAT_CODEC).fieldOf("fluid").forGetter(req -> req.ingredient),
@@ -28,11 +27,8 @@ public class RequirementFluidPerTick implements IRequirement<FluidComponent> {
       PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
   ).apply(instance, (fluid, mode, position) -> new RequirementFluidPerTick(mode, fluid, position)), "FluidRequirement");
 
-  @Getter
   private final PositionedRequirement position;
-  @Getter
   private final IOType mode;
-  @Getter
   private final SizedFluidIngredient ingredient;
 
   public RequirementFluidPerTick(IOType ioType, SizedFluidIngredient fluid, PositionedRequirement position) {

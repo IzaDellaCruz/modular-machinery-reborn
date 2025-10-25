@@ -30,7 +30,7 @@ public class RecipeIdPostProcessor implements RecipePostProcessor {
 
   @Override
   public void process(RecipeValidationContext ctx, KubeRecipe recipe) {
-    if (!recipe.newRecipe || !(recipe instanceof MachineRecipeBuilderJS builder)) return;
+    if (!recipe.newRecipe || !(recipe instanceof MachineRecipeBuilderJS)) return;
     for (RecipeComponentValue<?> value : recipe.getRecipeComponentValues()) {
       if (value.key.name.equals("machine") && value.value instanceof ResourceLocation machine) {
         int uniqueID = IDS.computeIfAbsent(RecipeRegistration.RECIPE_TYPE.getId(), id -> new HashMap<>()).computeIfAbsent(machine, m -> 0);

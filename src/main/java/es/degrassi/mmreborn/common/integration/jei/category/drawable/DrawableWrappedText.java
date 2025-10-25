@@ -58,9 +58,7 @@ public class DrawableWrappedText implements IDrawable {
     Font font = minecraft.font;
     guiGraphics.pose().pushPose();
 
-    transformations.forEach(transformation -> {
-      transformation.compute(guiGraphics.pose(), 1);
-    });
+    transformations.forEach(transformation -> transformation.compute(guiGraphics.pose(), 1));
 
     int yPos = 0;
     for (FormattedText descriptionLine : descriptionLines) {
@@ -72,7 +70,7 @@ public class DrawableWrappedText implements IDrawable {
   }
 
   public enum Operation {
-    ADD, REMOVE, MULTIPLY, DIVIDE, SET;
+    ADD, REMOVE, MULTIPLY, DIVIDE, SET
   }
 
   @Getter

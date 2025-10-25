@@ -62,29 +62,21 @@ public class Pattern {
     this.modifiers_west = rotateModifiers(Rotation.COUNTERCLOCKWISE_90);
     this.modifiers_east = rotateModifiers(Rotation.CLOCKWISE_90);
 
-    modifiers_north.forEach((pos, modifierList) -> {
-      modifierList.forEach(modifier -> {
-        pattern_north.put(pos, modifier.getIngredient().copyWithRotation(Rotation.NONE).merge(pattern_north.get(pos)));
-      });
-    });
+    modifiers_north.forEach((pos, modifierList) -> modifierList
+        .forEach(modifier -> pattern_north
+            .put(pos, modifier.getIngredient().copyWithRotation(Rotation.NONE).merge(pattern_north.get(pos)))));
 
-    modifiers_south.forEach((pos, modifierList) -> {
-      modifierList.forEach(modifier -> {
-        pattern_south.put(pos, modifier.getIngredient().copyWithRotation(Rotation.CLOCKWISE_180).merge(pattern_south.get(pos)));
-      });
-    });
+    modifiers_south.forEach((pos, modifierList) -> modifierList
+        .forEach(modifier -> pattern_south
+            .put(pos, modifier.getIngredient().copyWithRotation(Rotation.CLOCKWISE_180).merge(pattern_south.get(pos)))));
 
-    modifiers_west.forEach((pos, modifierList) -> {
-      modifierList.forEach(modifier -> {
-        pattern_west.put(pos, modifier.getIngredient().copyWithRotation(Rotation.COUNTERCLOCKWISE_90).merge(pattern_west.get(pos)));
-      });
-    });
+    modifiers_west.forEach((pos, modifierList) -> modifierList
+        .forEach(modifier -> pattern_west
+            .put(pos, modifier.getIngredient().copyWithRotation(Rotation.COUNTERCLOCKWISE_90).merge(pattern_west.get(pos)))));
 
-    modifiers_east.forEach((pos, modifierList) -> {
-      modifierList.forEach(modifier -> {
-        pattern_east.put(pos, modifier.getIngredient().copyWithRotation(Rotation.CLOCKWISE_90).merge(pattern_east.get(pos)));
-      });
-    });
+    modifiers_east.forEach((pos, modifierList) -> modifierList
+        .forEach(modifier -> pattern_east
+            .put(pos, modifier.getIngredient().copyWithRotation(Rotation.CLOCKWISE_90).merge(pattern_east.get(pos)))));
   }
 
   public Map<BlockPos, BlockIngredient> get(Direction direction) {
