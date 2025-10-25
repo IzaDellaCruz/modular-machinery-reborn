@@ -22,7 +22,8 @@ import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
-import es.degrassi.mmreborn.common.machine.Sounds;
+import es.degrassi.mmreborn.common.util.sound.AmbientSound;
+import es.degrassi.mmreborn.common.util.sound.Sounds;
 import es.degrassi.mmreborn.common.manager.ComponentManager;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessor;
 import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
@@ -32,7 +33,7 @@ import es.degrassi.mmreborn.common.network.server.SUpdateCraftingStatusPacket;
 import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
-import es.degrassi.mmreborn.common.util.SoundManager;
+import es.degrassi.mmreborn.common.util.sound.SoundManager;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -157,14 +158,14 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void doClientTick() {
     if (soundManager == null)
       soundManager = new SoundManager(getBlockPos());
-    SoundEvent sound = getFoundMachine().getAmbientSound(status);
-    if (sound != null && !sound.getLocation().equals(soundManager.getSoundID())) {
-      if (getFoundMachine().getAmbientSound(status) == Sounds.DEFAULT.ambientSound())
+    AmbientSound sound = getFoundMachine().getAmbientSound(status);
+
+    if (!soundManager.isCurrentlyPlaying(sound)) {
+      if (sound == Sounds.DEFAULT.ambientSound()) {
         soundManager.setSound(null);
-      else
-        soundManager.setSound(getFoundMachine().getAmbientSound(status));
-    } else {
-      soundManager.setSound(null);
+      } else {
+        soundManager.setSound(sound);
+      }
     }
 
     if (!soundManager.isPlaying())

@@ -15,7 +15,6 @@ import lombok.Getter;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -79,8 +78,9 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
     recipe.chanceTexts.clear();
     if (recipe.isShouldRenderProgress()) {
       new JeiDurationComponent(
-          new RecipeRequirement<>(new RequirementDuration(recipe.getRecipeTotalTickTime(), recipe.getProgressPosition())),
-          20, IDrawableAnimated.StartDirection.LEFT
+          new RecipeRequirement<>(new RequirementDuration(recipe.getRecipeTotalTickTime(), recipe.getProgressData().position())),
+          20, recipe.getProgressData()
+
       ).setRecipe(this, builder, recipe, focuses);
     }
 

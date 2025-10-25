@@ -1,4 +1,4 @@
-package es.degrassi.mmreborn.common.util;
+package es.degrassi.mmreborn.common.util.sound;
 
 import com.mojang.datafixers.util.Either;
 import es.degrassi.mmreborn.api.PartialBlockState;

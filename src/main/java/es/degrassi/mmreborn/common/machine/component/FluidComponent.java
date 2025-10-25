@@ -6,6 +6,10 @@ import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.util.HybridTank;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FluidComponent extends MachineComponent<HybridTank> {
   private final HybridTank handler;
@@ -110,5 +114,22 @@ public class FluidComponent extends MachineComponent<HybridTank> {
     if (one.isEmpty() && !two.isEmpty()) return -1;
     if (!one.isEmpty() && !two.isEmpty()) return 0;
     return 1;
+  }
+
+  public void removeFromInputs(FluidIngredient ingredient, int amount) {
+    AtomicLong toRemove = new AtomicLong(amount);
+    Arrays.stream(ingredient.getStacks())
+        .map(fluid -> new FluidStack(fluid.getFluid(), amount))
+        .forEach(fluid -> {
+          if (toRemove.get() <= 0) return;
+          long maxExtract = Math.min(handler.getFluidAmount(), toRemove.get());
+          toRemove.addAndGet(-maxExtract);
+          handler.recipeExtract(maxExtract);
+        });
+  }
+
+  public void addToOutputs(FluidStack stack) {
+    AtomicLong toAdd = new AtomicLong(stack.getAmount());
+    handler.recipeInsert(stack.getFluid(), toAdd.get(), null);
   }
 }

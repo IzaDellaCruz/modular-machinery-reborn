@@ -45,7 +45,6 @@ public abstract class JeiComponent<X, R extends RecipeRequirement<?, ?>> impleme
   }
 
   @Override
-  @SuppressWarnings("removal")
   public @NotNull List<Component> getTooltip(@NotNull X ingredient, @NotNull TooltipFlag tooltipFlag) {
     return new LinkedList<>();
   }

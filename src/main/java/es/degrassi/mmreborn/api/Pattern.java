@@ -146,8 +146,7 @@ public class Pattern {
       BlockIngredient ingredient = blocks.get(pos);
       worldPos.set(pos.getX() + machinePos.getX(), pos.getY() + machinePos.getY(), pos.getZ() + machinePos.getZ());
       BlockInWorld info = new BlockInWorld(world, worldPos, false);
-      if (ingredient.getAll().stream().noneMatch(state -> state.test(info)))
-        return false;
+      return ingredient.test(info);
     }
     return true;
   }

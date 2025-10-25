@@ -14,7 +14,7 @@ import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
-import es.degrassi.mmreborn.common.machine.Sounds;
+import es.degrassi.mmreborn.common.util.sound.Sounds;
 import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.util.MachineModelLocation;
 import lombok.Getter;

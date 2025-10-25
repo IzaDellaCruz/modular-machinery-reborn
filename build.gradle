@@ -182,7 +182,7 @@ dependencies {
   compileOnly localRuntime ("es.degrassi:experiencelib:${minecraft_version}-${experiencelib_version}")
 
   // ProbeJS
-  localRuntime("curse.maven:probejs-585406:5820894")
+  localRuntime("curse.maven:probejs-585406:7105159")
 
   // JEI
   compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")

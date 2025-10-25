@@ -1,11 +1,14 @@
 package es.degrassi.mmreborn.client.container;
 
 import es.degrassi.mmreborn.client.ModularMachineryRebornClient;
+import es.degrassi.mmreborn.client.screen.widget.ISlotClickHandler;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
+import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponentPacket;
 import es.degrassi.mmreborn.common.registration.ContainerRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
+import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,11 +17,20 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
-public class ItemBusContainer extends ContainerBase<TileItemBus> {
+@Setter
+public class ItemBusContainer extends ContainerBase<TileItemBus> implements ISlotClickHandler {
+  public static final int MAX_VISIBLE_ROWS = 5;
+  public static final int SLOT_SIZE = 18;
 
   public static void open(ServerPlayer player, TileItemBus machine) {
     player.openMenu(new MenuProvider() {
@@ -49,8 +61,12 @@ public class ItemBusContainer extends ContainerBase<TileItemBus> {
   }
 
   protected void addPlayerSlots(AtomicInteger slotIndex) {
-    int rows = (int) Math.ceil(getEntity().getSlots()*1d / getEntity().getSize().cols);
-    int yOffset = rows * 18 + 18;
+    int totalRows = (int) Math.ceil(getEntity().getSlots() * 1.0 / getEntity().getSize().cols);
+    boolean needsScrolling = totalRows > MAX_VISIBLE_ROWS;
+
+    int visibleRows = needsScrolling ? MAX_VISIBLE_ROWS : totalRows;
+    int yOffset = visibleRows * SLOT_SIZE + 18;
+
     int lastYOffset;
     for (int i = 0; i < 9; i++) {
       addSyncedSlot(new Slot(player.getInventory(), slotIndex.getAndIncrement(), 8 + i * 18, yOffset + 18 * 3 + 3));
@@ -75,5 +91,15 @@ public class ItemBusContainer extends ContainerBase<TileItemBus> {
       }
       addSyncedSlot(new SlotItemComponent(itemHandler.getInventory().get(s), atomicInteger.getAndIncrement(), xOffset + c * 18, yOffset + row * 18));
     }
+  }
+
+  public List<SlotItemComponent> getItemList() {
+    return slots.stream().filter(slot -> slot.getSlotIndex() >= getFirstComponentSlotIndex() && slot instanceof SlotItemComponent)
+        .map(slot -> (SlotItemComponent)slot).toList();
+  }
+
+  @Override
+  public void onClick(Supplier<@Nullable SlotItemComponent> slotProvider, int button, boolean hasShiftDown, ItemStack heldItem) {
+    getEntity().provideComponent().getContainerProvider().setChanged();
   }
 }

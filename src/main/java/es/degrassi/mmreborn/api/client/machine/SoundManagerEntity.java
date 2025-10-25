@@ -1,6 +1,6 @@
 package es.degrassi.mmreborn.api.client.machine;
 
-import es.degrassi.mmreborn.common.util.SoundManager;
+import es.degrassi.mmreborn.common.util.sound.SoundManager;
 
 public interface SoundManagerEntity {
   SoundManager getSoundManager();

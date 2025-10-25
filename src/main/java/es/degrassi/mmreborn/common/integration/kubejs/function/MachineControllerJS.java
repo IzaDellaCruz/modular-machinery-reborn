@@ -1,6 +1,6 @@
 package es.degrassi.mmreborn.common.integration.kubejs.function;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.CachedLevelBlock;
 import dev.latvian.mods.rhino.Wrapper;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -41,7 +41,7 @@ public class MachineControllerJS {
     if (o instanceof BlockEntity be && be instanceof MachineControllerEntity mce) {
       return new MachineControllerJS(mce);
     }
-    if (o instanceof BlockContainerJS bc) {
+    if (o instanceof CachedLevelBlock bc) {
       return of(bc.getEntity());
     }
     return null;

@@ -54,17 +54,74 @@ public class HatchBakedModel implements IDynamicBakedModel {
 
   private final HatchOverrideList overrideList = new HatchOverrideList();
 
-  public HatchBakedModel(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter) {
-    this.spriteGetter = spriteGetter;
-    this.baker = baker;
-  }
-
   private static Material createMaterial(ResourceLocation texture) {
     return new Material(InventoryMenu.BLOCK_ATLAS, texture);
   }
 
   private static Material copy(Material material) {
     return new Material(material.atlasLocation(), material.texture());
+  }
+
+  public HatchBakedModel(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter) {
+    this.spriteGetter = spriteGetter;
+    this.baker = baker;
+  }
+
+  private BakedModel getHatchModel(ModelData data) {
+    return modelByModelData.computeIfAbsent(data, d -> processHatchModel(data));
+  }
+
+  private BakedModel processHatchModel(ModelData data) {
+    BakedModel bakedModel;
+    ResourceLocation baseTexture = data.get(BASE_TEXTURE);
+    ResourceLocation overlayTexture = data.get(OVERLAY_TEXTURE);
+    String baseTextureName = data.get(BASE_TEXTURE_NAME);
+    String overlayTextureName = data.get(OVERLAY_TEXTURE_NAME);
+    ResourceLocation model = data.get(MODEL);
+    if (model == null) return Minecraft.getInstance().getModelManager().getMissingModel();
+    var oldBlockModel = ((BlockModel) baker.getModel(model));
+    Map<String, Either<Material, String>> textureMap = Maps.newHashMap();
+    oldBlockModel.textureMap.forEach((string, either) -> {
+      either.ifLeft(material -> textureMap.put(string, Either.left(copy(material))));
+      either.ifRight(name -> textureMap.put(string, Either.right(name)));
+    });
+    if (baseTexture != null && baseTextureName != null) {
+      switch (baseTextureName) {
+        case "bg_down" -> textureMap.put("bg_down", Either.left(createMaterial(baseTexture)));
+        case "bg_up" -> textureMap.put("bg_up", Either.left(createMaterial(baseTexture)));
+        case "bg_north" -> textureMap.put("bg_north", Either.left(createMaterial(baseTexture)));
+        case "bg_south" -> textureMap.put("bg_south", Either.left(createMaterial(baseTexture)));
+        case "bg_west" -> textureMap.put("bg_west", Either.left(createMaterial(baseTexture)));
+        case "bg_east" -> textureMap.put("bg_east", Either.left(createMaterial(baseTexture)));
+        default -> textureMap.put("bg_all", Either.left(createMaterial(baseTexture)));
+      }
+    }
+    if (overlayTexture != null && overlayTextureName != null) {
+      switch (overlayTextureName) {
+        case "ov_down" -> textureMap.put("ov_down", Either.left(createMaterial(overlayTexture)));
+        case "ov_up" -> textureMap.put("ov_up", Either.left(createMaterial(overlayTexture)));
+        case "ov_north" -> textureMap.put("ov_north", Either.left(createMaterial(overlayTexture)));
+        case "ov_south" -> textureMap.put("ov_south", Either.left(createMaterial(overlayTexture)));
+        case "ov_west" -> textureMap.put("ov_west", Either.left(createMaterial(overlayTexture)));
+        case "ov_east" -> textureMap.put("ov_east", Either.left(createMaterial(overlayTexture)));
+        case "ov_top" -> textureMap.put("ov_top", Either.left(createMaterial(overlayTexture)));
+        case "ov_side" -> textureMap.put("ov_side", Either.left(createMaterial(overlayTexture)));
+        case "ov_front" -> textureMap.put("ov_front", Either.left(createMaterial(overlayTexture)));
+        default -> textureMap.put("ov_all", Either.left(createMaterial(overlayTexture)));
+      }
+    }
+    BlockModel blockModel = new BlockModel(
+        oldBlockModel.getParentLocation(),
+        oldBlockModel.elements,
+        textureMap,
+        oldBlockModel.hasAmbientOcclusion(),
+        oldBlockModel.getGuiLight(),
+        oldBlockModel.getTransforms(),
+        oldBlockModel.getOverrides()
+    );
+    blockModel.resolveParents(baker::getModel);
+    bakedModel = baker.bakeUncached(blockModel, BlockModelRotation.X0_Y0, spriteGetter);
+    return bakedModel;
   }
 
   @Override
@@ -74,73 +131,15 @@ public class HatchBakedModel implements IDynamicBakedModel {
                                            ModelData data,
                                            @Nullable RenderType type
   ) {
-    BakedModel bakedModel;
-    if (modelByModelData.containsKey(data)) {
-      bakedModel = modelByModelData.get(data);
-    } else {
-      ResourceLocation baseTexture = data.get(BASE_TEXTURE);
-      ResourceLocation overlayTexture = data.get(OVERLAY_TEXTURE);
-      String baseTextureName = data.get(BASE_TEXTURE_NAME);
-      String overlayTextureName = data.get(OVERLAY_TEXTURE_NAME);
-      ResourceLocation model = data.get(MODEL);
-      if (model == null) return List.of();
-      var oldBlockModel = ((BlockModel) baker.getModel(model));
-      Map<String, Either<Material, String>> textureMap = Maps.newHashMap();
-      oldBlockModel.textureMap.forEach((string, either) -> {
-        either.ifLeft(material -> textureMap.put(string, Either.left(copy(material))));
-        either.ifRight(name -> textureMap.put(string, Either.right(name)));
-      });
-
-      if (baseTexture != null && baseTextureName != null) {
-        switch (baseTextureName) {
-          case "bg_down" -> textureMap.put("bg_down", Either.left(createMaterial(baseTexture)));
-          case "bg_up" -> textureMap.put("bg_up", Either.left(createMaterial(baseTexture)));
-          case "bg_north" -> textureMap.put("bg_north", Either.left(createMaterial(baseTexture)));
-          case "bg_south" -> textureMap.put("bg_south", Either.left(createMaterial(baseTexture)));
-          case "bg_west" -> textureMap.put("bg_west", Either.left(createMaterial(baseTexture)));
-          case "bg_east" -> textureMap.put("bg_east", Either.left(createMaterial(baseTexture)));
-          default -> textureMap.put("bg_all", Either.left(createMaterial(baseTexture)));
-        }
-      }
-
-      if (overlayTexture != null && overlayTextureName != null) {
-        switch (overlayTextureName) {
-          case "ov_down" -> textureMap.put("ov_down", Either.left(createMaterial(overlayTexture)));
-          case "ov_up" -> textureMap.put("ov_up", Either.left(createMaterial(overlayTexture)));
-          case "ov_north" -> textureMap.put("ov_north", Either.left(createMaterial(overlayTexture)));
-          case "ov_south" -> textureMap.put("ov_south", Either.left(createMaterial(overlayTexture)));
-          case "ov_west" -> textureMap.put("ov_west", Either.left(createMaterial(overlayTexture)));
-          case "ov_east" -> textureMap.put("ov_east", Either.left(createMaterial(overlayTexture)));
-          case "ov_top" -> textureMap.put("ov_top", Either.left(createMaterial(overlayTexture)));
-          case "ov_side" -> textureMap.put("ov_side", Either.left(createMaterial(overlayTexture)));
-          case "ov_front" -> textureMap.put("ov_front", Either.left(createMaterial(overlayTexture)));
-          default -> textureMap.put("ov_all", Either.left(createMaterial(overlayTexture)));
-        }
-      }
-
-      BlockModel blockModel = new BlockModel(
-          oldBlockModel.getParentLocation(),
-          oldBlockModel.elements,
-          textureMap,
-          oldBlockModel.hasAmbientOcclusion(),
-          oldBlockModel.getGuiLight(),
-          oldBlockModel.getTransforms(),
-          oldBlockModel.getOverrides()
-      );
-
-      blockModel.resolveParents(baker::getModel);
-
-      bakedModel = baker.bakeUncached(blockModel, BlockModelRotation.X0_Y0, spriteGetter);
-      modelByModelData.put(data, bakedModel);
-    }
-
+    BakedModel bakedModel = getHatchModel(data);
     if (bakedModel == null) return List.of();
-
+    List<BakedQuad> quads;
     if (state != null && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-      return getRotatedQuads(bakedModel, state.getValue(BlockStateProperties.HORIZONTAL_FACING), side, rand, type);
+      quads = getRotatedQuads(bakedModel, state.getValue(BlockStateProperties.HORIZONTAL_FACING), side, rand, type);
+    } else {
+      quads = bakedModel.getQuads(state, side, rand, ModelData.EMPTY, type);
     }
-
-    return bakedModel.getQuads(state, side, rand, ModelData.EMPTY, type);
+    return quads;
   }
 
   private List<BakedQuad> getRotatedQuads(BakedModel model, Direction machineFacing, @Nullable Direction side, RandomSource random, @Nullable RenderType type) {

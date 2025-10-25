@@ -12,12 +12,12 @@ import javax.annotation.Nullable;
 public class BlockWeatherSensor extends BlockMachineComponent {
   public BlockWeatherSensor() {
     super(
-        Properties.of()
-            .strength(2F, 10F)
-            .sound(SoundType.METAL)
-            .requiresCorrectToolForDrops()
-            .dynamicShape()
-            .noOcclusion()
+      Properties.of()
+        .strength(2F, 10F)
+        .sound(SoundType.METAL)
+        .requiresCorrectToolForDrops()
+        .dynamicShape()
+        .noOcclusion()
     );
   }
 

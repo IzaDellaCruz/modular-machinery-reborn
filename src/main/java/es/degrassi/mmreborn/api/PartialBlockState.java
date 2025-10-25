@@ -58,27 +58,19 @@ public class PartialBlockState implements Predicate<BlockInWorld> {
     }
   };
 
-  public static final PartialBlockState NOT_MACHINE = new PartialBlockState(Blocks.AIR.defaultBlockState(),
-      Collections.emptyList(), null) {
-    @Override
-    public boolean test(BlockInWorld cachedBlockInfo) {
-      return !(cachedBlockInfo.getState().getBlock() instanceof BlockController) && !(cachedBlockInfo.getEntity() instanceof MachineControllerEntity);
-    }
-
-    @Override
-    public String toString() {
-      return "NOT_MACHINE";
-    }
-  };
-
   public static final NamedCodec<PartialBlockState> CODEC = NamedCodec.STRING.comapFlatMap(s -> {
     try {
-      BlockStateParser.BlockResult result = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), s, true);
-      return DataResult.success(new PartialBlockState(result.blockState(), Lists.newArrayList(result.properties().keySet()), result.nbt()));
+      return DataResult.success(PartialBlockState.of(s));
     } catch (CommandSyntaxException exception) {
       return DataResult.error(exception::getMessage);
     }
   }, PartialBlockState::toString, "Partial block state");
+
+  public static PartialBlockState of(String s) throws CommandSyntaxException{
+    s = s.replaceAll("\\+", ",");
+    BlockStateParser.BlockResult result = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), s, true);
+    return new PartialBlockState(result.blockState(), Lists.newArrayList(result.properties().keySet()), result.nbt());
+  }
 
   @Getter
   private final BlockState blockState;
@@ -161,7 +153,7 @@ public class PartialBlockState implements Predicate<BlockInWorld> {
     StringBuilder builder = new StringBuilder();
     builder.append(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()));
     if (!this.properties.isEmpty())
-      builder.append(getProperties().toString().replaceAll(", ", ","));
+      builder.append(getProperties().toString().replaceAll(", ", "+"));
 
     if (this.nbt != null && !this.nbt.isEmpty())
       builder.append(this.nbt);

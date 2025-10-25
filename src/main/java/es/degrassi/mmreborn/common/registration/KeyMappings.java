@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Locale;
 
-@EventBusSubscriber(modid = ModularMachineryReborn.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = ModularMachineryReborn.MODID, value = Dist.CLIENT)
 public abstract class KeyMappings {
 
   private KeyMappings() {}

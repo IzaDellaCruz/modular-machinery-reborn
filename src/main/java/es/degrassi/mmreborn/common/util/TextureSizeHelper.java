@@ -26,7 +26,9 @@ public class TextureSizeHelper {
   public static int getWidth(@Nullable ResourceLocation texture) {
     if (texture == null)
       return 0;
-    else if (SIZES.containsKey(texture))
+    if (!texture.getPath().endsWith(".png"))
+      texture = texture.withSuffix(".png");
+    if (SIZES.containsKey(texture))
       return SIZES.get(texture).getLeft();
     else {
       try {
@@ -44,7 +46,9 @@ public class TextureSizeHelper {
   public static int getHeight(@Nullable ResourceLocation texture) {
     if (texture == null)
       return 0;
-    else if (SIZES.containsKey(texture))
+    if (!texture.getPath().endsWith(".png"))
+      texture = texture.withSuffix(".png");
+    if (SIZES.containsKey(texture))
       return SIZES.get(texture).getRight();
     else {
       try {

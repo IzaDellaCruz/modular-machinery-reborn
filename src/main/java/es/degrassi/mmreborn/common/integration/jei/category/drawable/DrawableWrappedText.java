@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.integration.jei.category.drawable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.util.StringUtil;
@@ -58,7 +59,7 @@ public class DrawableWrappedText implements IDrawable {
     guiGraphics.pose().pushPose();
 
     transformations.forEach(transformation -> {
-      transformation.compute(guiGraphics, 1);
+      transformation.compute(guiGraphics.pose(), 1);
     });
 
     int yPos = 0;
@@ -112,7 +113,7 @@ public class DrawableWrappedText implements IDrawable {
       this.state = state;
     }
 
-    public void compute(GuiGraphics graphics, double toCompute) {
+    public void compute(PoseStack graphics, double toCompute) {
       double modifiedValue = switch (operation) {
         case ADD -> toCompute + amount;
         case REMOVE -> toCompute - amount;
@@ -122,14 +123,14 @@ public class DrawableWrappedText implements IDrawable {
       };
 
       if (state.isScale()) {
-        graphics.pose().scale(
+        graphics.scale(
             state.isX() ? (float) modifiedValue : 0,
             state.isY() ? (float) modifiedValue : 0,
             state.isZ() ? (float) modifiedValue : 0
         );
       }
       if (state.isTranslate()) {
-        graphics.pose().translate(
+        graphics.translate(
             state.isX() ? modifiedValue : 0,
             state.isY() ? modifiedValue : 0,
             state.isZ() ? modifiedValue : 0

@@ -1,8 +1,5 @@
 package es.degrassi.mmreborn.common.integration.kubejs.builder;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.Structure;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
@@ -24,9 +21,8 @@ public class StructureBuilderJS {
     return this;
   }
 
-  public StructureBuilderJS keys(Map<Character, JsonElement> keys) {
-    this.keys = Maps.newHashMap();
-    keys.forEach((character, s) -> this.keys.put(character, BlockIngredient.CODEC.read(JsonOps.INSTANCE, s).getOrThrow()));
+  public StructureBuilderJS keys(Map<Character, BlockIngredient> keys) {
+    this.keys = keys;
     return this;
   }
 

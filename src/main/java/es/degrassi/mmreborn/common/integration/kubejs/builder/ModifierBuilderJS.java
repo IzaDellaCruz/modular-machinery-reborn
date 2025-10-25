@@ -1,7 +1,5 @@
 package es.degrassi.mmreborn.common.integration.kubejs.builder;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
@@ -32,8 +30,8 @@ public class ModifierBuilderJS {
     return new ModifierBuilderJS();
   }
 
-  public ModifierBuilderJS ingredient(JsonElement ingredient) {
-    this.ingredient = BlockIngredient.CODEC.read(JsonOps.INSTANCE, ingredient).getOrThrow();
+  public ModifierBuilderJS ingredient(BlockIngredient ingredient) {
+    this.ingredient = ingredient;
     return this;
   }
 

@@ -21,7 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,11 +42,10 @@ public class JeiFluidComponent extends JeiComponent<FluidStack, RecipeRequiremen
 
   @Override
   public List<FluidStack> ingredients() {
-    return Collections.singletonList(requirement.requirement().required.asFluidStack());
+    return Arrays.stream(requirement.requirement().getIngredient().getFluids()).toList();
   }
 
   @Override
-  @SuppressWarnings("removal")
   public @NotNull List<Component> getTooltip(@NotNull FluidStack ingredient, @NotNull TooltipFlag tooltipFlag) {
     List<Component> tooltip = super.getTooltip(ingredient, tooltipFlag);
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
@@ -73,6 +72,7 @@ public class JeiFluidComponent extends JeiComponent<FluidStack, RecipeRequiremen
 
   @Override
   public void setRecipe(MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
+    int fluid = (int) (System.currentTimeMillis() / 1000 % ingredients().size());
     Component component = Component.empty();
     String chance = Utils.decimalFormat(requirement.chance() * 100);
     if (requirement.chance() > 0 && requirement.chance() < 1)
@@ -108,8 +108,9 @@ public class JeiFluidComponent extends JeiComponent<FluidStack, RecipeRequiremen
             -1,
             -1
         )
-        .setFluidRenderer(getRequirement().requirement().amount, false, getWidth(), getHeight())
-        .addFluidStack(getRequirement().requirement().required.asFluidStack().getFluid(), getRequirement().requirement().amount)
+        .setFluidRenderer(getRequirement().requirement().getIngredient().amount(), false, getWidth(), getHeight())
+        .addFluidStack(ingredients().get(fluid).getFluid(),
+            getRequirement().requirement().getIngredient().amount())
         .addRichTooltipCallback((view, tooltip) -> {
           if (requirement.chance() > 0 && requirement.chance() < 1)
             tooltip.add(Component.translatable("modular_machinery_reborn.ingredient.chance." + requirement.requirement().getMode().name().toLowerCase(Locale.ROOT), chance, "%"));

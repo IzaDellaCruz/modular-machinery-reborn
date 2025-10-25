@@ -34,6 +34,7 @@ public class TimeCounterEntity extends ColorableMachineComponentEntity implement
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
   public TimeCounterEntity(BlockPos pos, BlockState blockState) {
     super(EntityRegistration.TIME_COUNTER.get(), pos, blockState);
+    this.overlayTexture = defaultOverlayTexture;
   }
 
   @Override

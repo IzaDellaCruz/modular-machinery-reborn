@@ -110,15 +110,18 @@ public class MMREmiClientIntegration {
     );
     event.register(
         RequirementTypeRegistration.FLUID.get(),
-        requirement -> List.of(
-            EmiStack.of(requirement.requirement().required.asFluidStack().getFluid(), requirement.requirement().amount)
-        )
+        requirement ->
+            Arrays.stream(requirement.requirement().getIngredient().ingredient().getStacks())
+                .map(stack -> EmiStack.of(stack.getFluid(), requirement.requirement().getIngredient().amount()))
+                .toList()
+
     );
     event.register(
         RequirementTypeRegistration.FLUID_PER_TICK.get(),
-        requirement -> List.of(
-            EmiStack.of(requirement.requirement().required.asFluidStack().getFluid(), requirement.requirement().amount)
-        )
+        requirement ->
+            Arrays.stream(requirement.requirement().getIngredient().ingredient().getStacks())
+            .map(stack -> EmiStack.of(stack.getFluid(), requirement.requirement().getIngredient().amount()))
+            .toList()
     );
     event.register(
         RequirementTypeRegistration.LOOT_TABLE.get(),

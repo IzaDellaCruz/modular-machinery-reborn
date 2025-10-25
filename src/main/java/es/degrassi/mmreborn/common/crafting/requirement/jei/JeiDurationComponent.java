@@ -2,30 +2,45 @@ package es.degrassi.mmreborn.common.crafting.requirement.jei;
 
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
+import es.degrassi.mmreborn.common.crafting.helper.Direction;
+import es.degrassi.mmreborn.common.crafting.helper.IDirectionalRequirement;
+import es.degrassi.mmreborn.common.crafting.helper.ProgressData;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDuration;
 import es.degrassi.mmreborn.common.integration.jei.MMRJeiPlugin;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.category.drawable.ProgressDrawable;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
 import es.degrassi.mmreborn.common.machine.component.DurationComponent;
+import lombok.Getter;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class JeiDurationComponent extends JeiComponent<Integer, RecipeRequirement<DurationComponent, RequirementDuration>> {
+public class JeiDurationComponent extends JeiComponent<Integer, RecipeRequirement<DurationComponent, RequirementDuration>>
+implements IDirectionalRequirement {
   private final ProgressDrawable progress;
+  @Getter
+  private final ProgressData progressData;
   private int duration;
   public JeiDurationComponent(RecipeRequirement<DurationComponent, RequirementDuration> requirement,
-                              int ticksPerCycle, IDrawableAnimated.StartDirection direction) {
+                              int ticksPerCycle, ProgressData data) {
     super(requirement, 0, 0);
-    progress = new ProgressDrawable(ticksPerCycle, direction);
+    this.progressData = data;
+
+    progress = new ProgressDrawable(ticksPerCycle, toJEIDirection(), progressData.getEmptyTexture(), progressData.getFillTexture());
+  }
+
+  @Override
+  public Direction getDirection() {
+    return progressData.direction();
   }
 
   @Override
@@ -49,7 +64,6 @@ public class JeiDurationComponent extends JeiComponent<Integer, RecipeRequiremen
   }
 
   @Override
-  @SuppressWarnings("removal")
   public @NotNull List<Component> getTooltip(@NotNull Integer ingredient, @NotNull TooltipFlag tooltipFlag) {
    List<Component> tooltip = super.getTooltip(ingredient, tooltipFlag);
    tooltip.add(Component.translatable(
@@ -66,5 +80,14 @@ public class JeiDurationComponent extends JeiComponent<Integer, RecipeRequiremen
         .setOverlay(MMRJeiPlugin.jeiHelpers.getGuiHelper().createBlankDrawable(getWidth(), getHeight()), 0, 0)
         .setCustomRenderer(CustomIngredientTypes.INTEGER, this)
         .addIngredients(CustomIngredientTypes.INTEGER, ingredients());
+  }
+
+  private IDrawableAnimated.StartDirection toJEIDirection() {
+    return switch (getDirection()) {
+      case LEFT -> IDrawableAnimated.StartDirection.LEFT;
+      case RIGHT -> IDrawableAnimated.StartDirection.RIGHT;
+      case TOP -> IDrawableAnimated.StartDirection.TOP;
+      case BOTTOM -> IDrawableAnimated.StartDirection.BOTTOM;
+    };
   }
 }

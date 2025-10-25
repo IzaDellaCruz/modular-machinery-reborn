@@ -168,17 +168,13 @@ public class ControllerBakedModel implements IDynamicBakedModel {
       if (blockModelLocation.getState() != null)
         model = Minecraft.getInstance().getBlockRenderer().getBlockModel(blockModelLocation.getState());
       else if (blockModelLocation.getLoc() != null && blockModelLocation.getProperties() != null)
-        model =
-            Minecraft.getInstance().getModelManager().getModel(new ModelResourceLocation(blockModelLocation.getLoc(),
-                blockModelLocation.getProperties()));
+        model = Minecraft.getInstance().getModelManager().getModel(new ModelResourceLocation(blockModelLocation.getLoc(), blockModelLocation.getProperties()));
       else if (blockModelLocation.getLoc() != null)
-        model =
-            Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(blockModelLocation.getLoc()));
+        model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(blockModelLocation.getLoc()));
     }
 
     if (model == missing)
-      model =
-          Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(MachineModelLocation.DEFAULT.getLoc()));
+      model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(MachineModelLocation.DEFAULT.getLoc()));
 
     return model;
   }
@@ -190,19 +186,15 @@ public class ControllerBakedModel implements IDynamicBakedModel {
       MachineModelLocation itemModelLocation = machine.getControllerModel();
       if (itemModelLocation != null) {
         if (itemModelLocation.getItem() != null && itemModelLocation.getItem() != Items.AIR)
-          model =
-              Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(itemModelLocation.getItem());
+          model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(itemModelLocation.getItem());
         else if (itemModelLocation.getLoc() != null && !itemModelLocation.getLoc().equals(MachineModelLocation.DEFAULT.getLoc())) {
           Item item = BuiltInRegistries.ITEM.get(itemModelLocation.getLoc());
           if (itemModelLocation.getProperties() != null)
-            model =
-                Minecraft.getInstance().getModelManager().getModel(new ModelResourceLocation(itemModelLocation.getLoc()
-                    , itemModelLocation.getProperties()));
+            model = Minecraft.getInstance().getModelManager().getModel(new ModelResourceLocation(itemModelLocation.getLoc(), itemModelLocation.getProperties()));
           else if (item != Items.AIR && Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(item) != null)
             model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(item);
           else
-            model =
-                Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(itemModelLocation.getLoc()));
+            model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(itemModelLocation.getLoc()));
         }
       }
 
@@ -210,8 +202,7 @@ public class ControllerBakedModel implements IDynamicBakedModel {
         model = getMachineBlockModel(machine);
     }
     if (model == missing)
-      model =
-          Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ModularMachineryReborn.rl("controller")));
+      model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ModularMachineryReborn.rl("controller")));
 
     return model;
   }

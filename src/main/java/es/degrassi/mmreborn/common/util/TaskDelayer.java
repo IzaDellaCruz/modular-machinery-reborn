@@ -5,14 +5,13 @@ import com.mojang.datafixers.util.Pair;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@EventBusSubscriber(modid = ModularMachineryReborn.MODID, bus = Bus.GAME)
+@EventBusSubscriber(modid = ModularMachineryReborn.MODID)
 public class TaskDelayer {
   private TaskDelayer() {}
 

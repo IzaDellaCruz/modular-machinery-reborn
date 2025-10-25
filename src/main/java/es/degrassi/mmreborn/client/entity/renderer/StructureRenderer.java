@@ -49,9 +49,7 @@ public class StructureRenderer {
       if (direction.getAxis().isVertical()) continue;
       this.blocksGetter.put(direction, blocksGetter.apply(direction));
       Map<BlockPos, BlockIngredient> map = this.blocksGetter.get(direction);
-      map.forEach((pos, ing) -> {
-        maxTime.set(Math.max(maxTime.get(), map.size() * MMRConfig.get().blockTagCycleTime.get()));
-      });
+      map.forEach((pos, ing) -> maxTime.set(Math.max(maxTime.get(), map.size() * MMRConfig.get().blockTagCycleTime.get())));
       timers.put(map, new CycleTimer(() -> MMRConfig.get().blockTagCycleTime.get(), false));
     }
     this.time = maxTime.get();
@@ -71,15 +69,22 @@ public class StructureRenderer {
       matrix.translate(pos.getX(), pos.getY(), pos.getZ());
       if (!(pos.getX() == 0 && pos.getY() == 0 && pos.getZ() == 0) && ingredient != BlockIngredient.ANY) {
         PartialBlockState state = finalTimer.get(ingredient.getAll());
+        boolean isNot = ingredient.isNot();
         BlockPos blockPos = machinePos.offset(pos);
         if (state != null && state != PartialBlockState.ANY && !state.getBlockState().isAir()) {
           if (world.getBlockState(blockPos).isAir()) {
             matrix.pushPose();
             matrix.translate(0.1F, 0.1F, 0.1F);
             matrix.scale(0.8f, 0.8f, 0.8f);
-            renderTransparentBlock(context, world, blockPos, state, matrix, buffer);
-          } else if (ingredient.getAll().stream().noneMatch(test -> test.test(new BlockInWorld(world, blockPos, false)))) {
+            if (isNot) renderTransparentNotBlock(context, world, blockPos, state, matrix, buffer);
+            else renderTransparentBlock(context, world, blockPos, state, matrix, buffer);
+            matrix.popPose();
+          } else if (!ingredient.test(new BlockInWorld(world, blockPos, false))) {
+            matrix.pushPose();
+            matrix.translate(-0.0005, -0.0005, -0.0005);
+            matrix.scale(1.001F, 1.001F, 1.001F);
             renderNope(matrix, buffer);
+            matrix.popPose();
           }
         }
       }
@@ -163,14 +168,17 @@ public class StructureRenderer {
         );
       }
     }
-    matrix.popPose();
+  }
+
+  private void renderTransparentNotBlock(BlockEntityRendererProvider.Context context, Level level, BlockPos pos, PartialBlockState state,
+        PoseStack pose,
+        MultiBufferSource buffer) {
+    this.renderTransparentBlock(context, level, pos, state, pose, buffer);
+    this.renderNope(pose, buffer);
   }
 
   private void renderNope(PoseStack matrix,
                           MultiBufferSource buffer) {
-    matrix.pushPose();
-    matrix.translate(-0.0005, -0.0005, -0.0005);
-    matrix.scale(1.001F, 1.001F, 1.001F);
     VertexConsumer builder = buffer.getBuffer(RenderTypes.NOPE);
     BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ModularMachineryReborn.rl("block/nope")));
     ModelData modelData = ModelData.EMPTY;
@@ -179,7 +187,6 @@ public class StructureRenderer {
         .forEach(quad -> builder.putBulkData(matrix.last(), quad, 1.0F, 1.0F, 1.0F, 0.8F, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false));
     model.getQuads(null, null, RandomSource.create(42L), modelData, RenderTypes.NOPE)
         .forEach(quad -> builder.putBulkData(matrix.last(), quad, 1.0F, 1.0F, 1.0F, 0.8F, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false));
-    matrix.popPose();
   }
 
   public boolean shouldRender() {

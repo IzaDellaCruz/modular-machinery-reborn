@@ -13,6 +13,8 @@ import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.util.MachineModelLocation;
+import es.degrassi.mmreborn.common.util.sound.AmbientSound;
+import es.degrassi.mmreborn.common.util.sound.Sounds;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.network.chat.Component;
@@ -92,7 +94,7 @@ public class DynamicMachine {
   }
 
   @Nullable
-  public SoundEvent getAmbientSound(MachineStatus status) {
+  public AmbientSound getAmbientSound(MachineStatus status) {
     return Optional.ofNullable(sounds.get(status)).map(Sounds::ambientSound).orElse(null);
   }
 

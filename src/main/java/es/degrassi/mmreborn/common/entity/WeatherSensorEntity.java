@@ -35,6 +35,7 @@ public class WeatherSensorEntity extends ColorableMachineComponentEntity impleme
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
   public WeatherSensorEntity(BlockPos pos, BlockState blockState) {
     super(EntityRegistration.WEATHER_SENSOR.get(), pos, blockState);
+    this.overlayTexture = defaultOverlayTexture;
   }
 
   @Override

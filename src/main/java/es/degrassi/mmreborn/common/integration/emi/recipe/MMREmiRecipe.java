@@ -5,7 +5,6 @@ import dev.emi.emi.api.recipe.BasicEmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.widget.WidgetHolder;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
-import es.degrassi.mmreborn.api.integration.emi.Direction;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDuration;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiDurationComponent;
@@ -67,10 +66,10 @@ public class MMREmiRecipe extends BasicEmiRecipe {
     if (recipe.isShouldRenderProgress()) {
       new EmiDurationComponent(
           new RecipeRequirement<>(
-              new RequirementDuration(recipe.getRecipeTotalTickTime(), recipe.getProgressPosition())
+              new RequirementDuration(recipe.getRecipeTotalTickTime(), recipe.getProgressData().position())
           ),
           1000,
-          Direction.LEFT,
+          recipe.getProgressData(),
           false
       ).addWidgets(widgets, this);
     }

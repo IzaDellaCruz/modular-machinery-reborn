@@ -17,7 +17,6 @@ public class DummyIngredientRenderer<T> implements IIngredientRenderer<T> {
   }
 
   //Safe to remove
-  @SuppressWarnings("removal")
   @Override
   public List<Component> getTooltip(T t, TooltipFlag iTooltipFlag) {
     return new ArrayList<>();

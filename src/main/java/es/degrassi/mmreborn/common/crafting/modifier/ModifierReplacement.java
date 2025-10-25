@@ -19,7 +19,7 @@ import java.util.List;
 
 public class ModifierReplacement {
   public static final NamedCodec<ModifierReplacement> CODEC = NamedCodec.record(instance -> instance.group(
-      BlockIngredient.CODEC.fieldOf("replacement").forGetter(ModifierReplacement::getIngredient),
+      BlockIngredient.MAP_CODEC.fieldOf("replacement").forGetter(ModifierReplacement::getIngredient),
       RecipeModifier.CODEC.listOf().fieldOf("modifiers").forGetter(ModifierReplacement::getModifiers),
       DefaultCodecs.BLOCK_POS.fieldOf("position").forGetter(ModifierReplacement::getPosition)
   ).apply(instance, ModifierReplacement::new), "Modifier Replacement");

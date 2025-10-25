@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.integration.kubejs.function;
 
 import dev.latvian.mods.kubejs.event.EventExit;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.CachedLevelBlock;
 import dev.latvian.mods.rhino.Context;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
@@ -59,8 +59,8 @@ public class FunctionKubeEvent implements KubeEvent {
     return this.internal.getMachineTile();
   }
 
-  public BlockContainerJS getBlock() {
-    return new BlockContainerJS(getTile().getLevel(), getTile().getBlockPos());
+  public CachedLevelBlock getBlock() {
+    return new CachedLevelBlock(getTile().getLevel(), getTile().getBlockPos());
   }
 
   @Override

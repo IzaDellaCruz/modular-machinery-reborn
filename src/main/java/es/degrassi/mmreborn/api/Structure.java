@@ -15,10 +15,12 @@ import es.degrassi.mmreborn.data.MMRTags;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -119,13 +121,26 @@ public class Structure {
         for (PartialBlockState state : ingredient.getAll()) {
           if (state.equals(PartialBlockState.AIR) || state.equals(PartialBlockState.ANY)) continue blockSearch;
           ItemStack blockToRemove2 = new ItemStack(state.getBlockState().getBlock());
-          if (player.getInventory().contains(blockToRemove2)) {
+          if (!ingredient.isNot() && player.getInventory().contains(blockToRemove2)) {
             int slot = player.getInventory().findSlotMatchingItem(blockToRemove2);
             player.getInventory().removeItem(slot, 1);
             player.containerMenu.broadcastChanges();
             player.inventoryMenu.slotsChanged(player.getInventory());
             setBlock(level, worldPos, state);
             placed = true;
+            break;
+          } else if (ingredient.isNot()) {
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+              ItemStack stack = player.getInventory().getItem(i);
+              if (!stack.is(blockToRemove2.getItem()) && stack.getItem() instanceof BlockItem bi) {
+                player.getInventory().removeItem(i, 1);
+                player.containerMenu.broadcastChanges();
+                player.inventoryMenu.slotsChanged(player.getInventory());
+                setBlock(level, worldPos, new PartialBlockState(bi.getBlock()));
+                placed = true;
+                break;
+              }
+            }
             break;
           }
         }
@@ -141,7 +156,13 @@ public class Structure {
         continue;
       }
       if (worldPos.equals(controllerPos)) continue;
-      setBlock(level, worldPos, ingredient.getAll().get(random.nextInt(0, ingredient.getAll().size())));
+      if (ingredient.isNot()) {
+        BlockIngredient finalIngredient = ingredient;
+        var filtered = BuiltInRegistries.BLOCK.stream().filter(b -> finalIngredient.getAll().stream().noneMatch(s -> s.getBlockState().is(b))).toList();
+        setBlock(level, worldPos, new PartialBlockState(filtered.get(random.nextInt(0, filtered.size()))));
+      } else {
+        setBlock(level, worldPos, ingredient.getAll().get(random.nextInt(0, ingredient.getAll().size())));
+      }
     }
   }
 
@@ -157,8 +178,7 @@ public class Structure {
       BlockInWorld info = new BlockInWorld(level, worldPos, false);
       if (info.getState().isAir()) continue;
       if (info.getEntity() instanceof MachineControllerEntity) continue;
-      if (ingredient.getAll().stream().noneMatch(state -> state.test(info))) continue;
-      level.destroyBlock(worldPos.immutable(), !isCreative);
+      if (ingredient.test(info)) level.destroyBlock(worldPos.immutable(), !isCreative);
     }
   }
 

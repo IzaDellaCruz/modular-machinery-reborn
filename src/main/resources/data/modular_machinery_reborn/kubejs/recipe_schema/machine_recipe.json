@@ -1,0 +1,97 @@
+{
+  "recipe_factory": "modular_machinery_reborn:machine_recipe",
+  "constructor": [
+    {
+      "keys": [
+        "machine",
+        "time"
+      ]
+    }
+  ],
+  "keys": [
+    {
+      "name": "machine",
+      "type": "modular_machinery_reborn:rl"
+    },
+    {
+      "name": "time",
+      "type": "ticks"
+    },
+    {
+      "name": "requirements",
+      "type": {
+        "component": "modular_machinery_reborn:requirements",
+        "type": "list",
+        "min": 0
+      },
+      "optional": [],
+      "always_write": true,
+      "excluded": true
+    },
+    {
+      "name": "jei_requirements",
+      "type": {
+        "component": "modular_machinery_reborn:requirements",
+        "type": "list",
+        "min": 0
+      },
+      "optional": [],
+      "always_write": true,
+      "excluded": true
+    },
+    {
+      "name": "priority",
+      "type": "int",
+      "optional": 0,
+      "excluded": true
+    },
+    {
+      "name": "hidden",
+      "type": "boolean",
+      "optional": false,
+      "excluded": true
+    },
+    {
+      "name": "voidOnFailure",
+      "type": "boolean",
+      "optional": true,
+      "excluded": true
+    },
+    {
+      "name": "renderProgress",
+      "type": "boolean",
+      "optional": true,
+      "excluded": true
+    },
+    {
+      "name": "progressData",
+      "type": "modular_machinery_reborn:progress_data",
+      "default_optional": true,
+      "excluded": true
+    },
+    {
+      "name": "width",
+      "type": "int",
+      "optional": 256,
+      "excluded": true
+    },
+    {
+      "name": "height",
+      "type": "int",
+      "optional": 256,
+      "excluded": true
+    }
+  ],
+  "post_processors": [
+    {
+      "type": "modular_machinery_reborn:recipe_id"
+    }
+  ],
+  "function": {
+    "hide": {
+      "type": "set",
+      "key": "hidden",
+      "value": true
+    }
+  }
+}

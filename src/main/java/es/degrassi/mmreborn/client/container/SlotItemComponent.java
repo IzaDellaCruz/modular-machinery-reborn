@@ -46,4 +46,15 @@ public class SlotItemComponent extends Slot {
   public void setChanged() {
     this.component.getManager().setChanged();
   }
+
+  @Override
+  public String toString() {
+    return "SlotItemComponent{" +
+        "component=" + component +
+        ", index=" + index +
+        ", slot=" + getSlotIndex() +
+        ", x=" + x +
+        ", y=" + y +
+        '}';
+  }
 }

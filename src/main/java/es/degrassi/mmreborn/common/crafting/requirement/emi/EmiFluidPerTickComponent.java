@@ -15,7 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +26,7 @@ public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeReq
   private EmiRecipe recipe;
   private int width = 16;
   private int height = 16;
+  private int fluid;
 
   public EmiFluidPerTickComponent(RecipeRequirement<FluidComponent, RequirementFluidPerTick> requirement) {
     super(requirement, 0, 0);
@@ -33,11 +34,12 @@ public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeReq
 
   @Override
   public List<FluidStack> ingredients() {
-    return Collections.singletonList(requirement.requirement().required.asFluidStack());
+    return Arrays.stream(requirement.requirement().getIngredient().getFluids()).toList();
   }
 
   @Override
   public void render(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    fluid = (int) (System.currentTimeMillis() / 1000 % ingredients().size());
     width += 2;
     height += 2;
     super.render(guiGraphics, mouseX, mouseY);
@@ -62,7 +64,8 @@ public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeReq
     List<Component> tooltip = new LinkedList<>();
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(Component.translatable("modular_machinery_reborn.jei.ingredient.fluid." + mode,
-        requirement.requirement().required.asFluidStack().getHoverName(), requirement.requirement().required.asFluidStack().getAmount()));
+        String.valueOf(requirement.requirement().getIngredient().ingredient()),
+        requirement.requirement().getIngredient().amount()));
     tooltip.add(Component.translatable("modular_machinery_reborn.ingredient.perTick"));
     addChanceTooltips(tooltip);
     return tooltip;
@@ -75,7 +78,7 @@ public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeReq
 
   @Override
   public EmiStack getStack() {
-    return EmiStack.of(ingredients().get(0).getFluid(), requirement.requirement().amount);
+    return EmiStack.of(ingredients().get(fluid).getFluid(), requirement.requirement().getIngredient().amount());
   }
 
   @Override

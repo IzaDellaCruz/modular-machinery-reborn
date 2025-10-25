@@ -2,8 +2,11 @@ package es.degrassi.mmreborn.common.util;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
@@ -31,5 +34,16 @@ public class HybridTank extends FluidTank {
     super.onContentsChanged();
     if (listener != null)
       listener.onChange();
+  }
+
+  public void recipeExtract(long amount) {
+    if (amount <= 0) return;
+    amount = Utils.clamp(amount, 0, this.fluid.getAmount());
+    drain((int)amount, FluidAction.EXECUTE);
+  }
+
+  public void recipeInsert(Fluid fluid, long amount, @Nullable CompoundTag nbt) {
+    if (amount <= 0) return;
+    fill(new FluidStack(fluid, this.fluid.getAmount() + (int) amount), FluidAction.EXECUTE);
   }
 }
