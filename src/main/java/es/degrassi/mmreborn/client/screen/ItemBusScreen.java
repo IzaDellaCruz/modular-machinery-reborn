@@ -46,14 +46,12 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     int totalSlots = getMenu().getEntity().getSlots();
     int totalRows = (int) Math.ceil(totalSlots * 1.0 / cols);
     int slotsWidth = cols * SLOT_SIZE + 16;
-    int invWidth = SLOT_SIZE * 9 + 16 + getScrollbarBackgroundWidth() + 8;
-    this.imageHeight =
-        (int) Math.ceil(totalSlots * 1D / cols) * SLOT_SIZE + 10 + SLOT_SIZE * 4 + 3 + font.wordWrapHeight(title,
-        Math.max(slotsWidth, invWidth) - 16) + titleLabelY;
-    this.imageWidth = cols * SLOT_SIZE + 16 + getScrollbarBackgroundWidth() * 2 + this.titleLabelX;
-
     this.needsScrolling = totalRows > MAX_VISIBLE_ROWS;
-    this.visibleRows = needsScrolling ? MAX_VISIBLE_ROWS : totalRows;
+    this.visibleRows = Math.min(totalRows, MAX_VISIBLE_ROWS);
+    int slotsHeight = visibleRows * SLOT_SIZE;
+    int invWidth = SLOT_SIZE * 9 + 16 + getScrollbarBackgroundWidth() + 8;
+    this.imageHeight = slotsHeight + 10 + SLOT_SIZE * 4 + 3 + font.wordWrapHeight(title, Math.max(slotsWidth, invWidth) - 16) + titleLabelY;
+    this.imageWidth = cols * SLOT_SIZE + 16 + getScrollbarBackgroundWidth() * 2 + this.titleLabelX;
   }
 
   @Override
