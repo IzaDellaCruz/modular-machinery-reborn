@@ -371,6 +371,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   }
 
+  // TODO: refactor to reduce lag spikes
   public static IOInventory mergeBuild(IOInventory... inventories) {
     IOInventory merged = new IOInventory();
     int slotOffset = 0;

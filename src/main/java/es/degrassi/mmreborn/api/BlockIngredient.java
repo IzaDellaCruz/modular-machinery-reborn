@@ -111,7 +111,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
               NamedCodec.BOOL.optionalFieldOf("not", false).forGetter(ingredient -> ingredient.not),
               ING_CODEC.fieldOf("ingredient").forGetter(Function.identity())
           ).apply(blockIngredientInstance, (not, ingredient) -> new BlockIngredient(not, ingredient.getTags(),
-              ingredient.uniqueStates().toList())),
+              ingredient.getUniqueStates())),
       "Block ingredient"
   );
 
@@ -125,6 +125,9 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   private List<TagKey<Block>> tags = Lists.newArrayList();
   @Getter
   private final boolean not;
+
+  @Getter
+  private final List<PartialBlockState> uniqueStates;
 
   public BlockIngredient(List<TagKey<Block>> tags, List<PartialBlockState> states) {
     this(false, tags, states);
@@ -140,6 +143,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
             .toList())
     );
     this.partialBlockStates = Suppliers.memoize(() -> ImmutableList.copyOf(statesCopy));
+    this.uniqueStates = uniqueStates().toList();
   }
 
   public BlockIngredient(boolean not, PartialBlockState partialBlockState) {
@@ -200,9 +204,9 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
       }
     } else {
       if (not) {
-        return uniqueStates().noneMatch(state -> state.test(block));
+        return getUniqueStates().stream().noneMatch(state -> state.test(block));
       } else {
-        return uniqueStates().anyMatch(state -> state.test(block));
+        return getUniqueStates().stream().anyMatch(state -> state.test(block));
       }
     }
   }
@@ -220,7 +224,8 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   }
 
   public List<ItemStack> getNonTagStacks(int amount) {
-    return uniqueStates()
+    return getUniqueStates()
+        .stream()
         .map(PartialBlockState::getBlockState)
         .map(BlockState::getBlock)
         .map(Block::asItem)
@@ -252,7 +257,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     ingredients.addAll(this.tags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).map(Component::literal).toList());
 
     ingredients.addAll(
-        uniqueStates()
+        getUniqueStates().stream()
             .map(PartialBlockState::getName)
             .toList()
     );
@@ -285,7 +290,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     ingredients.addAll(this.tags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).toList());
 
     ingredients.addAll(
-        uniqueStates()
+        getUniqueStates().stream()
             .map(PartialBlockState::toString)
             .toList()
     );

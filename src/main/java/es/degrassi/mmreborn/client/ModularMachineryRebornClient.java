@@ -3,10 +3,12 @@ package es.degrassi.mmreborn.client;
 import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.entity.renderer.ControllerRenderer;
+import es.degrassi.mmreborn.client.integration.athena.MMRAthenaModels;
 import es.degrassi.mmreborn.client.integration.emi.MMREmiClientIntegration;
 import es.degrassi.mmreborn.client.integration.jei.MMRJeiClientIntegration;
 import es.degrassi.mmreborn.client.item.MMRItemTooltip;
 import es.degrassi.mmreborn.client.item.MMRItemTooltipComponent;
+import es.degrassi.mmreborn.client.model.InitBuiltInModels;
 import es.degrassi.mmreborn.client.model.controller.ControllerModelLoader;
 import es.degrassi.mmreborn.client.model.hatch.HatchModelLoader;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
@@ -73,6 +75,8 @@ public class ModularMachineryRebornClient {
   private final IEventBus bus;
 
   public ModularMachineryRebornClient(final IEventBus bus) {
+    MMRAthenaModels.init();
+    InitBuiltInModels.init();
     NeoForge.EVENT_BUS.register(clientScheduler);
     bus.register(this);
     this.bus = bus;

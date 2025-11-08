@@ -1,3 +1,6 @@
 {
-    "parent": "modular_machinery_reborn:block/experienceinputhatch_vacuum"
+    "parent": "modular_machinery_reborn:block/experienceinputhatch_vacuum",
+    "textures": {
+        "ov_r_all": "modular_machinery_reborn:block/casing_reinforced"
+    }
 }

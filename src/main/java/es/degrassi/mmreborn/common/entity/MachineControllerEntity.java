@@ -9,7 +9,9 @@ import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.api.network.syncable.IntegerSyncable;
 import es.degrassi.mmreborn.api.network.syncable.NbtSyncable;
 import es.degrassi.mmreborn.api.network.syncable.StringSyncable;
-import es.degrassi.mmreborn.client.model.controller.ControllerBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerData;
+import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.crafting.helper.CraftingStatus;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.data.Config;
@@ -132,7 +134,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   @Override
   public ModelData getModelData() {
     return ModelData.builder()
-        .with(ControllerBakedModel.MACHINE, getFoundMachine())
+        .with(ControllerBakedModel.DATA, new ControllerData(getFoundMachine(), null))
         .build();
   }
 
@@ -140,17 +142,17 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     return isPaused;
   }
 
-  public void pause() {
+  public void tryPause() {
     setPaused(RedstoneHelper.getReceivingRedstone(this) > 0);
   }
 
   public void setPaused(boolean paused) {
-    this.isPaused = paused;
     if (paused) setStatus(MachineStatus.PAUSED);
-    if (!getLevel().isClientSide) {
+    if (!getLevel().isClientSide && paused != isPaused) {
       PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) getLevel(), new ChunkPos(getBlockPos()),
-          new SSyncPauseStatePacket(isPaused, getBlockPos()));
+          new SSyncPauseStatePacket(paused, getBlockPos()));
     }
+    this.isPaused = paused;
   }
 
   @Override
@@ -173,7 +175,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void doRestrictedTick() {
-    pause();
+    tryPause();
     checkStructure(false);
 
     if (status.isMissingStructure()) {
@@ -182,9 +184,9 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
       return;
     }
 
-    componentManager.updateComponents(false);
-
     if (isPaused()) return;
+
+    componentManager.updateComponents(false);
 
     try {
       processor.tick();

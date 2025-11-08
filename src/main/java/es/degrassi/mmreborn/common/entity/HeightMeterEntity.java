@@ -2,7 +2,8 @@ package es.degrassi.mmreborn.common.entity;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
-import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
+import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -73,12 +75,20 @@ public class HeightMeterEntity extends ColorableMachineComponentEntity implement
 
   @Override
   public ModelData getModelData() {
-    ModelData.Builder builder = getModelDataBuilder("orientable");
-    builder.with(HatchBakedModel.BASE_TEXTURE, baseTexture)
-        .with(HatchBakedModel.BASE_TEXTURE_NAME, "bg_all");
-    builder.with(HatchBakedModel.OVERLAY_TEXTURE, overlayTexture)
-        .with(HatchBakedModel.OVERLAY_TEXTURE_NAME, "ov_front");
-    return builder.build();
+    return getModelDataBuilder("orientable").build();
+  }
+
+  @Override
+  public HatchTextureData getTextureData(@NotNull String mode) {
+    return MachineComponentEntity.super.getTextureData(mode).derive(
+        "bg_all",
+        baseTexture,
+        defaultBaseTexture,
+        "ov_front",
+        overlayTexture,
+        defaultOverlayTexture,
+        false
+    );
   }
 
   @Override

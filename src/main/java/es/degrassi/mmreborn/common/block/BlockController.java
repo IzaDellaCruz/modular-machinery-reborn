@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.block;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
+import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.item.ItemBlueprint;
@@ -62,10 +63,10 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
     builder.add(BlockStateProperties.HORIZONTAL_FACING);
   }
 
-  @Nullable
   @Override
   public BlockState getStateForPlacement(BlockPlaceContext context) {
-    return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
+    return super.getStateForPlacement(context)
+        .setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
   }
 
   @Override
@@ -73,6 +74,9 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
     ResourceLocation id = ModularMachineryReborn.MACHINES_BLOCK.inverse().get(this);
     if (id != null && pLevel.getBlockEntity(pPos) instanceof MachineControllerEntity entity) {
       entity.setId(id);
+      if (entity.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
+        pLevel.setBlockAndUpdate(pPos, pState.setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
+      }
       if (pLevel instanceof ServerLevel serverLevel)
         serverLevel.getServer().tell(new TickTask(1, () -> PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
             new ChunkPos(pPos), new SMachineUpdatePacket(id, pPos))));

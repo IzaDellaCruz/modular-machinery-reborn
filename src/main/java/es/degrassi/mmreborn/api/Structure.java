@@ -74,7 +74,7 @@ public class Structure {
               state.equals(PartialBlockState.ANY) ||
               state.getBlockState().isAir()
       )) {
-        ingredient = new BlockIngredient(ingredient.getTags(), ingredient.uniqueStates().filter(state ->
+        ingredient = new BlockIngredient(ingredient.getTags(), ingredient.getUniqueStates().stream().filter(state ->
             !state.equals(PartialBlockState.AIR) &&
                 !state.equals(PartialBlockState.ANY) &&
                 !state.getBlockState().isAir()

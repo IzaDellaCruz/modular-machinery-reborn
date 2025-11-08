@@ -39,12 +39,24 @@ public class BlockRegistration {
   private BlockRegistration() {}
   public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ModularMachineryReborn.MODID);
 
-  public static final DeferredBlock<BlockCasing> CASING_PLAIN = BLOCKS.register(rootLC("casing_" + CasingType.PLAIN.getSerializedName()), BlockCasing::new);
-  public static final DeferredBlock<BlockCasing> CASING_VENT = BLOCKS.register(rootLC("casing_" + CasingType.VENT.getSerializedName()), BlockCasing::new);
-  public static final DeferredBlock<BlockCasing> CASING_FIREBOX = BLOCKS.register(rootLC("casing_" + CasingType.FIREBOX.getSerializedName()), BlockCasing::new);
-  public static final DeferredBlock<BlockCasing> CASING_GEARBOX = BLOCKS.register(rootLC("casing_" + CasingType.GEARBOX.getSerializedName()), BlockCasing::new);
-  public static final DeferredBlock<BlockCasing> CASING_REINFORCED = BLOCKS.register(rootLC("casing_" + CasingType.REINFORCED.getSerializedName()), BlockCasing::new);
-  public static final DeferredBlock<BlockCasing> CASING_CIRCUITRY = BLOCKS.register(rootLC("casing_" + CasingType.CIRCUITRY.getSerializedName()), BlockCasing::new);
+  public static final DeferredBlock<BlockCasing> CASING_PLAIN =
+      BLOCKS.register(rootLC("casing_" + CasingType.PLAIN.getSerializedName()),
+          () -> new BlockCasing(CasingType.PLAIN));
+  public static final DeferredBlock<BlockCasing> CASING_VENT =
+      BLOCKS.register(rootLC("casing_" + CasingType.VENT.getSerializedName()),
+          () -> new BlockCasing(CasingType.VENT));
+  public static final DeferredBlock<BlockCasing> CASING_FIREBOX =
+      BLOCKS.register(rootLC("casing_" + CasingType.FIREBOX.getSerializedName()),
+          () -> new BlockCasing(CasingType.FIREBOX));
+  public static final DeferredBlock<BlockCasing> CASING_GEARBOX =
+      BLOCKS.register(rootLC("casing_" + CasingType.GEARBOX.getSerializedName()),
+        () -> new BlockCasing(CasingType.GEARBOX));
+  public static final DeferredBlock<BlockCasing> CASING_REINFORCED =
+      BLOCKS.register(rootLC("casing_" + CasingType.REINFORCED.getSerializedName()),
+          () -> new BlockCasing(CasingType.REINFORCED));
+  public static final DeferredBlock<BlockCasing> CASING_CIRCUITRY =
+      BLOCKS.register(rootLC("casing_" + CasingType.CIRCUITRY.getSerializedName()),
+          () -> new BlockCasing(CasingType.CIRCUITRY));
 
   public static final DeferredBlock<BlockController> CONTROLLER = BLOCKS.register(rootLC("controller"), BlockController::new);
 

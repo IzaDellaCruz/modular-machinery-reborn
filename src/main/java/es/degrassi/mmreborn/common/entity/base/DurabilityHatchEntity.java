@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.entity.base;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
-import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
@@ -145,10 +145,10 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
   @Override
   public ModelData getModelData() {
     ModelData.Builder builder = getModelDataBuilder("all");
-    builder.with(HatchBakedModel.BASE_TEXTURE, baseTexture)
-        .with(HatchBakedModel.BASE_TEXTURE_NAME, "bg_all");
-    builder.with(HatchBakedModel.OVERLAY_TEXTURE, overlayTexture)
-        .with(HatchBakedModel.OVERLAY_TEXTURE_NAME, "ov_all");
+    builder.with(DefaultHatchBakedModel.BASE_TEXTURE, baseTexture)
+        .with(DefaultHatchBakedModel.BASE_TEXTURE_NAME, "bg_all");
+    builder.with(DefaultHatchBakedModel.OVERLAY_TEXTURE, overlayTexture)
+        .with(DefaultHatchBakedModel.OVERLAY_TEXTURE_NAME, "ov_all");
     return builder.build();
   }
 

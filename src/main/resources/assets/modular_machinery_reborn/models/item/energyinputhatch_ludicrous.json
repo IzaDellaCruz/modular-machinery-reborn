@@ -1,3 +1,6 @@
 {
-    "parent": "modular_machinery_reborn:block/energyinputhatch_ludicrous"
+    "parent": "modular_machinery_reborn:block/energyinputhatch_ludicrous",
+    "textures": {
+        "ov_r_all": "modular_machinery_reborn:block/casing_reinforced"
+    }
 }

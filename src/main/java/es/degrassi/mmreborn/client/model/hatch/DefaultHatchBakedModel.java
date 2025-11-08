@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @ParametersAreNonnullByDefault
-public class HatchBakedModel implements IDynamicBakedModel {
+public class DefaultHatchBakedModel implements IDynamicBakedModel {
   public static final ModelProperty<ResourceLocation> BASE_TEXTURE = new ModelProperty<>();
   public static final ModelProperty<String> BASE_TEXTURE_NAME = new ModelProperty<>();
   public static final ModelProperty<ResourceLocation> OVERLAY_TEXTURE = new ModelProperty<>();
@@ -62,13 +62,13 @@ public class HatchBakedModel implements IDynamicBakedModel {
     return new Material(material.atlasLocation(), material.texture());
   }
 
-  public HatchBakedModel(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter) {
+  public DefaultHatchBakedModel(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter) {
     this.spriteGetter = spriteGetter;
     this.baker = baker;
   }
 
   private BakedModel getHatchModel(ModelData data) {
-    return modelByModelData.computeIfAbsent(data, d -> processHatchModel(data));
+    return modelByModelData.computeIfAbsent(data, this::processHatchModel);
   }
 
   private BakedModel processHatchModel(ModelData data) {

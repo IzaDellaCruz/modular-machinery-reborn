@@ -1,7 +1,29 @@
 {
   "variants": {
     "": {
-      "model":"modular_machinery_reborn:block/experienceoutputhatch_big"
+      "model": "minecraft:block/air"
     }
+  },
+  "athena:loader": "modular_machinery_reborn:hatch",
+  "ctm_textures": {
+    "center": "modular_machinery_reborn:block/casing_plain_corners",
+    "empty": "modular_machinery_reborn:block/casing_empty",
+    "horizontal": "modular_machinery_reborn:block/casing_plain_horizontal",
+    "particle": "modular_machinery_reborn:block/casing_plain",
+    "vertical": "modular_machinery_reborn:block/casing_plain_vertical",
+    "ov_center": "modular_machinery_reborn:block/casing_reinforced_corners",
+    "ov_vertical": "modular_machinery_reborn:block/casing_reinforced_vertical",
+    "ov_horizontal": "modular_machinery_reborn:block/casing_reinforced_horizontal",
+    "ov_particle": "modular_machinery_reborn:block/casing_reinforced",
+    "overlay": "modular_machinery_reborn:block/overlay_experienceoutputhatch_big"
+  },
+  "connect_to": {
+    "type": "or",
+    "conditions": [
+      {
+        "type": "tag",
+        "tag": "modular_machinery_reborn:reinforced_connectable"
+      }
+    ]
   }
 }

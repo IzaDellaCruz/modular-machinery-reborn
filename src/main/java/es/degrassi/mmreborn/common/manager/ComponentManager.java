@@ -8,6 +8,9 @@ import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
@@ -16,6 +19,7 @@ import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
+import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -96,6 +100,20 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     lastComponentsCheckTick = gameTime;
     reset();
     foundComponents.putAll(gatherComponents());
+
+    if (controller.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
+      controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
+    }
+    foundComponents.forEach((pos, comp) -> {
+      var oldState = controller.getLevel().getBlockState(pos);
+      var entity = controller.getLevel().getBlockEntity(pos);
+      if (!(entity instanceof TextureableMachineEntity)) return;
+      var data = entity.getModelData();
+      if (!data.has(HatchBakedModel.TEXTURE_DATA)) return;
+      var state = oldState.setValue(BlockMachineComponent.CONNECT_TEXTURES,
+          data.get(HatchBakedModel.TEXTURE_DATA).hasDefaultTextures());
+      controller.getLevel().setBlockAndUpdate(pos, state);
+    });
     foundComponentsValues.putAll(filter());
     updateModifiers(force);
     controller.getProcessor().setMachineInventoryChanged();

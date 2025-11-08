@@ -51,10 +51,10 @@ public class ParallelHatchBlock extends BlockMachineComponent {
     builder.add(BlockStateProperties.HORIZONTAL_FACING);
   }
 
-  @Nullable
   @Override
   public BlockState getStateForPlacement(BlockPlaceContext context) {
-    return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
+    return super.getStateForPlacement(context).setValue(BlockStateProperties.HORIZONTAL_FACING,
+        context.getHorizontalDirection().getOpposite());
   }
 
   @Override

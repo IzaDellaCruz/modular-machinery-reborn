@@ -13,6 +13,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -22,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class BlockMachineComponent extends Block implements BlockDynamicColor, EntityBlock {
+  public static final Property<Boolean> CONNECT_TEXTURES = BooleanProperty.create("connect_textures");
   protected BlockMachineComponent(Properties properties) {
     super(properties.requiresCorrectToolForDrops());
   }
@@ -36,6 +40,17 @@ public abstract class BlockMachineComponent extends Block implements BlockDynami
       return ((ColorableMachineEntity) te).getMachineColor();
     }
     return Config.machineColor;
+  }
+
+  @Override
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    super.createBlockStateDefinition(builder);
+    builder.add(CONNECT_TEXTURES);
+  }
+
+  @Override
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
+    return defaultBlockState().setValue(CONNECT_TEXTURES, true);
   }
 
   @Override

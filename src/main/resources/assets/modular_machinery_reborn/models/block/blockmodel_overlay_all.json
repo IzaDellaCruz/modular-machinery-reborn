@@ -13,6 +13,12 @@
     "ov_north": "#ov_all",
     "ov_east": "#ov_all",
     "ov_south": "#ov_all",
-    "ov_west": "#ov_all"
+    "ov_west": "#ov_all",
+    "ov_r_down": "#ov_r_all",
+    "ov_r_up": "#ov_r_all",
+    "ov_r_north": "#ov_r_all",
+    "ov_r_east": "#ov_r_all",
+    "ov_r_south": "#ov_r_all",
+    "ov_r_west": "#ov_r_all"
   }
 }

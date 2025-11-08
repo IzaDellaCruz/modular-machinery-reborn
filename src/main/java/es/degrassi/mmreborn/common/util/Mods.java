@@ -7,6 +7,10 @@ public interface Mods {
     return ModList.get().isLoaded("almostunified");
   }
 
+  static boolean isAthenaLoaded() {
+    return ModList.get().isLoaded("athena");
+  }
+
   static boolean isJEILoaded() {
     return ModList.get().isLoaded("jei");
   }

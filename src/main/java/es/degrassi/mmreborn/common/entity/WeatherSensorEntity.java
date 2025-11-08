@@ -1,7 +1,8 @@
 package es.degrassi.mmreborn.common.entity;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
+import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
@@ -62,12 +63,20 @@ public class WeatherSensorEntity extends ColorableMachineComponentEntity impleme
 
   @Override
   public ModelData getModelData() {
-    ModelData.Builder builder = getModelDataBuilder("all");
-    builder.with(HatchBakedModel.BASE_TEXTURE, baseTexture)
-        .with(HatchBakedModel.BASE_TEXTURE_NAME, "bg_all");
-    builder.with(HatchBakedModel.OVERLAY_TEXTURE, overlayTexture)
-        .with(HatchBakedModel.OVERLAY_TEXTURE_NAME, "ov_all");
-    return builder.build();
+    return getModelDataBuilder("all").build();
+  }
+
+  @Override
+  public HatchTextureData getTextureData(@NotNull String mode) {
+    return MachineComponentEntity.super.getTextureData(mode).derive(
+        "bg_all",
+        baseTexture,
+        defaultBaseTexture,
+        "ov_all",
+        overlayTexture,
+        defaultOverlayTexture,
+        false
+    );
   }
 
   @Override

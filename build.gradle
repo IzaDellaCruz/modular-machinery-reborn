@@ -3,7 +3,7 @@ plugins {
   id 'idea'
   id 'maven-publish'
   id 'net.neoforged.moddev' version '2.0.105'
-  id "es.degrassi.unified-publishing-with-mmr-bot" version "1+"
+  // id "es.degrassi.unified-publishing-with-mmr-bot" version "1+"
   id "io.freefair.lombok" version "8.6"
 }
 
@@ -19,11 +19,9 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 java.withSourcesJar()
 
-/*File transformer = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
-
-if (transformer.exists()) {
-  minecraft.accessTransformers.file transformer
-}*/
+tasks.processResources {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
 
 neoForge {
   version = project.neo_version
@@ -32,6 +30,8 @@ neoForge {
     mappingsVersion = project.parchment_mappings_version
     minecraftVersion = project.parchment_minecraft_version
   }
+
+  accessTransformers.from project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
   runs {
     client {
@@ -172,6 +172,10 @@ repositories {
       includeGroup "es.degrassi"
     }
   }
+  maven {
+    name = "terrarium"
+    url = 'https://maven.teamresourceful.com/repository/maven-public/'
+  }
 }
 
 dependencies {
@@ -206,6 +210,9 @@ dependencies {
 
   // Almost unified
   compileOnly localRuntime("com.almostreliable.mods:almostunified-neoforge:${almostunified_version}")
+
+  // Athena
+  compileOnly localRuntime("earth.terrarium.athena:athena-neoforge-1.21:${athena_version}")
 
   // Addons for testing
 //  localRuntime("es.degrassi:modular_machinery_reborn_energistics:${minecraft_version}-2.0.0")
@@ -255,7 +262,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
       emi_version            : emi_version,
       kubejs_version         : kubejs_version,
       jei_version            : jei_version,
-      almostunified_version  : almostunified_version
+      almostunified_version  : almostunified_version,
+      athena_version         : athena_version
   ]
   inputs.properties replaceProperties
   expand replaceProperties
@@ -326,7 +334,7 @@ idea {
   }
 }
 
-unifiedPublishingWithMMRBot {
+/*unifiedPublishingWithMMRBot {
   project {
     displayName = "[NeoForge]ModularMachineyReborn-${minecraft_version}-${mod_version}"
     releaseType = "release"
@@ -346,6 +354,7 @@ unifiedPublishingWithMMRBot {
         id = "1083840"
         relations {
           depends "experiencelib"
+          depends "athena"
           optional "kubejs"
           optional "jei"
           optional "emi"
@@ -363,6 +372,7 @@ unifiedPublishingWithMMRBot {
         id = "oPdlqv8D"
         relations {
           depends "experiencelib"
+          depends "athena"
           optional "kubejs"
           optional "jei"
           optional "emi"
@@ -373,4 +383,4 @@ unifiedPublishingWithMMRBot {
       }
     }
   }
-}
+}*/

@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.common.entity.base;
 
-import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
@@ -13,6 +13,10 @@ public interface MachineComponentEntity<T extends MachineComponent<?>> {
 
   default ModelData.Builder getModelDataBuilder(String mode) {
     return ModelData.builder()
-        .with(HatchBakedModel.MODEL, ModularMachineryReborn.rl("default/hatch_" + mode));
+        .with(HatchBakedModel.TEXTURE_DATA, getTextureData(mode));
+  }
+
+  default HatchTextureData getTextureData(String mode) {
+    return HatchTextureData.withDefault(mode);
   }
 }

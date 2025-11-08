@@ -11,7 +11,7 @@ public class HatchOverrideList extends ItemOverrides {
 
   @Override
   public @Nullable BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-    if (!(model instanceof HatchBakedModel machineModel))
+    if (!(model instanceof DefaultHatchBakedModel machineModel))
       return super.resolve(model, stack, level, entity, seed);
     return machineModel.getMachineItemModel(stack);
   }

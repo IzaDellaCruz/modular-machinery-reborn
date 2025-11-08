@@ -2,7 +2,8 @@ package es.degrassi.mmreborn.common.entity.base;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
-import es.degrassi.mmreborn.client.model.hatch.HatchBakedModel;
+import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
+import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -128,14 +130,21 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
 
   @Override
   public ModelData getModelData() {
-    ModelData.Builder builder = getModelDataBuilder("all");
-    builder.with(HatchBakedModel.BASE_TEXTURE, baseTexture)
-        .with(HatchBakedModel.BASE_TEXTURE_NAME, "bg_all");
-    builder.with(HatchBakedModel.OVERLAY_TEXTURE, overlayTexture)
-        .with(HatchBakedModel.OVERLAY_TEXTURE_NAME, "ov_all");
-    return builder.build();
+    return getModelDataBuilder("all").build();
   }
 
+  @Override
+  public HatchTextureData getTextureData(@NotNull String mode) {
+    return MachineComponentEntity.super.getTextureData(mode).derive(
+        "bg_all",
+        baseTexture,
+        defaultBaseTexture,
+        "ov_all",
+        overlayTexture,
+        defaultOverlayTexture,
+        false
+    );
+  }
   @Override
   public ResourceLocation getMachineBaseTexture() {
     return baseTexture;
