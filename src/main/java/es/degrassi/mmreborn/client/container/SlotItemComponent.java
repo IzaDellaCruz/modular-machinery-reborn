@@ -44,7 +44,7 @@ public class SlotItemComponent extends Slot {
 
   @Override
   public void setChanged() {
-    this.component.getManager().setChanged();
+    this.component.setChanged();
   }
 
   @Override

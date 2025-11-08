@@ -76,7 +76,7 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
   @Override
   public void setStackInSlot(int slot, ItemStack stack) {
     this.stack = stack;
-    this.getManager().setChanged();
+    this.setChanged();
   }
 
   @Override
@@ -113,7 +113,7 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
 
   public void setItemStack(ItemStack stack) {
     this.stack = stack;
-    getManager().setChanged();
+    setChanged();
   }
 
   @Override
@@ -145,12 +145,12 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
     if(this.stack.isEmpty()) {
       if(!simulate) {
         this.stack = stack.copyWithCount(amountToInsert);
-        getManager().setChanged();
+        setChanged();
       }
     } else {//If this slot is not empty simply grow the contained stack
       if(!simulate) {
         this.stack.grow(amountToInsert);
-        getManager().setChanged();
+        setChanged();
       }
     }
 
@@ -177,7 +177,7 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
 
     if(!simulate) {
       this.stack.shrink(amount);
-      getManager().setChanged();
+      setChanged();
     }
     return extracted;
   }
@@ -195,5 +195,9 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
     container.accept(ItemStackSyncable.create(() -> this.stack, stack -> this.stack = stack));
+  }
+  
+  public void setChanged() {
+    getManager().setChanged(slot, stack);
   }
 }

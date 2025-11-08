@@ -50,7 +50,7 @@ public class ItemComponent extends MachineComponent<IOInventory> {
       int maxExtract = Math.min(component.getItemStack().getCount(), toRemove.get());
       toRemove.addAndGet(-maxExtract);
       component.getItemStack().shrink(maxExtract);
-      component.getManager().setChanged();
+      component.setChanged();
     });
   }
 

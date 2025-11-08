@@ -106,12 +106,6 @@ public class MachineProcessorCore implements ISyncableStuff {
     }
 
     if (this.currentRecipe != null) {
-      tile.checkStructure(true);
-      if (tile.getStatus().isMissingStructure()) {
-        processor.reset();
-        return;
-      }
-
       if (this.phase == Phase.CONDITIONS)
         this.checkConditions();
 

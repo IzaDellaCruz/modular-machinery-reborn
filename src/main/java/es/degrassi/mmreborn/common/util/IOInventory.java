@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public class IOInventory implements IItemHandlerModifiable, Container, ISyncableStuff {
   @Getter
@@ -120,7 +121,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
         .ifPresent(s -> {
           s.setItemStack(stack);
         });
-    setChanged();
+    setChanged(slot, stack);
   }
 
   @Override
@@ -223,6 +224,12 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     }
   }
 
+  public void setChanged(int slot, ItemStack stack) {
+    if (listener != null) {
+      listener.onChange(slot, stack);
+    }
+  }
+
   @Override
   public boolean stillValid(Player player) {
     return true;
@@ -259,8 +266,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
           int maxRepair = Math.min(component.getItemStack().getDamageValue(), toRepair.get());
           toRepair.addAndGet(-maxRepair);
           component.getItemStack().setDamageValue(component.getItemStack().getDamageValue() - maxRepair);
+          component.setChanged();
         });
-    setChanged();
   }
 
   public void removeDurability(ItemStack input, int amount) {
@@ -281,8 +288,8 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
           stack.setDamageValue(stack.getDamageValue() + maxRemove);
           if(stack.getDamageValue() >= stack.getMaxDamage())
             stack.shrink(1);
+          component.setChanged();
         });
-    setChanged();
   }
 
   private static boolean isSameItem(ItemStack toTest, ItemStack ingredient) {
@@ -371,7 +378,6 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   }
 
-  // TODO: refactor to reduce lag spikes
   public static IOInventory mergeBuild(IOInventory... inventories) {
     IOInventory merged = new IOInventory();
     int slotOffset = 0;
@@ -404,9 +410,15 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
       outputs.addAll(inventory.outputs);
     }
     merged.accessibleSides = sides;
-    merged.inSlots = inSlots.stream().mapToInt(i -> i).toArray();
-    merged.outSlots = outSlots.stream().mapToInt(i -> i).toArray();
-    merged.miscSlots = miscSlots.stream().mapToInt(i -> i).toArray();
+    var builder = IntStream.builder();
+    inSlots.forEach(builder::add);
+    merged.inSlots = builder.build().toArray();
+    builder = IntStream.builder();
+    outSlots.forEach(builder::add);
+    merged.outSlots = builder.build().toArray();
+    builder = IntStream.builder();
+    miscSlots.forEach(builder::add);
+    merged.miscSlots = builder.build().toArray();
     merged.inputs.addAll(inputs);
     merged.outputs.addAll(outputs);
     merged.setListener((slot, stack) ->
@@ -440,23 +452,26 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   public void removeFromInputs(ItemStack stack, int amount) {
     AtomicInteger toRemove = new AtomicInteger(amount);
-    Predicate<ItemSlot> slotPredicate = component -> true;
-    this.inputs.stream().filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack) && slotPredicate.test(component)).forEach(component -> {
-      int maxExtract = Math.min(component.getItemStack().getCount(), toRemove.get());
-      toRemove.addAndGet(-maxExtract);
-      component.getItemStack().shrink(maxExtract);
-    });
-    setChanged();
+    this.inputs.stream()
+        .filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
+        .forEach(component -> {
+          int maxExtract = Math.min(component.getItemStack().getCount(), toRemove.get());
+          toRemove.addAndGet(-maxExtract);
+          component.getItemStack().shrink(maxExtract);
+          component.setChanged();
+        });
   }
 
   public void addToOutputs(ItemStack stack, int amount) {
     AtomicInteger toAdd = new AtomicInteger(amount);
-    this.outputs.stream().filter(component -> canPlaceOutput(component, stack)).forEach(component -> {
-      int maxInsert = toAdd.get() - component.insertItemBypassLimit(stack, true).getCount();
-      toAdd.addAndGet(-maxInsert);
-      component.insertItemBypassLimit(stack.copyWithCount(maxInsert), false);
-    });
-    setChanged();
+    this.outputs.stream()
+        .filter(component -> canPlaceOutput(component, stack))
+        .forEach(component -> {
+          int maxInsert = toAdd.get() - component.insertItemBypassLimit(stack, true).getCount();
+          toAdd.addAndGet(-maxInsert);
+          component.insertItemBypassLimit(stack.copyWithCount(maxInsert), false);
+          component.setChanged();
+        });
   }
 
   public boolean canPlaceOutput(@NotNull ItemSlot component, ItemStack stack) {

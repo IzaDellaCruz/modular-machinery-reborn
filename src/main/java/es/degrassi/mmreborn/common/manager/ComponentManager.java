@@ -103,6 +103,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
 
     if (controller.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
       controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
+    } else if(!controller.getBlockState().getValue(BlockMachineComponent.CONNECT_TEXTURES)) {
+      controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, true));
     }
     foundComponents.forEach((pos, comp) -> {
       var oldState = controller.getLevel().getBlockState(pos);
