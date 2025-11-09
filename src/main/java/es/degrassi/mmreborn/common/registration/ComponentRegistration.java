@@ -45,6 +45,8 @@ public class ComponentRegistration {
       ComponentType::create);
   public static final Supplier<ComponentType> COMPONENT_FUNCTION = MACHINE_COMPONENTS.register(rootLC("function"),
       ComponentType::create);
+  public static final Supplier<ComponentType> COMPONENT_FUEL = MACHINE_COMPONENTS.register(rootLC("fuel"),
+      ComponentType::create);
 
   public static final Supplier<ComponentType> COMPONENT_EMPTY = MACHINE_COMPONENTS.register(rootLC("empty"),
       ComponentType::create);

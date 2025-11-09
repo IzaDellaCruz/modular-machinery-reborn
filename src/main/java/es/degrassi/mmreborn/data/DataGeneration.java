@@ -40,5 +40,7 @@ public class DataGeneration {
     generator.addProvider(true, new MMRLangProvider(packOutput, "pt_br"));
     generator.addProvider(true, new MMRLangProvider(packOutput, "zh_cn"));
     generator.addProvider(true, new MMRLangProvider(packOutput, "ru_ru"));
+
+    generator.addProvider(true, new MMRBlockStateProvider(packOutput, fileHelper));
   }
 }
