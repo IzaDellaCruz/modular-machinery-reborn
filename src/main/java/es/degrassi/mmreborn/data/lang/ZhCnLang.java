@@ -91,6 +91,8 @@ public final class ZhCnLang extends Lang {
     add(recipeModifier("loot_table.MULTIPLICATION"), " (为配方提供 %s 倍战利品幸运值)");
     add(recipeModifier("experience.ADDITION"), " (为配方增加 %s 经验 %s, 是否影响概率: %s)");
     add(recipeModifier("experience.MULTIPLICATION"), " (为配方提供%s 倍经验 %s, 是否影响概率: %s)");
+    add(recipeModifier("fuel.ADDITION"), " (%s burntime %s to recipe, chance: %s)");
+    add(recipeModifier("fuel.MULTIPLICATION"), " (x%s burntime %s of recipe, chance: %s)");
   }
 
   @Override
@@ -124,6 +126,7 @@ public final class ZhCnLang extends Lang {
     add(jeiIngredient("chunkload"), "区块加载器半径: %s");
     add(mm(ingredient("durability.consume")), "消耗 %s 耐久值");
     add(mm(ingredient("durability.repair")), "修复 %s 耐久值");
+    add(jeiIngredient("fuel"), "Require %s burntime");
   }
 
   @Override
@@ -231,6 +234,13 @@ public final class ZhCnLang extends Lang {
     addBlock(BlockRegistration.TIME_COUNTER, "时间计数器");
     addBlock(BlockRegistration.HEIGHT_METER, "高度计");
     addBlock(BlockRegistration.CHUNKLOADER, "区块加载器");
+
+    addBlock(BlockRegistration.FUEL_TANK_TINY, "Tiny Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_SMALL, "Small Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_NORMAL, "Normal Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_REINFORCED, "Reinforced Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_BIG, "Big Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_HUGE, "Huge Fuel Tank");
   }
 
   @Override
@@ -282,6 +292,8 @@ public final class ZhCnLang extends Lang {
 
     add(tooltip("parallelhatch.size"), "使多方快结构最多同时处理 %s 个配方");
     add(tooltip("blueprint"), "右键任意机器控制器以显示结构");
+
+    add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
   }
 
   @Override
@@ -303,6 +315,7 @@ public final class ZhCnLang extends Lang {
     add(missingComponent("function"), "未找到函数组件（控制器集成）！");
     add(missingComponent("durability.input"), "未找到耐久值损耗仓！");
     add(missingComponent("durability.output"), "未找到耐久值修复仓！");
+    add(missingComponent("fuel"), "No Fuel Tank found!");
   }
 
   @Override
@@ -329,6 +342,7 @@ public final class ZhCnLang extends Lang {
     add(craftCheck("function"), "条件函数未能执行, 查看日志以获得错误信息!");
     add(craftCheck("function.no_listener"), "id 为 %s 的条件函数没有关联的 KubeJS 事件");
     add(craftCheck("function.interrupt"), "被 KubeJS 事件停止");
+    add(craftCheck("fuel"), "Not enough burntime, needed: %s but found %s");
   }
 
   @Override
@@ -338,6 +352,7 @@ public final class ZhCnLang extends Lang {
     add(mm(gui("title.fluid_hatch")), "流体仓");
     add(mm(gui("title.item_bus")), "物品仓");
     add(mm(gui("title.parallel_hatch")), "并行处理仓");
+    add(mm(gui("title.fuel_tank")), "Fuel Tank");
     add(mmr(gui("button.back")), "返回");
     add(mmr(gui("button.close")), "关闭");
     add(mmr(gui("button.page.next")), "下一页");

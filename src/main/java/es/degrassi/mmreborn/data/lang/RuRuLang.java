@@ -91,6 +91,8 @@ public final class RuRuLang extends Lang {
     add(recipeModifier("loot_table.MULTIPLICATION"), " (%s лут для рецепта)");
     add(recipeModifier("experience.ADDITION"), " (%s опыт %s к рецепту, шанс: %s)");
     add(recipeModifier("experience.MULTIPLICATION"), " (x%s опыт %s рецепта, шанс: %s)");
+    add(recipeModifier("fuel.ADDITION"), " (%s burntime %s to recipe, chance: %s)");
+    add(recipeModifier("fuel.MULTIPLICATION"), " (x%s burntime %s of recipe, chance: %s)");
   }
 
   @Override
@@ -124,6 +126,7 @@ public final class RuRuLang extends Lang {
     add(jeiIngredient("chunkload"), "Радиус загрузки: %s");
     add(mm(ingredient("durability.consume")), "Тратится %s прочности");
     add(mm(ingredient("durability.repair")), "Ремонтируется %s прочности");
+    add(jeiIngredient("fuel"), "Require %s burntime");
   }
 
   @Override
@@ -231,6 +234,13 @@ public final class RuRuLang extends Lang {
     addBlock(BlockRegistration.TIME_COUNTER, "Временной Анализатор");
     addBlock(BlockRegistration.HEIGHT_METER, "Высотный Анализатор");
     addBlock(BlockRegistration.CHUNKLOADER, "Загрузчик чанков");
+
+    addBlock(BlockRegistration.FUEL_TANK_TINY, "Tiny Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_SMALL, "Small Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_NORMAL, "Normal Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_REINFORCED, "Reinforced Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_BIG, "Big Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_HUGE, "Huge Fuel Tank");
   }
 
   @Override
@@ -282,6 +292,8 @@ public final class RuRuLang extends Lang {
 
     add(tooltip("parallelhatch.size"), "Позволяет параллельно создавать до %s рецептов одновременно.");
     add(tooltip("blueprint"), "Нажмите по контролеру, чтобы показать мульти-структуру");
+
+    add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
   }
 
   @Override
@@ -303,6 +315,7 @@ public final class RuRuLang extends Lang {
     add(missingComponent("function"), "Контроллер не найден!");
     add(missingComponent("durability.input"), "Не найден вход для увеличения срока службы инструментов!");
     add(missingComponent("durability.output"), "Не найден вход для уменьшения срока службы инструментов!");
+    add(missingComponent("fuel"), "No Fuel Tank found!");
   }
 
   @Override
@@ -329,6 +342,7 @@ public final class RuRuLang extends Lang {
     add(craftCheck("function"), "Не удается выполнить функциональное требование, проверьте журналы на наличие ошибок!");
     add(craftCheck("function.no_listener"), "Функциональное требование с идентификатором: %s не имеет связанного события KubeJS");
     add(craftCheck("function.interrupt"), "Остановлен ивентом KubeJS!");
+    add(craftCheck("fuel"), "Not enough burntime, needed: %s but found %s");
   }
 
   @Override
@@ -338,6 +352,7 @@ public final class RuRuLang extends Lang {
     add(mm(gui("title.fluid_hatch")), "Жидкостный Порт");
     add(mm(gui("title.item_bus")), "Предметный Люк");
     add(mm(gui("title.parallel_hatch")), "Параллельное Ядро");
+    add(mm(gui("title.fuel_tank")), "Fuel Tank");
     add(mmr(gui("button.back")), "Назад");
     add(mmr(gui("button.close")), "Закрыть");
     add(mmr(gui("button.page.next")), "Следующая страница");

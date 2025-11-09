@@ -121,6 +121,16 @@ public class MMRItemTagProvider extends ItemTagsProvider {
             BlockRegistration.ITEM_DURABILITY_HATCH_BIG.get().asItem()
         );
 
+    tag(MMRTags.Items.FUEL_TANK)
+        .add(
+            BlockRegistration.FUEL_TANK_TINY.get().asItem(),
+            BlockRegistration.FUEL_TANK_SMALL.get().asItem(),
+            BlockRegistration.FUEL_TANK_NORMAL.get().asItem(),
+            BlockRegistration.FUEL_TANK_REINFORCED.get().asItem(),
+            BlockRegistration.FUEL_TANK_BIG.get().asItem(),
+            BlockRegistration.FUEL_TANK_HUGE.get().asItem()
+        );
+
     tag(MMRTags.Items.ITEM)
         .addTag(MMRTags.Items.INPUT_BUS)
         .addTag(MMRTags.Items.OUTPUT_BUS);
@@ -164,6 +174,7 @@ public class MMRItemTagProvider extends ItemTagsProvider {
         .addTag(MMRTags.Items.EXPERIENCE)
         .addTag(MMRTags.Items.PARALLEL)
         .addTag(MMRTags.Items.DURABILITY)
+        .addTag(MMRTags.Items.FUEL_TANK)
         .add(BlockRegistration.BIOME_READER.get().asItem())
         .add(BlockRegistration.DIMENSIONAL_DETECTOR.get().asItem())
         .add(BlockRegistration.WEATHER_SENSOR.get().asItem())

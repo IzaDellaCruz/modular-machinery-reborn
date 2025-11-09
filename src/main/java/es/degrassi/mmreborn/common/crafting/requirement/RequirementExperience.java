@@ -23,7 +23,7 @@ public class RequirementExperience implements IRequirement<ExperienceComponent> 
       NamedCodec.longRange(0, Long.MAX_VALUE).fieldOf("amount").forGetter(req -> req.required),
       NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
       PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
-  ).apply(instance, (amount, type, position) -> new RequirementExperience(type, amount, position)), "EnergyRequirement");
+  ).apply(instance, (amount, type, position) -> new RequirementExperience(type, amount, position)), "ExperienceRequirement");
 
   private final IOType mode;
   private final PositionedRequirement position;

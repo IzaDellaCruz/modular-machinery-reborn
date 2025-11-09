@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.common.block.BlockCasing.CasingType;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
+import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
@@ -17,6 +18,7 @@ import es.degrassi.mmreborn.common.item.DurabilityHatchItem;
 import es.degrassi.mmreborn.common.item.EnergyHatchItem;
 import es.degrassi.mmreborn.common.item.ExperienceHatchItem;
 import es.degrassi.mmreborn.common.item.FluidHatchItem;
+import es.degrassi.mmreborn.common.item.FuelTankItem;
 import es.degrassi.mmreborn.common.item.HeightMeterItem;
 import es.degrassi.mmreborn.common.item.InputBusItem;
 import es.degrassi.mmreborn.common.item.ItemBlueprint;
@@ -302,6 +304,25 @@ public class ItemRegistration {
   public static final DeferredItem<ParallelHatchItem> PARALLEL_HATCH_MAX =
       ITEMS.register(rootLC("parallel_hatch_" + ParallelHatchSize.MAX.getSerializedName()),
     () -> new ParallelHatchItem(BlockRegistration.PARALLEL_HATCH_MAX.get(), ParallelHatchSize.MAX));
+
+  public static final DeferredItem<FuelTankItem> FUEL_TANK_TINY =
+      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.TINY.getSerializedName()),
+      () -> new FuelTankItem(BlockRegistration.FUEL_TANK_TINY.get(), FuelTankSize.TINY));
+  public static final DeferredItem<FuelTankItem> FUEL_TANK_SMALL =
+      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.SMALL.getSerializedName()),
+      () -> new FuelTankItem(BlockRegistration.FUEL_TANK_SMALL.get(), FuelTankSize.SMALL));
+  public static final DeferredItem<FuelTankItem> FUEL_TANK_NORMAL =
+      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.NORMAL.getSerializedName()),
+      () -> new FuelTankItem(BlockRegistration.FUEL_TANK_NORMAL.get(), FuelTankSize.NORMAL));
+  public static final DeferredItem<FuelTankItem> FUEL_TANK_REINFORCED =
+      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.REINFORCED.getSerializedName()),
+      () -> new FuelTankItem(BlockRegistration.FUEL_TANK_REINFORCED.get(), FuelTankSize.REINFORCED));
+  public static final DeferredItem<FuelTankItem> FUEL_TANK_BIG =
+      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.BIG.getSerializedName()),
+      () -> new FuelTankItem(BlockRegistration.FUEL_TANK_BIG.get(), FuelTankSize.BIG));
+  public static final DeferredItem<FuelTankItem> FUEL_TANK_HUGE =
+      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.HUGE.getSerializedName()),
+      () -> new FuelTankItem(BlockRegistration.FUEL_TANK_HUGE.get(), FuelTankSize.HUGE));
 
 
   public static void register(final IEventBus bus) {

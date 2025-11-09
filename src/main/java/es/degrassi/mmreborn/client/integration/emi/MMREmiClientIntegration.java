@@ -24,6 +24,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiExperienceCompone
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiExperiencePerTickComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiFluidComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiFluidPerTickComponent;
+import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiFuelComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiHeightComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiItemComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.emi.EmiLootTableComponent;
@@ -91,6 +92,7 @@ public class MMREmiClientIntegration {
     event.register(RequirementTypeRegistration.DIMENSION.get(), EmiDimensionComponent::new);
     event.register(RequirementTypeRegistration.WEATHER.get(), EmiWeatherComponent::new);
     event.register(RequirementTypeRegistration.LOOT_TABLE.get(), EmiLootTableComponent::new);
+    event.register(RequirementTypeRegistration.FUEL.get(), EmiFuelComponent::new);
     event.register(RequirementTypeRegistration.EMPTY.get(), EmiEmptyComponent::new);
   }
 

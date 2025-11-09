@@ -26,7 +26,7 @@ import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.ExperienceHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.FluidTankEntity;
-import es.degrassi.mmreborn.common.entity.base.DurabilityHatchEntity;
+import es.degrassi.mmreborn.common.entity.DurabilityHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.item.ItemDynamicColor;
 import es.degrassi.mmreborn.common.registration.BlockRegistration;
@@ -206,7 +206,14 @@ public class ModularMachineryRebornClient {
         BlockRegistration.PARALLEL_HATCH_MEDIUM.get(),
         BlockRegistration.PARALLEL_HATCH_ADVANCED.get(),
         BlockRegistration.PARALLEL_HATCH_ULTIMATE.get(),
-        BlockRegistration.PARALLEL_HATCH_MAX.get()
+        BlockRegistration.PARALLEL_HATCH_MAX.get(),
+
+        BlockRegistration.FUEL_TANK_TINY.get(),
+        BlockRegistration.FUEL_TANK_SMALL.get(),
+        BlockRegistration.FUEL_TANK_NORMAL.get(),
+        BlockRegistration.FUEL_TANK_REINFORCED.get(),
+        BlockRegistration.FUEL_TANK_BIG.get(),
+        BlockRegistration.FUEL_TANK_HUGE.get()
     );
     ModularMachineryReborn.MACHINES_BLOCK.values().forEach(block -> event.register(ModularMachineryRebornClient::blockColor, block));
   }
@@ -312,7 +319,14 @@ public class ModularMachineryRebornClient {
         ItemRegistration.PARALLEL_HATCH_MEDIUM.get(),
         ItemRegistration.PARALLEL_HATCH_ADVANCED.get(),
         ItemRegistration.PARALLEL_HATCH_ULTIMATE.get(),
-        ItemRegistration.PARALLEL_HATCH_MAX.get()
+        ItemRegistration.PARALLEL_HATCH_MAX.get(),
+
+        ItemRegistration.FUEL_TANK_TINY.get(),
+        ItemRegistration.FUEL_TANK_SMALL.get(),
+        ItemRegistration.FUEL_TANK_NORMAL.get(),
+        ItemRegistration.FUEL_TANK_REINFORCED.get(),
+        ItemRegistration.FUEL_TANK_BIG.get(),
+        ItemRegistration.FUEL_TANK_HUGE.get()
     );
     ModularMachineryReborn.MACHINES_BLOCK.values().forEach(block -> event.register(ModularMachineryRebornClient::itemColor, block));
   }

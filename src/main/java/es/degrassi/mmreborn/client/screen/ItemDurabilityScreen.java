@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.client.screen;
 
 import es.degrassi.mmreborn.client.container.ItemDurabilityContainer;
-import es.degrassi.mmreborn.common.entity.base.DurabilityHatchEntity;
+import es.degrassi.mmreborn.common.entity.DurabilityHatchEntity;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;

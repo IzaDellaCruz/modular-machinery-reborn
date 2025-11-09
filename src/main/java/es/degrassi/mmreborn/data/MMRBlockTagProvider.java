@@ -121,6 +121,16 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.ITEM_DURABILITY_HATCH_BIG.get()
         );
 
+    tag(MMRTags.Blocks.FUEL_TANK)
+        .add(
+            BlockRegistration.FUEL_TANK_TINY.get(),
+            BlockRegistration.FUEL_TANK_SMALL.get(),
+            BlockRegistration.FUEL_TANK_NORMAL.get(),
+            BlockRegistration.FUEL_TANK_REINFORCED.get(),
+            BlockRegistration.FUEL_TANK_BIG.get(),
+            BlockRegistration.FUEL_TANK_HUGE.get()
+        );
+
     tag(MMRTags.Blocks.ITEM)
         .addTag(MMRTags.Blocks.INPUT_BUS)
         .addTag(MMRTags.Blocks.OUTPUT_BUS);
@@ -164,6 +174,7 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
         .addTag(MMRTags.Blocks.EXPERIENCE)
         .addTag(MMRTags.Blocks.PARALLEL)
         .addTag(MMRTags.Blocks.DURABILITY)
+        .addTag(MMRTags.Blocks.FUEL_TANK)
         .add(BlockRegistration.BIOME_READER.get())
         .add(BlockRegistration.DIMENSIONAL_DETECTOR.get())
         .add(BlockRegistration.WEATHER_SENSOR.get())
@@ -214,7 +225,10 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.ENERGY_OUTPUT_HATCH_NORMAL.get(),
             BlockRegistration.ENERGY_INPUT_HATCH_TINY.get(),
             BlockRegistration.ENERGY_INPUT_HATCH_SMALL.get(),
-            BlockRegistration.ENERGY_INPUT_HATCH_NORMAL.get()
+            BlockRegistration.ENERGY_INPUT_HATCH_NORMAL.get(),
+            BlockRegistration.FUEL_TANK_TINY.get(),
+            BlockRegistration.FUEL_TANK_SMALL.get(),
+            BlockRegistration.FUEL_TANK_NORMAL.get()
         );
 
     tag(MMRTags.Blocks.PLAIN_CONNECTABLE)
@@ -269,7 +283,10 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.ITEM_OUTPUT_BUS_BIG.get(),
             BlockRegistration.ITEM_OUTPUT_BUS_HUGE.get(),
             BlockRegistration.ITEM_OUTPUT_BUS_LUDICROUS.get(),
-            BlockRegistration.ITEM_DURABILITY_HATCH_BIG.get()
+            BlockRegistration.ITEM_DURABILITY_HATCH_BIG.get(),
+            BlockRegistration.FUEL_TANK_REINFORCED.get(),
+            BlockRegistration.FUEL_TANK_BIG.get(),
+            BlockRegistration.FUEL_TANK_HUGE.get()
         );
 
     tag(MMRTags.Blocks.REINFORCED_CONNECTABLE)

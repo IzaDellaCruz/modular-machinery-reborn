@@ -17,6 +17,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.PartialBlockState;
+import es.degrassi.mmreborn.common.integration.kubejs.builder.FuelDataJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.MachineBuilderJS.MachineKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ModifierBuilderJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ProgressDataJS;
@@ -71,6 +72,7 @@ public class MMRKubeJSPlugin implements KubeJSPlugin {
     registry.add("ControllerModel", MachineModelLocation.class);
     registry.add("MachineController", MachineControllerJS.class);
     registry.add("ProgressData", ProgressDataJS.class);
+    registry.add("FuelData", FuelDataJS.class);
   }
 
   @Override

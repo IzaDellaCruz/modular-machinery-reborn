@@ -11,6 +11,7 @@ import es.degrassi.mmreborn.common.entity.ExperienceInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.ExperienceOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FluidInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FluidOutputHatchEntity;
+import es.degrassi.mmreborn.common.entity.FuelTankEntity;
 import es.degrassi.mmreborn.common.entity.HeightMeterEntity;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.entity.ItemOutputBusEntity;
@@ -19,7 +20,7 @@ import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
 import es.degrassi.mmreborn.common.entity.TimeCounterEntity;
 import es.degrassi.mmreborn.common.entity.WeatherSensorEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
-import es.degrassi.mmreborn.common.entity.base.DurabilityHatchEntity;
+import es.degrassi.mmreborn.common.entity.DurabilityHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -270,6 +271,22 @@ public class EntityRegistration {
               BlockRegistration.PARALLEL_HATCH_MAX.get()
           ),
           null)
+  );
+
+  public static final Supplier<BlockEntityType<FuelTankEntity>> FUEL_TANK = ENTITY_TYPE.register(
+      rootLC("fuel_tank"),
+      () -> new BlockEntityType<>(
+          FuelTankEntity::new,
+          Set.of(
+              BlockRegistration.FUEL_TANK_TINY.get(),
+              BlockRegistration.FUEL_TANK_SMALL.get(),
+              BlockRegistration.FUEL_TANK_NORMAL.get(),
+              BlockRegistration.FUEL_TANK_REINFORCED.get(),
+              BlockRegistration.FUEL_TANK_BIG.get(),
+              BlockRegistration.FUEL_TANK_HUGE.get()
+          ),
+          null
+      )
   );
 
   public static void register(final IEventBus bus) {

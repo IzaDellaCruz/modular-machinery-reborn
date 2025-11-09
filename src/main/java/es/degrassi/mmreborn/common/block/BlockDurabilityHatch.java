@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.block;
 
 import es.degrassi.mmreborn.client.container.ItemDurabilityContainer;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
-import es.degrassi.mmreborn.common.entity.base.DurabilityHatchEntity;
+import es.degrassi.mmreborn.common.entity.DurabilityHatchEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

@@ -91,6 +91,8 @@ public final class PtBrLang extends Lang {
     add(recipeModifier("loot_table.MULTIPLICATION"), " (x%s sorte de tabela de loot da receita)");
     add(recipeModifier("experience.ADDITION"), " (%s experiência %s para a receita, chance: %s)");
     add(recipeModifier("experience.MULTIPLICATION"), " (x%s experiência %s da receita, chance: %s)");
+    add(recipeModifier("fuel.ADDITION"), " (%s burntime %s to recipe, chance: %s)");
+    add(recipeModifier("fuel.MULTIPLICATION"), " (x%s burntime %s of recipe, chance: %s)");
   }
 
   @Override
@@ -124,6 +126,7 @@ public final class PtBrLang extends Lang {
     add(jeiIngredient("chunkload"), "Raio de carregamento de chunk: %s");
     add(mm(ingredient("durability.consume")), "Consumir %s de durabilidade");
     add(mm(ingredient("durability.repair")), "Reparar %s de durabilidade");
+    add(jeiIngredient("fuel"), "Require %s burntime");
   }
 
   @Override
@@ -231,6 +234,13 @@ public final class PtBrLang extends Lang {
     addBlock(BlockRegistration.TIME_COUNTER, "Contador de Tempo");
     addBlock(BlockRegistration.HEIGHT_METER, "Medidor de Altura");
     addBlock(BlockRegistration.CHUNKLOADER, "Carregador de Chunks");
+
+    addBlock(BlockRegistration.FUEL_TANK_TINY, "Tiny Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_SMALL, "Small Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_NORMAL, "Normal Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_REINFORCED, "Reinforced Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_BIG, "Big Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_HUGE, "Huge Fuel Tank");
   }
 
   @Override
@@ -282,6 +292,8 @@ public final class PtBrLang extends Lang {
 
     add(tooltip("parallelhatch.size"), "Pode fazer o multiblock executar até %s receitas");
     add(tooltip("blueprint"), "Clique em qualquer controlador de máquina para mostrar a estrutura");
+
+    add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
   }
 
   @Override
@@ -303,6 +315,7 @@ public final class PtBrLang extends Lang {
     add(missingComponent("function"), "Nenhum Componente de Função (Controlador) encontrado!");
     add(missingComponent("durability.input"), "Nenhuma Escotilha de Durabilidade encontrada!");
     add(missingComponent("durability.output"), "Nenhuma Escotilha de Durabilidade encontrada!");
+    add(missingComponent("fuel"), "No Fuel Tank found!");
   }
 
   @Override
@@ -329,6 +342,7 @@ public final class PtBrLang extends Lang {
     add(craftCheck("function"), "Não foi possível executar o requisito de função, verifique os logs para erros!");
     add(craftCheck("function.no_listener"), "O requisito de função com id: %s não tem um evento KubeJS associado");
     add(craftCheck("function.interrupt"), "Parado pelo evento KubeJS");
+    add(craftCheck("fuel"), "Not enough burntime, needed: %s but found %s");
   }
 
   @Override
@@ -338,6 +352,7 @@ public final class PtBrLang extends Lang {
     add(mm(gui("title.fluid_hatch")), "Escotilha de Fluido");
     add(mm(gui("title.item_bus")), "Escotilha de Itens");
     add(mm(gui("title.parallel_hatch")), "Escotilha Paralela");
+    add(mm(gui("title.fuel_tank")), "Fuel Tank");
     add(mmr(gui("button.back")), "Voltar");
     add(mmr(gui("button.close")), "Fechar");
     add(mmr(gui("button.page.next")), "Próxima Página");

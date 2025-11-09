@@ -14,11 +14,13 @@ import es.degrassi.mmreborn.common.block.prop.ConfigLoaded;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
+import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.command.MMRCommand;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -78,7 +80,7 @@ public class ModularMachineryReborn {
   public static final BiMap<ResourceLocation, BlockController> MACHINES_BLOCK = HashBiMap.create();
 
   public ModularMachineryReborn(final ModContainer CONTAINER, final IEventBus MOD_BUS) {
-    CONTAINER.registerConfig(ModConfig.Type.COMMON, MMRConfig.getSpec(), String.format("%s/base/common.toml", MODID));
+    initConfigs(CONTAINER);
 
     addConfigLoaders();
 
@@ -96,6 +98,11 @@ public class ModularMachineryReborn {
     GAME_BUS.addListener(this::registerReloadListener);
     GAME_BUS.addListener(this::registerCommands);
     GAME_BUS.addListener(this::onReloadStart);
+  }
+
+  private static void initConfigs(final ModContainer container) {
+    container.registerConfig(ModConfig.Type.COMMON, MMRConfig.getSpec(), String.format("%s/base/common.toml", MODID));
+    container.registerConfig(ModConfig.Type.COMMON, FuelTankConfig.getSpec(), String.format("%s/base/fuel_tank.toml", MODID));
   }
 
   private static void addConfigLoaders() {
@@ -117,7 +124,8 @@ public class ModularMachineryReborn {
         }),
         Pair.of(ExperienceHatchSize.class, (ExperienceHatchSize size) -> size.capacity =
             MMRConfig.get().experienceSize(size)),
-        Pair.of(ParallelHatchSize.class, (ParallelHatchSize size) -> size.max = MMRConfig.get().maxParallel(size))
+        Pair.of(ParallelHatchSize.class, (ParallelHatchSize size) -> size.max = MMRConfig.get().maxParallel(size)),
+        Pair.of(FuelTankSize.class, (FuelTankSize size) -> size.burnTimeCapacity = FuelTankConfig.get().fuelCapacity(size))
     );
   }
 

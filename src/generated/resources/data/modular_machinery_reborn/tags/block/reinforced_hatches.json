@@ -38,6 +38,9 @@
     "modular_machinery_reborn:outputbus_big",
     "modular_machinery_reborn:outputbus_huge",
     "modular_machinery_reborn:outputbus_ludicrous",
-    "modular_machinery_reborn:durabilityhatch_big"
+    "modular_machinery_reborn:durabilityhatch_big",
+    "modular_machinery_reborn:fuel_tank_reinforced",
+    "modular_machinery_reborn:fuel_tank_big",
+    "modular_machinery_reborn:fuel_tank_huge"
   ]
 }

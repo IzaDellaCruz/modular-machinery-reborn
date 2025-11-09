@@ -90,6 +90,8 @@ public final class EsEsLang extends Lang {
     add(recipeModifier("loot_table.MULTIPLICATION"), " (x%s loot table luck of recipe)");
     add(recipeModifier("experience.ADDITION"), " (%s experience %s to recipe, chance: %s)");
     add(recipeModifier("experience.MULTIPLICATION"), " (x%s experience %s of recipe, chance: %s)");
+    add(recipeModifier("fuel.ADDITION"), " (%s burntime %s to recipe, chance: %s)");
+    add(recipeModifier("fuel.MULTIPLICATION"), " (x%s burntime %s of recipe, chance: %s)");
   }
 
   @Override
@@ -123,6 +125,7 @@ public final class EsEsLang extends Lang {
     add(jeiIngredient("chunkload"), "Chunkload radius: %s");
     add(mm(ingredient("durability.consume")), "Consume %s durability");
     add(mm(ingredient("durability.repair")), "Repair %s durability");
+    add(jeiIngredient("fuel"), "Require %s burntime");
   }
 
   @Override
@@ -230,6 +233,13 @@ public final class EsEsLang extends Lang {
     addBlock(BlockRegistration.TIME_COUNTER, "Time Counter");
     addBlock(BlockRegistration.HEIGHT_METER, "Height Meter");
     addBlock(BlockRegistration.CHUNKLOADER, "Chunkloader");
+
+    addBlock(BlockRegistration.FUEL_TANK_TINY, "Tiny Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_SMALL, "Small Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_NORMAL, "Normal Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_REINFORCED, "Reinforced Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_BIG, "Big Fuel Tank");
+    addBlock(BlockRegistration.FUEL_TANK_HUGE, "Huge Fuel Tank");
   }
 
   @Override
@@ -281,6 +291,8 @@ public final class EsEsLang extends Lang {
 
     add(tooltip("parallelhatch.size"), "Can make the multiblock run up to %s recipes");
     add(tooltip("blueprint"), "Click on any machine controller to show the structure preview");
+
+    add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
   }
 
   @Override
@@ -302,6 +314,7 @@ public final class EsEsLang extends Lang {
     add(missingComponent("function"), "No se ha Function Component(Controller)!");
     add(missingComponent("durability.input"), "No se ha Durability Hatch!");
     add(missingComponent("durability.output"), "No se ha Durability Hatch!");
+    add(missingComponent("fuel"), "No Fuel Tank found!");
   }
 
   @Override
@@ -328,6 +341,7 @@ public final class EsEsLang extends Lang {
     add(craftCheck("function"), "No se puede ejecutar la función requerida, mira los logs para más información!");
     add(craftCheck("function.no_listener"), "Función requerida con id: %s no tiene asociado ningún KubeJS event");
     add(craftCheck("function.interrupt"), "Parado por KubeJS event");
+    add(craftCheck("fuel"), "Not enough burntime, needed: %s but found %s");
   }
 
   @Override
@@ -337,6 +351,7 @@ public final class EsEsLang extends Lang {
     add(mm(gui("title.fluid_hatch")), "Fluid Hatch");
     add(mm(gui("title.item_bus")), "Item Bus");
     add(mm(gui("title.parallel_hatch")), "Parallel Hatch");
+    add(mm(gui("title.fuel_tank")), "Fuel Tank");
     add(mmr(gui("button.back")), "Back");
     add(mmr(gui("button.close")), "Close");
     add(mmr(gui("button.page.next")), "Next Page");

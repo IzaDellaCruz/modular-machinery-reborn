@@ -261,6 +261,25 @@ public class MachineHatchTypeRegistration {
       MACHINE_COMPONENTS.register(rootLC("DURABILITY_HATCH_BIG".toLowerCase(Locale.ENGLISH)),
       MachineHatchType::create);
 
+  public static final Supplier<MachineHatchType> FUEL_TANK_TINY =
+      MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_TINY".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> FUEL_TANK_SMALL =
+      MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_SMALL".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> FUEL_TANK_NORMAL =
+      MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_NORMAL".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> FUEL_TANK_REINFORCED =
+      MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_REINFORCED".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> FUEL_TANK_BIG =
+      MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_BIG".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> FUEL_TANK_HUGE =
+      MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_HUGE".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);
   }
