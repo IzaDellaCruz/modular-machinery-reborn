@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.client.container;
 import es.degrassi.mmreborn.client.ModularMachineryRebornClient;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.data.MMRConfig;
+import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.entity.DurabilityHatchEntity;
 import es.degrassi.mmreborn.common.registration.ContainerRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
@@ -64,8 +65,8 @@ public class ItemDurabilityContainer extends ContainerBase<DurabilityHatchEntity
   }
 
   protected void addInventorySlots(IOInventory itemHandler, ItemDurabilityHatchSize size, AtomicInteger atomicInteger) {
-    int xOffset = MMRConfig.get().itemSlotXOffset.get();
-    int yOffset = MMRConfig.get().itemSlotYOffset.get();
+    int xOffset = ItemBusConfig.get().itemSlotXOffset.get();
+    int yOffset = ItemBusConfig.get().itemSlotYOffset.get();
     int cols = size.cols;
     int row = 0;
     for (int s = 0, c = 0; s < size.slots; s++, c++) {

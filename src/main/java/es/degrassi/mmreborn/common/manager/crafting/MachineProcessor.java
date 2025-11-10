@@ -7,6 +7,7 @@ import es.degrassi.mmreborn.api.crafting.IProcessorTemplate;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.common.data.MMRConfig;
+import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.registration.ProcessorTypeRegistration;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
     this.tile = tile;
     int maxParallel = Math.max(
         MMRConfig.get().maxParallel.get(),
-        MMRConfig.get().getMaxParallel()
+        ParallelHatchConfig.get().getMaxParallel()
     );
     cores = Lists.newArrayList();
     for (int i = 0; i < maxParallel; ++i) {

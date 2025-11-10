@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.client.ModularMachineryRebornClient;
 import es.degrassi.mmreborn.client.screen.widget.ISlotClickHandler;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.data.MMRConfig;
+import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.registration.ContainerRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
@@ -77,8 +78,8 @@ public class ItemBusContainer extends ContainerBase<TileItemBus> implements ISlo
   }
 
   protected void addInventorySlots(IOInventory itemHandler, ItemBusSize size, AtomicInteger atomicInteger) {
-    int xOffset = MMRConfig.get().itemSlotXOffset.get();
-    int yOffset = MMRConfig.get().itemSlotYOffset.get();
+    int xOffset = ItemBusConfig.get().itemSlotXOffset.get();
+    int yOffset = ItemBusConfig.get().itemSlotYOffset.get();
     int cols = size.cols;
     int row = 0;
     for (int s = 0, c = 0; s < size.slots; s++, c++) {

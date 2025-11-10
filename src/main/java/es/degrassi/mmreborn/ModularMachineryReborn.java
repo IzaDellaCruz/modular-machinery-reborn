@@ -20,7 +20,13 @@ import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.command.MMRCommand;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.data.config.DurabilityHatchConfig;
+import es.degrassi.mmreborn.common.data.config.EnergyHatchConfig;
+import es.degrassi.mmreborn.common.data.config.ExperienceHatchConfig;
+import es.degrassi.mmreborn.common.data.config.FluidHatchConfig;
 import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
+import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
+import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -101,30 +107,39 @@ public class ModularMachineryReborn {
   }
 
   private static void initConfigs(final ModContainer container) {
-    container.registerConfig(ModConfig.Type.COMMON, MMRConfig.getSpec(), String.format("%s/base/common.toml", MODID));
-    container.registerConfig(ModConfig.Type.COMMON, FuelTankConfig.getSpec(), String.format("%s/base/fuel_tank.toml", MODID));
+    container.registerConfig(ModConfig.Type.COMMON, MMRConfig.getSpec(), config("common"));
+    container.registerConfig(ModConfig.Type.COMMON, EnergyHatchConfig.getSpec(), config("energy_hatch"));
+    container.registerConfig(ModConfig.Type.COMMON, FluidHatchConfig.getSpec(), config("fluid_hatch"));
+    container.registerConfig(ModConfig.Type.COMMON, ItemBusConfig.getSpec(), config("item_bus"));
+    container.registerConfig(ModConfig.Type.COMMON, DurabilityHatchConfig.getSpec(), config("durability_hatch"));
+    container.registerConfig(ModConfig.Type.COMMON, ExperienceHatchConfig.getSpec(), config("experience_hatch"));
+    container.registerConfig(ModConfig.Type.COMMON, ParallelHatchConfig.getSpec(), config("parallel_hatch"));
+    container.registerConfig(ModConfig.Type.COMMON, FuelTankConfig.getSpec(), config("fuel_tank"));
+  }
+
+  private static String config(String name) {
+    return String.format("%s/base/%s.toml", MODID, name);
   }
 
   private static void addConfigLoaders() {
     ConfigLoaded.add(
         Pair.of(EnergyHatchSize.class, (EnergyHatchSize size) -> {
-          size.maxEnergy = MMRConfig.get().energySize(size);
+          size.maxEnergy = EnergyHatchConfig.get().energySize(size);
           size.maxEnergy = MiscUtils.clamp(size.maxEnergy, 1, Long.MAX_VALUE);
-          size.transferLimit = MMRConfig.get().energyLimit(size);
+          size.transferLimit = EnergyHatchConfig.get().energyLimit(size);
           size.transferLimit = MiscUtils.clamp(size.transferLimit, 1, Long.MAX_VALUE);
         }),
-        Pair.of(FluidHatchSize.class, (FluidHatchSize size) -> size.size = MMRConfig.get().fluidSize(size)),
+        Pair.of(FluidHatchSize.class, (FluidHatchSize size) -> size.size = FluidHatchConfig.get().fluidSize(size)),
         Pair.of(ItemBusSize.class, (ItemBusSize size) -> {
-          size.slots = MMRConfig.get().itemSize(size);
-          size.cols = MMRConfig.get().itemCols(size);
+          size.slots = ItemBusConfig.get().itemSize(size);
+          size.cols = ItemBusConfig.get().itemCols(size);
         }),
         Pair.of(ItemDurabilityHatchSize.class, (ItemDurabilityHatchSize size) -> {
-          size.slots = MMRConfig.get().durabilitySize(size);
-          size.cols = MMRConfig.get().durabilityCols(size);
+          size.slots = DurabilityHatchConfig.get().durabilitySize(size);
+          size.cols = DurabilityHatchConfig.get().durabilityCols(size);
         }),
-        Pair.of(ExperienceHatchSize.class, (ExperienceHatchSize size) -> size.capacity =
-            MMRConfig.get().experienceSize(size)),
-        Pair.of(ParallelHatchSize.class, (ParallelHatchSize size) -> size.max = MMRConfig.get().maxParallel(size)),
+        Pair.of(ExperienceHatchSize.class, (ExperienceHatchSize size) -> size.capacity = ExperienceHatchConfig.get().experienceSize(size)),
+        Pair.of(ParallelHatchSize.class, (ParallelHatchSize size) -> size.max = ParallelHatchConfig.get().maxParallel(size)),
         Pair.of(FuelTankSize.class, (FuelTankSize size) -> size.burnTimeCapacity = FuelTankConfig.get().fuelCapacity(size))
     );
   }
