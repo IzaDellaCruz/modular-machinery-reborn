@@ -23,11 +23,18 @@ public class FuelTankConfig {
   public final ModConfigSpec.ConfigValue<Long> BIG_fuelCapacity;
   public final ModConfigSpec.ConfigValue<Long> HUGE_fuelCapacity;
 
+  public final ModConfigSpec.ConfigValue<Boolean> reduceFuelPerTick;
+
   public static FuelTankConfig get() {
     return INSTANCE;
   }
 
   public FuelTankConfig(ModConfigSpec.Builder builder) {
+    builder.push("General");
+    reduceFuelPerTick = builder
+        .comment("Weather the fuel tank should reduce its fuel when no recipe is running or not")
+        .define("reduceFuel", true);
+    builder.pop();
     builder.push(FuelTankSize.TINY.getSerializedName());
     TINY_fuelCapacity = builder
         .comment("Defines the burntime capacity in ticks (1s = 20ticks)")

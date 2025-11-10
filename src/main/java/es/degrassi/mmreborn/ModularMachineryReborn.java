@@ -186,6 +186,11 @@ public class ModularMachineryReborn {
         (be, side) -> be.getInventory()
     );
     event.registerBlockEntity(
+        Capabilities.ItemHandler.BLOCK,
+        EntityRegistration.FUEL_TANK.get(),
+        (be, side) -> be.getInventory()
+    );
+    event.registerBlockEntity(
         Capabilities.FluidHandler.BLOCK,
         EntityRegistration.FLUID_INPUT_HATCH.get(),
         (be, side) -> be.getTank()

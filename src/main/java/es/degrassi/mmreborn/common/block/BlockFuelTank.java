@@ -1,8 +1,8 @@
 package es.degrassi.mmreborn.common.block;
 
+import es.degrassi.mmreborn.client.container.FuelTankContainer;
 import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
 import es.degrassi.mmreborn.common.entity.FuelTankEntity;
-import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -40,9 +40,9 @@ public class BlockFuelTank extends BlockMachineComponent implements BlockTickEnt
   @Override
   protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     BlockEntity te = level.getBlockEntity(pos);
-    if(te instanceof EnergyHatchEntity entity) {
+    if(te instanceof FuelTankEntity entity) {
       if (player instanceof ServerPlayer serverPlayer) {
-        //EnergyHatchContainer.open(serverPlayer, entity);
+        FuelTankContainer.open(serverPlayer, entity);
       }
       return ItemInteractionResult.sidedSuccess(level.isClientSide);
     }

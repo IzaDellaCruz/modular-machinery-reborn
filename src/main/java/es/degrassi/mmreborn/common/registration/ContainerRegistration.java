@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.container.EnergyHatchContainer;
 import es.degrassi.mmreborn.client.container.ExperienceHatchContainer;
 import es.degrassi.mmreborn.client.container.FluidHatchContainer;
+import es.degrassi.mmreborn.client.container.FuelTankContainer;
 import es.degrassi.mmreborn.client.container.ItemBusContainer;
 import es.degrassi.mmreborn.client.container.ItemDurabilityContainer;
 import es.degrassi.mmreborn.client.container.ParallelHatchContainer;
@@ -35,6 +36,8 @@ public class ContainerRegistration {
       CONTAINERS.register(rootLC("experience_hatch"), () -> IMenuTypeExtension.create(ExperienceHatchContainer::new));
   public static final DeferredHolder<MenuType<?>, MenuType<ParallelHatchContainer>> PARALLEL_HATCH =
       CONTAINERS.register(rootLC("parallel_hatch"), () -> IMenuTypeExtension.create(ParallelHatchContainer::new));
+  public static final DeferredHolder<MenuType<?>, MenuType<FuelTankContainer>> FUEL_TANK =
+      CONTAINERS.register(rootLC("fuel_tank"), () -> IMenuTypeExtension.create(FuelTankContainer::new));
 
   public static void register(IEventBus bus) {
     CONTAINERS.register(bus);

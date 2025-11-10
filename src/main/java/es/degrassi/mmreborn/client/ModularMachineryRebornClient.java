@@ -15,11 +15,13 @@ import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.EnergyHatchScreen;
 import es.degrassi.mmreborn.client.screen.ExperienceHatchScreen;
 import es.degrassi.mmreborn.client.screen.FluidHatchScreen;
+import es.degrassi.mmreborn.client.screen.FuelTankScreen;
 import es.degrassi.mmreborn.client.screen.ItemBusScreen;
 import es.degrassi.mmreborn.client.screen.ItemDurabilityScreen;
 import es.degrassi.mmreborn.client.screen.ParallelHatchScreen;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.data.MMRConfig;
+import es.degrassi.mmreborn.common.entity.FuelTankEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
@@ -411,6 +413,7 @@ public class ModularMachineryRebornClient {
     event.register(ContainerRegistration.ITEM_DURABILITY_HATCH.get(), ItemDurabilityScreen::new);
     event.register(ContainerRegistration.EXPERIENCE_HATCH.get(), ExperienceHatchScreen::new);
     event.register(ContainerRegistration.PARALLEL_HATCH.get(), ParallelHatchScreen::new);
+    event.register(ContainerRegistration.FUEL_TANK.get(), FuelTankScreen::new);
   }
 
   @NotNull
@@ -475,5 +478,14 @@ public class ModularMachineryRebornClient {
         return controller;
     }
     throw new IllegalStateException("Trying to open a Durability Hatch container without clicking on a Durability Hatch block");
+  }
+
+  public static FuelTankEntity getClientSideFuelTankEntity(BlockPos pos) {
+    if (Minecraft.getInstance().level != null) {
+      BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(pos);
+      if (tile instanceof FuelTankEntity controller)
+        return controller;
+    }
+    throw new IllegalStateException("Trying to open a Fuel Tank container without clicking on a Fuel Tank block");
   }
 }

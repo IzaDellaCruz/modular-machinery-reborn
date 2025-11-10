@@ -294,6 +294,7 @@ public final class PtBrLang extends Lang {
     add(tooltip("blueprint"), "Clique em qualquer controlador de máquina para mostrar a estrutura");
 
     add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
+    add(tooltip("fuel_tank.tank"), "%s / %s ticks");
   }
 
   @Override

@@ -294,6 +294,7 @@ public final class RuRuLang extends Lang {
     add(tooltip("blueprint"), "Нажмите по контролеру, чтобы показать мульти-структуру");
 
     add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
+    add(tooltip("fuel_tank.tank"), "%s / %s ticks");
   }
 
   @Override

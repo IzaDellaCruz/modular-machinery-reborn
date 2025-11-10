@@ -10,7 +10,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "modular_machinery_reborn:fuel_tanknormal"
+          "name": "modular_machinery_reborn:fuel_tank_normal"
         }
       ],
       "rolls": 1.0

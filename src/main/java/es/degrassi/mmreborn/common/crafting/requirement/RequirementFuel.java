@@ -17,6 +17,7 @@ import es.degrassi.mmreborn.common.machine.component.ExperienceComponent;
 import es.degrassi.mmreborn.common.machine.component.FuelComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -66,6 +67,7 @@ public class RequirementFuel implements IRequirement<FuelComponent> {
 
   private CraftingResult processTick(FuelComponent component, ICraftingContext context) {
     long amount = context.getIntegerModifiedValue(this.required, this);
+    MMRLogger.INSTANCE.debug("processingFuelTick: {}", amount);
     if(component.getContainerProvider().burn(amount))
       return CraftingResult.success();
     return CraftingResult.error(Component.translatable("craftcheck.failure.fuel", amount, component.getContainerProvider().getFuel()));

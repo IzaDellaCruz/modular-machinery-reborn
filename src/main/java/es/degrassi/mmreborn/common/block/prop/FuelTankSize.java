@@ -5,12 +5,12 @@ import net.minecraft.util.StringRepresentable;
 import java.util.Locale;
 
 public enum FuelTankSize implements ConfigLoaded, StringRepresentable {
-  TINY(secondsToTicks(5)),
-  SMALL(secondsToTicks(10)),
-  NORMAL(secondsToTicks(25)),
-  REINFORCED(secondsToTicks(50)),
-  BIG(secondsToTicks(75)),
-  HUGE(secondsToTicks(100));
+  TINY(secondsToTicks(500)),
+  SMALL(secondsToTicks(1000)),
+  NORMAL(secondsToTicks(2500)),
+  REINFORCED(secondsToTicks(5000)),
+  BIG(secondsToTicks(7500)),
+  HUGE(secondsToTicks(10000));
 
   public long burnTimeCapacity;
   public final long defaultBurnTimeCapacity;

@@ -343,6 +343,7 @@
   "tooltip.fluidhatch.tank": "%smB / %smB",
   "tooltip.fluidhatch.tank.gas": "%s / %s",
   "tooltip.fluidhatch.tank.info": "Может содержать %s mB",
+  "tooltip.fuel_tank.tank": "%s / %s ticks",
   "tooltip.fueltank.storage": "Can store %s burntime (ticks)",
   "tooltip.itembus.slot": "1 Слот",
   "tooltip.itembus.slots": "%s Слотов",

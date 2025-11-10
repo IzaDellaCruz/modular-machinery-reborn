@@ -294,6 +294,7 @@ public final class ZhCnLang extends Lang {
     add(tooltip("blueprint"), "右键任意机器控制器以显示结构");
 
     add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
+    add(tooltip("fuel_tank.tank"), "%s / %s ticks");
   }
 
   @Override

@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.api.capability;
 import es.degrassi.experiencelib.api.capability.IContentsListener;
 import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.ItemSlot;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +24,7 @@ public class BasicFuelHandler implements IFuelHandler {
 
   @Override
   public void addFuel(long fuel) {
+    if (this.fuel >= this.maxFuel) return;
     this.fuel += fuel;
     setChanged();
   }
@@ -31,18 +33,8 @@ public class BasicFuelHandler implements IFuelHandler {
   public boolean burn(long amount) {
     //If the machine have sufficient fuel, just burn it and return true
     if(this.fuel >= amount) {
-      this.fuel -= amount;
-      setChanged();
-      return true;
-    }
-
-    //Else we try to burn a fuel item to add some fuel
-    tryBurnItem();
-
-    //Then we check again
-    if(this.fuel >= amount) {
-      this.fuel -= amount;
-      setChanged();
+      MMRLogger.INSTANCE.debug("Burning amount: {}", amount);
+      addFuel(-amount);
       return true;
     }
 
@@ -57,9 +49,11 @@ public class BasicFuelHandler implements IFuelHandler {
         .stream()
         .filter(ItemSlot::isInput)
         .filter(slot -> !slot.getItemStack().isEmpty())
+        .filter(slot -> slot.getItemStack().getBurnTime(RecipeType.SMELTING) > 0)
         .findFirst()
         .ifPresent(slot -> {
           long fuel = slot.getItemStack().getBurnTime(RecipeType.SMELTING);
+          if (!hasSpace(fuel)) return;
           addFuel(fuel);
           ItemStack stack = slot.getItemStack();
           if (stack.hasCraftingRemainingItem()) {
@@ -69,6 +63,13 @@ public class BasicFuelHandler implements IFuelHandler {
           }
           slot.setChanged();
         });
+  }
+
+  @Override
+  public boolean hasSpace(long amount) {
+    var hasSpace = (this.fuel + amount) <= maxFuel;
+    MMRLogger.INSTANCE.debug("hasSpaceForFuel: {}", hasSpace);
+    return hasSpace;
   }
 
   @Override

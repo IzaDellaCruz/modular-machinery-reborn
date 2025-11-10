@@ -4,9 +4,13 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.capability.BasicFuelHandler;
 import es.degrassi.mmreborn.api.capability.IFuelHandler;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.network.ISyncable;
+import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.LongSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
-import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
+import es.degrassi.mmreborn.common.data.MMRConfig;
+import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.ITickEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
@@ -21,6 +25,7 @@ import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponent
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -31,7 +36,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,12 +44,13 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 @Getter
 @Setter
 @MethodsReturnNonnullByDefault
 public class FuelTankEntity extends TileInventory implements MachineComponentEntity<FuelComponent>,
-    ControllerAccessible, TextureableMachineEntity, ITickEntity, IServerTickEntity {
+    ControllerAccessible, TextureableMachineEntity, ITickEntity, IServerTickEntity, ISyncableStuff {
   @Nullable
   private BlockPos controllerPos;
   private FuelTankSize size;
@@ -53,12 +58,15 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   private ResourceLocation baseTexture;
   private ResourceLocation overlayTexture;
   @Getter
-  private final ResourceLocation defaultOverlayTexture;
+  private ResourceLocation defaultOverlayTexture;
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
   @Getter
   private final IFuelHandler fuelHandler;
+
+  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
+  private long lastCheckTick;
 
   private FuelTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FuelTankSize size) {
     super(type, pos, state, 1);
@@ -84,6 +92,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
       }
     });
     this.fuelHandler = new BasicFuelHandler(this.getInventory());
+    this.fuelHandler.setMaxFuel(size.burnTimeCapacity);
     this.fuelHandler.setListener(() -> {
       if (getLevel() != null && !getLevel().isClientSide)
         PacketDistributor.sendToPlayersTrackingChunk(
@@ -105,10 +114,18 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
 
   @Override
   public void doRestrictedTick() {
-    if (getController() == null) return;
-    if(this.getFuelHandler().getFuel() > 0 && getController().getStatus() != MachineStatus.RUNNING) {
-      this.getFuelHandler().addFuel(-1);
+    if (getLevel() == null) return;
+    if (FuelTankConfig.get().reduceFuelPerTick.get()) {
+      if (getFuelHandler().getFuel() > 0 && (getController() == null || getController().getStatus() != MachineStatus.RUNNING)) {
+        getFuelHandler().addFuel(-1);
+      }
     }
+    long gameTime = getLevel().getGameTime();
+    if (!Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckTick, tickOffset,
+        MMRConfig.get().checkRecipeTicks.get()))
+      return;
+    lastCheckTick = gameTime;
+    getFuelHandler().tryBurnItem();
   }
 
   @Override
@@ -117,7 +134,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], stack -> stack.getBurnTime(RecipeType.SMELTING) > 0, Direction.values());
+    return new IOInventory(inSlots, new int[0], stack -> true, Direction.values());
   }
 
   @Override
@@ -130,6 +147,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     }
 
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
+    this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_fueltank_" + size.getSerializedName());
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
 
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
@@ -238,6 +256,14 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
 
   @Override
   public FuelComponent provideComponent() {
-    return new FuelComponent(getFuelHandler(), getInventory());
+    return new FuelComponent(getFuelHandler());
+  }
+
+  @Override
+  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+    if (this.getLevel() == null)
+      return;
+    container.accept(LongSyncable.create(getFuelHandler()::getFuel, getFuelHandler()::setFuel));
+    container.accept(LongSyncable.create(getFuelHandler()::getMaxFuel, getFuelHandler()::setMaxFuel));
   }
 }

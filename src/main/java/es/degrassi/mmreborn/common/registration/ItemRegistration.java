@@ -275,8 +275,7 @@ public class ItemRegistration {
       "experienceoutputhatch_" + ExperienceHatchSize.VACUUM.getSerializedName()),
     () -> new ExperienceHatchItem(BlockRegistration.EXPERIENCE_OUTPUT_HATCH_VACUUM.get(), ExperienceHatchSize.VACUUM));
 
-  public static final DeferredItem<DimensionalDetectorItem> DIMENSIONAL_DETECTOR = ITEMS.register(rootLC(
-      "dimensional_detector"),
+  public static final DeferredItem<DimensionalDetectorItem> DIMENSIONAL_DETECTOR = ITEMS.register(rootLC("dimensional_detector"),
     () -> new DimensionalDetectorItem(BlockRegistration.DIMENSIONAL_DETECTOR.get()));
   public static final DeferredItem<BiomeReaderItem> BIOME_READER = ITEMS.register(rootLC("biome_reader"),
     () -> new BiomeReaderItem(BlockRegistration.BIOME_READER.get()));
@@ -306,22 +305,22 @@ public class ItemRegistration {
     () -> new ParallelHatchItem(BlockRegistration.PARALLEL_HATCH_MAX.get(), ParallelHatchSize.MAX));
 
   public static final DeferredItem<FuelTankItem> FUEL_TANK_TINY =
-      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.TINY.getSerializedName()),
+      ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.TINY.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_TINY.get(), FuelTankSize.TINY));
   public static final DeferredItem<FuelTankItem> FUEL_TANK_SMALL =
-      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.SMALL.getSerializedName()),
+      ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.SMALL.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_SMALL.get(), FuelTankSize.SMALL));
   public static final DeferredItem<FuelTankItem> FUEL_TANK_NORMAL =
-      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.NORMAL.getSerializedName()),
+      ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.NORMAL.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_NORMAL.get(), FuelTankSize.NORMAL));
   public static final DeferredItem<FuelTankItem> FUEL_TANK_REINFORCED =
-      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.REINFORCED.getSerializedName()),
+      ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.REINFORCED.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_REINFORCED.get(), FuelTankSize.REINFORCED));
   public static final DeferredItem<FuelTankItem> FUEL_TANK_BIG =
-      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.BIG.getSerializedName()),
+      ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.BIG.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_BIG.get(), FuelTankSize.BIG));
   public static final DeferredItem<FuelTankItem> FUEL_TANK_HUGE =
-      ITEMS.register(rootLC("fuel_tank" + FuelTankSize.HUGE.getSerializedName()),
+      ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.HUGE.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_HUGE.get(), FuelTankSize.HUGE));
 
 

@@ -293,6 +293,7 @@ public final class EsEsLang extends Lang {
     add(tooltip("blueprint"), "Click on any machine controller to show the structure preview");
 
     add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
+    add(tooltip("fuel_tank.tank"), "%s / %s ticks");
   }
 
   @Override
