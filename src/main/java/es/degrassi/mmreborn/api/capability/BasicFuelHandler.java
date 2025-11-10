@@ -29,12 +29,17 @@ public class BasicFuelHandler implements IFuelHandler {
     setChanged();
   }
 
+  public void removeFuel(long fuel) {
+    if (this.fuel < fuel) return;
+    this.fuel -= fuel;
+    setChanged();
+  }
+
   @Override
   public boolean burn(long amount) {
     //If the machine have sufficient fuel, just burn it and return true
-    if(this.fuel >= amount) {
-      MMRLogger.INSTANCE.debug("Burning amount: {}", amount);
-      addFuel(-amount);
+    if (this.fuel >= amount) {
+      removeFuel(amount);
       return true;
     }
 
@@ -67,9 +72,7 @@ public class BasicFuelHandler implements IFuelHandler {
 
   @Override
   public boolean hasSpace(long amount) {
-    var hasSpace = (this.fuel + amount) <= maxFuel;
-    MMRLogger.INSTANCE.debug("hasSpaceForFuel: {}", hasSpace);
-    return hasSpace;
+    return (this.fuel + amount) <= maxFuel;
   }
 
   @Override

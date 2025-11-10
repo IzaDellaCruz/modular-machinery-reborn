@@ -3,7 +3,6 @@ package es.degrassi.mmreborn.client.container;
 import es.degrassi.mmreborn.client.ModularMachineryRebornClient;
 import es.degrassi.mmreborn.client.screen.widget.ISlotClickHandler;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
-import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.registration.ContainerRegistration;

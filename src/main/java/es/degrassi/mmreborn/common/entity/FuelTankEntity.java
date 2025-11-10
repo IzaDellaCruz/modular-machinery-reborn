@@ -36,6 +36,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -66,7 +67,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   private final IFuelHandler fuelHandler;
 
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
-  private long lastCheckTick;
+  private long lastCheckTick, lastCheckFuelTick;
 
   private FuelTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FuelTankSize size) {
     super(type, pos, state, 1);
@@ -115,14 +116,15 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   @Override
   public void doRestrictedTick() {
     if (getLevel() == null) return;
-    if (FuelTankConfig.get().reduceFuelPerTick.get()) {
-      if (getFuelHandler().getFuel() > 0 && (getController() == null || getController().getStatus() != MachineStatus.RUNNING)) {
-        getFuelHandler().addFuel(-1);
-      }
-    }
     long gameTime = getLevel().getGameTime();
-    if (!Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckTick, tickOffset,
-        MMRConfig.get().checkRecipeTicks.get()))
+    if (FuelTankConfig.get().reduceFuelPerTick.get()) {
+      if (Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckFuelTick, tickOffset, 1))
+        if (getFuelHandler().getFuel() > 0 && (getController() == null || getController().getStatus() != MachineStatus.RUNNING)) {
+          getFuelHandler().removeFuel(-1);
+        }
+      lastCheckFuelTick = gameTime;
+    }
+    if (!Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkRecipeTicks.get()))
       return;
     lastCheckTick = gameTime;
     getFuelHandler().tryBurnItem();
@@ -134,7 +136,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], stack -> true, Direction.values());
+    return new IOInventory(inSlots, new int[0], stack -> stack.getBurnTime(RecipeType.SMELTING) > 0, Direction.values());
   }
 
   @Override
@@ -261,8 +263,6 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    if (this.getLevel() == null)
-      return;
     container.accept(LongSyncable.create(getFuelHandler()::getFuel, getFuelHandler()::setFuel));
     container.accept(LongSyncable.create(getFuelHandler()::getMaxFuel, getFuelHandler()::setMaxFuel));
   }

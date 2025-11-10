@@ -373,7 +373,7 @@ public class MachineControllerJS {
           if (amt.get() <= 0) return;
           long toRemove = Math.min(comp.getFuel(), amt.get());
           amt.addAndGet(-toRemove);
-          comp.addFuel(-toRemove);
+          comp.removeFuel(toRemove);
         });
   }
 

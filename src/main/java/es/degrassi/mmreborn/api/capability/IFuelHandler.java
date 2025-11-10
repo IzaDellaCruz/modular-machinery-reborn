@@ -12,6 +12,7 @@ public interface IFuelHandler {
   long getFuel();
   long getMaxFuel();
   void addFuel(long fuel);
+  void removeFuel(long amount);
 
   void setFuel(long fuel);
   void setMaxFuel(long maxFuel);

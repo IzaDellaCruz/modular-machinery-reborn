@@ -67,8 +67,7 @@ public class RequirementFuel implements IRequirement<FuelComponent> {
 
   private CraftingResult processTick(FuelComponent component, ICraftingContext context) {
     long amount = context.getIntegerModifiedValue(this.required, this);
-    MMRLogger.INSTANCE.debug("processingFuelTick: {}", amount);
-    if(component.getContainerProvider().burn(amount))
+    if (component.getContainerProvider().burn(amount))
       return CraftingResult.success();
     return CraftingResult.error(Component.translatable("craftcheck.failure.fuel", amount, component.getContainerProvider().getFuel()));
   }

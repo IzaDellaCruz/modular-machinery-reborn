@@ -32,15 +32,14 @@ public class FuelComponent extends MachineComponent<IFuelHandler> {
     return (C) new FuelComponent(new BasicFuelHandler(null) {
       @Override
       public void addFuel(long fuel) {
-        if (fuelHandler.getFuel() + fuel <= fuelHandler.getMaxFuel()) {
+        if (fuelHandler.getFuel() + fuel <= fuelHandler.getMaxFuel() && fuelHandler.getFuel() + fuel >= 0) {
           fuelHandler.addFuel(fuel);
           return;
         }
         var rest = Math.min(fuelHandler.getMaxFuel() - fuelHandler.getFuel(), fuel);
         fuelHandler.addFuel(rest);
         fuel -= rest;
-        if (fuel <= 0) return;
-        if (comp.fuelHandler.getFuel() + fuel <= comp.fuelHandler.getMaxFuel()) {
+        if (comp.fuelHandler.getFuel() + fuel <= comp.fuelHandler.getMaxFuel() && comp.fuelHandler.getFuel() + fuel >= 0) {
           comp.fuelHandler.addFuel(fuel);
           return;
         }
@@ -54,14 +53,31 @@ public class FuelComponent extends MachineComponent<IFuelHandler> {
           var first = fuelHandler.getFuel();
           var second = comp.fuelHandler.getFuel();
           if (first + second >= amount) {
-            fuelHandler.addFuel(-first);
+            fuelHandler.removeFuel(first);
             amount -= first;
-            comp.fuelHandler.addFuel(-amount);
+            comp.fuelHandler.removeFuel(amount);
             return true;
           }
           return false;
         }
         return true;
+      }
+
+      @Override
+      public void removeFuel(long fuel) {
+        if (fuelHandler.getFuel() - fuel >= 0) {
+          fuelHandler.removeFuel(fuel);
+          return;
+        }
+        var rest = Math.min(fuelHandler.getFuel(), fuel);
+        fuelHandler.removeFuel(rest);
+        fuel -= rest;
+        if (comp.fuelHandler.getFuel() - fuel >= 0) {
+          comp.fuelHandler.removeFuel(fuel);
+          return;
+        }
+        rest = Math.min(comp.fuelHandler.getFuel(), fuel);
+        comp.fuelHandler.removeFuel(rest);
       }
 
       @Override
