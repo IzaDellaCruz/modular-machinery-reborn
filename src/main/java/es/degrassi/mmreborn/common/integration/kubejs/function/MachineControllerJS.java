@@ -7,6 +7,7 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ChunkloadComponent;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
+import es.degrassi.mmreborn.common.machine.component.FuelComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.util.Chunkloader;
@@ -325,6 +326,55 @@ public class MachineControllerJS {
         });
 
     return extracted.get();
+  }
+
+  /** FUEL STUFF **/
+  public long getFuelAmount() {
+    return internal.getComponentManager()
+        .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
+        .stream()
+        .map(comp -> (FuelComponent) comp)
+        .mapToLong(comp -> comp.getContainerProvider().getFuel())
+        .sum();
+  }
+
+  public long getFuelCapacity() {
+    return internal.getComponentManager()
+        .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
+        .stream()
+        .map(comp -> (FuelComponent) comp)
+        .mapToLong(comp -> comp.getContainerProvider().getMaxFuel())
+        .sum();
+  }
+
+  public void addFuel(long amount) {
+    AtomicLong amt = new AtomicLong(amount);
+    internal.getComponentManager()
+        .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
+        .stream()
+        .map(comp -> (FuelComponent) comp)
+        .map(FuelComponent::getContainerProvider)
+        .forEach(comp -> {
+          if (amt.get() <= 0) return;
+          long toInsert = Math.min(comp.getMaxFuel() - comp.getFuel(), amt.get());
+          amt.addAndGet(-toInsert);
+          comp.addFuel(toInsert);
+        });
+  }
+
+  public void removeFuel(long amount) {
+    AtomicLong amt = new AtomicLong(amount);
+    internal.getComponentManager()
+        .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
+        .stream()
+        .map(comp -> (FuelComponent) comp)
+        .map(FuelComponent::getContainerProvider)
+        .forEach(comp -> {
+          if (amt.get() <= 0) return;
+          long toRemove = Math.min(comp.getFuel(), amt.get());
+          amt.addAndGet(-toRemove);
+          comp.addFuel(-toRemove);
+        });
   }
 
   /** CHUNKLOAD STUFF **/
