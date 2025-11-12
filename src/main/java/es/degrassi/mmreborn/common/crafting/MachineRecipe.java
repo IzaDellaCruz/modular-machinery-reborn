@@ -190,6 +190,12 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     return RecipeRegistration.RECIPE_TYPE.get();
   }
 
+  public List<RecipeRequirement<?, ?>> getDisplayInfoRequirements() {
+    if(this.getJeiRequirements().isEmpty())
+      return this.getRequirements();
+    return this.getJeiRequirements();
+  }
+
   @Getter
   public static class MachineRecipeBuilder {
     private final ResourceLocation machine;

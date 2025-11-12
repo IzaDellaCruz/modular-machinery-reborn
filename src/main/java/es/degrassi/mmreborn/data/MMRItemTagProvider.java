@@ -156,6 +156,13 @@ public class MMRItemTagProvider extends ItemTagsProvider {
             BlockRegistration.PARALLEL_HATCH_MAX.get().asItem()
         );
 
+    tag(MMRTags.Items.EFFECT_DISPENSER)
+        .add(
+            BlockRegistration.EFFECT_DISPENSER_SMALL.get().asItem(),
+            BlockRegistration.EFFECT_DISPENSER_MEDIUM.get().asItem(),
+            BlockRegistration.EFFECT_DISPENSER_BIG.get().asItem()
+        );
+
     tag(MMRTags.Items.CASINGS)
         .add(
             BlockRegistration.CASING_PLAIN.get().asItem(),
@@ -175,6 +182,7 @@ public class MMRItemTagProvider extends ItemTagsProvider {
         .addTag(MMRTags.Items.PARALLEL)
         .addTag(MMRTags.Items.DURABILITY)
         .addTag(MMRTags.Items.FUEL_TANK)
+        .addTag(MMRTags.Items.EFFECT_DISPENSER)
         .add(BlockRegistration.BIOME_READER.get().asItem())
         .add(BlockRegistration.DIMENSIONAL_DETECTOR.get().asItem())
         .add(BlockRegistration.WEATHER_SENSOR.get().asItem())

@@ -90,4 +90,8 @@ public interface IRequirement<C extends MachineComponent<?>> {
   default void setModified(boolean modified) {
 
   }
+
+  default void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+
+  }
 }

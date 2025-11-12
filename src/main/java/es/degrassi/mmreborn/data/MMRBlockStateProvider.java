@@ -1,6 +1,7 @@
 package es.degrassi.mmreborn.data;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.common.block.prop.EffectDispenserSize;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
@@ -132,6 +133,11 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
     addHatch(BlockRegistration.FUEL_TANK_REINFORCED.get(), true, fuel(FuelTankSize.REINFORCED), false);
     addHatch(BlockRegistration.FUEL_TANK_BIG.get(), true, fuel(FuelTankSize.BIG), false);
     addHatch(BlockRegistration.FUEL_TANK_HUGE.get(), true, fuel(FuelTankSize.HUGE), false);
+
+    addHatch(BlockRegistration.EFFECT_DISPENSER_SMALL.get(), false, effect(EffectDispenserSize.SMALL), false);
+    addHatch(BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(), false, effect(EffectDispenserSize.MEDIUM), false);
+    addHatch(BlockRegistration.EFFECT_DISPENSER_BIG.get(), true, effect(EffectDispenserSize.BIG), false);
+
   }
 
   private void addDefaultModels() {
@@ -263,5 +269,8 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
   }
   private ResourceLocation fuel(FuelTankSize size) {
     return modLoc("block/overlay_fueltank_" + size.getSerializedName());
+  }
+  private ResourceLocation effect(EffectDispenserSize size) {
+    return modLoc("block/overlay_effectdispenser_" + size.getSerializedName());
   }
 }

@@ -11,12 +11,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 public interface DurabilityRequirementJS extends RecipeJSBuilder {
   default MachineRecipeBuilderJS damageItem(Ingredient ingredient, int amount, int x, int y) {
     RequirementDurability requirement = new RequirementDurability(IOType.INPUT, ingredient, amount, new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, 1));
+    return addRequirement(new RecipeRequirement<>(requirement));
   }
 
   default MachineRecipeBuilderJS repairItem(Ingredient ingredient, int amount, int x, int y) {
     RequirementDurability requirement = new RequirementDurability(IOType.OUTPUT, ingredient, amount, new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, 1));
+    return addRequirement(new RecipeRequirement<>(requirement));
   }
 
   default MachineRecipeBuilderJS damageItem(Ingredient ingredient) {

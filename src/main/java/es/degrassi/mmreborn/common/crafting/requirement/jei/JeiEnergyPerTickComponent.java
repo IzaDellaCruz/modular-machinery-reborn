@@ -52,7 +52,6 @@ public class JeiEnergyPerTickComponent extends JeiComponent<Long, RecipeRequirem
   }
 
   @Override
-  @SuppressWarnings("removal")
   public @NotNull List<Component> getTooltip(@NotNull Long ingredient, @NotNull TooltipFlag tooltipFlag) {
     List<Component> tooltip = super.getTooltip(ingredient, tooltipFlag);
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";

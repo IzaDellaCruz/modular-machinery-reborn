@@ -40,6 +40,8 @@
     "modular_machinery_reborn:energyinputhatch_normal",
     "modular_machinery_reborn:fuel_tank_tiny",
     "modular_machinery_reborn:fuel_tank_small",
-    "modular_machinery_reborn:fuel_tank_normal"
+    "modular_machinery_reborn:fuel_tank_normal",
+    "modular_machinery_reborn:effect_dispenser_small",
+    "modular_machinery_reborn:effect_dispenser_medium"
   ]
 }

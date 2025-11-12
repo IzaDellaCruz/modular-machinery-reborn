@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.common.block.BlockDynamicColor;
 import es.degrassi.mmreborn.common.entity.BiomeReaderEntity;
 import es.degrassi.mmreborn.common.entity.ChunkloaderEntity;
 import es.degrassi.mmreborn.common.entity.DimensionalDetectorEntity;
+import es.degrassi.mmreborn.common.entity.EffectDispenserEntity;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.EnergyOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.ExperienceInputHatchEntity;
@@ -284,6 +285,19 @@ public class EntityRegistration {
               BlockRegistration.FUEL_TANK_REINFORCED.get(),
               BlockRegistration.FUEL_TANK_BIG.get(),
               BlockRegistration.FUEL_TANK_HUGE.get()
+          ),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<EffectDispenserEntity>> EFFECT_DISPENSER = ENTITY_TYPE.register(
+      rootLC("effect_dispenser"),
+      () -> new BlockEntityType<>(
+          EffectDispenserEntity::new,
+          Set.of(
+              BlockRegistration.EFFECT_DISPENSER_SMALL.get(),
+              BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(),
+              BlockRegistration.EFFECT_DISPENSER_BIG.get()
           ),
           null
       )

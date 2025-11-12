@@ -156,6 +156,13 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.PARALLEL_HATCH_MAX.get()
         );
 
+    tag(MMRTags.Blocks.EFFECT_DISPENSER)
+        .add(
+          BlockRegistration.EFFECT_DISPENSER_SMALL.get(),
+          BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(),
+          BlockRegistration.EFFECT_DISPENSER_BIG.get()
+        );
+
     tag(MMRTags.Blocks.CASINGS)
         .add(
             BlockRegistration.CASING_PLAIN.get(),
@@ -175,6 +182,7 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
         .addTag(MMRTags.Blocks.PARALLEL)
         .addTag(MMRTags.Blocks.DURABILITY)
         .addTag(MMRTags.Blocks.FUEL_TANK)
+        .addTag(MMRTags.Blocks.EFFECT_DISPENSER)
         .add(BlockRegistration.BIOME_READER.get())
         .add(BlockRegistration.DIMENSIONAL_DETECTOR.get())
         .add(BlockRegistration.WEATHER_SENSOR.get())
@@ -228,7 +236,9 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.ENERGY_INPUT_HATCH_NORMAL.get(),
             BlockRegistration.FUEL_TANK_TINY.get(),
             BlockRegistration.FUEL_TANK_SMALL.get(),
-            BlockRegistration.FUEL_TANK_NORMAL.get()
+            BlockRegistration.FUEL_TANK_NORMAL.get(),
+            BlockRegistration.EFFECT_DISPENSER_SMALL.get(),
+            BlockRegistration.EFFECT_DISPENSER_MEDIUM.get()
         );
 
     tag(MMRTags.Blocks.PLAIN_CONNECTABLE)
@@ -286,7 +296,8 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.ITEM_DURABILITY_HATCH_BIG.get(),
             BlockRegistration.FUEL_TANK_REINFORCED.get(),
             BlockRegistration.FUEL_TANK_BIG.get(),
-            BlockRegistration.FUEL_TANK_HUGE.get()
+            BlockRegistration.FUEL_TANK_HUGE.get(),
+            BlockRegistration.EFFECT_DISPENSER_BIG.get()
         );
 
     tag(MMRTags.Blocks.REINFORCED_CONNECTABLE)

@@ -42,7 +42,7 @@ public interface ItemRequirementJS extends RecipeJSBuilder {
     if (chance > 1)
       return this.error("Chance can not be greater than 1");
     RequirementItem requirement = new RequirementItem(IOType.INPUT, stack, new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, chance));
+    return addRequirement(new RecipeRequirement<>(requirement, chance, null));
   }
 
   default MachineRecipeBuilderJS produceItem(SizedIngredient stack, float chance, int x, int y) {
@@ -55,6 +55,6 @@ public interface ItemRequirementJS extends RecipeJSBuilder {
     if (chance > 1)
       return this.error("Chance can not be greater than 1");
     RequirementItem requirement = new RequirementItem(IOType.OUTPUT, stack, new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, chance));
+    return addRequirement(new RecipeRequirement<>(requirement, chance, null));
   }
 }

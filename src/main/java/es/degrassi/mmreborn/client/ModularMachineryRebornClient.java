@@ -41,7 +41,9 @@ import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -107,6 +109,24 @@ public class ModularMachineryRebornClient {
 
   public static Map<ModelResourceLocation, BakedModel> getAllModels() {
     return models;
+  }
+
+  public static boolean shouldAddParticles(RandomSource r) {
+    return switch (Minecraft.getInstance().options.particles().get()) {
+      case ALL -> true;
+      case DECREASED -> r.nextBoolean();
+      case MINIMAL -> false;
+    };
+  }
+
+  public static void createParticle(ParticleOptions particle, BlockPos pos) {
+    Minecraft.getInstance().particleEngine.createParticle(
+        particle,
+        pos.getX(),
+        pos.getY() + 0.5,
+        pos.getZ(),
+        0.0, 0.0, 0.0
+    );
   }
 
   @SubscribeEvent
@@ -215,7 +235,11 @@ public class ModularMachineryRebornClient {
         BlockRegistration.FUEL_TANK_NORMAL.get(),
         BlockRegistration.FUEL_TANK_REINFORCED.get(),
         BlockRegistration.FUEL_TANK_BIG.get(),
-        BlockRegistration.FUEL_TANK_HUGE.get()
+        BlockRegistration.FUEL_TANK_HUGE.get(),
+
+        BlockRegistration.EFFECT_DISPENSER_SMALL.get(),
+        BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(),
+        BlockRegistration.EFFECT_DISPENSER_BIG.get()
     );
     ModularMachineryReborn.MACHINES_BLOCK.values().forEach(block -> event.register(ModularMachineryRebornClient::blockColor, block));
   }
@@ -328,7 +352,11 @@ public class ModularMachineryRebornClient {
         ItemRegistration.FUEL_TANK_NORMAL.get(),
         ItemRegistration.FUEL_TANK_REINFORCED.get(),
         ItemRegistration.FUEL_TANK_BIG.get(),
-        ItemRegistration.FUEL_TANK_HUGE.get()
+        ItemRegistration.FUEL_TANK_HUGE.get(),
+
+        ItemRegistration.EFFECT_DISPENSER_SMALL.get(),
+        ItemRegistration.EFFECT_DISPENSER_MEDIUM.get(),
+        ItemRegistration.EFFECT_DISPENSER_BIG.get()
     );
     ModularMachineryReborn.MACHINES_BLOCK.values().forEach(block -> event.register(ModularMachineryRebornClient::itemColor, block));
   }

@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.registration;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.block.BlockCasing.CasingType;
+import es.degrassi.mmreborn.common.block.prop.EffectDispenserSize;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
@@ -15,6 +16,7 @@ import es.degrassi.mmreborn.common.item.ChunkloaderItem;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.item.DimensionalDetectorItem;
 import es.degrassi.mmreborn.common.item.DurabilityHatchItem;
+import es.degrassi.mmreborn.common.item.EffectDispenserItem;
 import es.degrassi.mmreborn.common.item.EnergyHatchItem;
 import es.degrassi.mmreborn.common.item.ExperienceHatchItem;
 import es.degrassi.mmreborn.common.item.FluidHatchItem;
@@ -323,6 +325,15 @@ public class ItemRegistration {
       ITEMS.register(rootLC("fuel_tank_" + FuelTankSize.HUGE.getSerializedName()),
       () -> new FuelTankItem(BlockRegistration.FUEL_TANK_HUGE.get(), FuelTankSize.HUGE));
 
+  public static final DeferredItem<EffectDispenserItem> EFFECT_DISPENSER_SMALL =
+      ITEMS.register(rootLC("effect_dispenser_" + EffectDispenserSize.SMALL.getSerializedName()),
+      () -> new EffectDispenserItem(BlockRegistration.EFFECT_DISPENSER_SMALL.get(), EffectDispenserSize.SMALL));
+  public static final DeferredItem<EffectDispenserItem> EFFECT_DISPENSER_MEDIUM =
+      ITEMS.register(rootLC("effect_dispenser_" + EffectDispenserSize.MEDIUM.getSerializedName()),
+      () -> new EffectDispenserItem(BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(), EffectDispenserSize.MEDIUM));
+  public static final DeferredItem<EffectDispenserItem> EFFECT_DISPENSER_BIG =
+      ITEMS.register(rootLC("effect_dispenser_" + EffectDispenserSize.BIG.getSerializedName()),
+      () -> new EffectDispenserItem(BlockRegistration.EFFECT_DISPENSER_BIG.get(), EffectDispenserSize.BIG));
 
   public static void register(final IEventBus bus) {
     ITEMS.register(bus);

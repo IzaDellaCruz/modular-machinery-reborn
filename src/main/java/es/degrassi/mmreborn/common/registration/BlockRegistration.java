@@ -8,6 +8,7 @@ import es.degrassi.mmreborn.common.block.BlockChunkloader;
 import es.degrassi.mmreborn.common.block.BlockController;
 import es.degrassi.mmreborn.common.block.BlockDimensionDetector;
 import es.degrassi.mmreborn.common.block.BlockDurabilityHatch;
+import es.degrassi.mmreborn.common.block.BlockEffectDispenser;
 import es.degrassi.mmreborn.common.block.BlockEnergyHatch;
 import es.degrassi.mmreborn.common.block.BlockEnergyInputHatch;
 import es.degrassi.mmreborn.common.block.BlockEnergyOutputHatch;
@@ -24,6 +25,7 @@ import es.degrassi.mmreborn.common.block.BlockOutputBus;
 import es.degrassi.mmreborn.common.block.BlockTimeCounter;
 import es.degrassi.mmreborn.common.block.BlockWeatherSensor;
 import es.degrassi.mmreborn.common.block.ParallelHatchBlock;
+import es.degrassi.mmreborn.common.block.prop.EffectDispenserSize;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
@@ -244,6 +246,16 @@ public class BlockRegistration {
   public static final DeferredBlock<BlockFuelTank> FUEL_TANK_HUGE =
       BLOCKS.register(rootLC("fuel_tank_" + FuelTankSize.HUGE.getSerializedName()),
       () -> new BlockFuelTank(FuelTankSize.HUGE));
+
+  public static final DeferredBlock<BlockEffectDispenser> EFFECT_DISPENSER_SMALL =
+      BLOCKS.register(rootLC("effect_dispenser_" + EffectDispenserSize.SMALL.getSerializedName()),
+      () -> new BlockEffectDispenser(EffectDispenserSize.SMALL));
+  public static final DeferredBlock<BlockEffectDispenser> EFFECT_DISPENSER_MEDIUM =
+      BLOCKS.register(rootLC("effect_dispenser_" + EffectDispenserSize.MEDIUM.getSerializedName()),
+          () -> new BlockEffectDispenser(EffectDispenserSize.MEDIUM));
+  public static final DeferredBlock<BlockEffectDispenser> EFFECT_DISPENSER_BIG =
+      BLOCKS.register(rootLC("effect_dispenser_" + EffectDispenserSize.BIG.getSerializedName()),
+          () -> new BlockEffectDispenser(EffectDispenserSize.BIG));
 
   public static void register(final IEventBus bus) {
     BLOCKS.register(bus);

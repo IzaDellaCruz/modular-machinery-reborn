@@ -60,6 +60,7 @@ public class MMRTags {
 
     public static final TagKey<Block> PARALLEL = new Blocks(false, "parallelhatch", "Parallel Hatches").get();
     public static final TagKey<Block> FUEL_TANK = new Blocks(false, "fueltank", "Fuel Tanks").get();
+    public static final TagKey<Block> EFFECT_DISPENSER = new Blocks(false, "effect_dispenser", "Effect Dispensers").get();
 
     public static final TagKey<Block> CASINGS = new Blocks(false, "casing", "Casings").get();
     public static final TagKey<Block> ALL_CASINGS = new Blocks(false, "all_casing", "All Casings").get();
@@ -101,6 +102,7 @@ public class MMRTags {
 
     public static final TagKey<Item> PARALLEL = new Items(false, "parallelhatch", "Parallel Hatches").get();
     public static final TagKey<Item> FUEL_TANK = new Items(false, "fueltank", "Fuel Tanks").get();
+    public static final TagKey<Item> EFFECT_DISPENSER = new Items(false, "effect_dispenser", "Effect Dispensers").get();
 
     public static final TagKey<Item> CASINGS = new Items(false, "casing", "Casings").get();
     public static final TagKey<Item> ALL_CASINGS = new Items(false, "all_casing", "All Casings").get();

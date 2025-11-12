@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.common.block;
 import es.degrassi.mmreborn.common.entity.base.ITickEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,7 +14,7 @@ public interface BlockTickEntity extends EntityBlock {
 
   @Nullable
   @Override
-  default <T extends net.minecraft.world.level.block.entity.BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
+  default <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
     return (level, pos, state, blockEntity) -> {
       if (blockEntity.getType() == pBlockEntityType && blockEntity instanceof ITickEntity entity) {
         entity.tick();

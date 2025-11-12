@@ -11,12 +11,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 public interface DurabilityPerTickRequirementJS extends RecipeJSBuilder {
   default MachineRecipeBuilderJS damageItemPerTick(Ingredient ingredient, int amount, int x, int y) {
     RequirementDurabilityPerTick requirement = new RequirementDurabilityPerTick(IOType.INPUT, ingredient, amount, new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, 1));
+    return addRequirement(new RecipeRequirement<>(requirement));
   }
 
   default MachineRecipeBuilderJS repairItemPerTick(Ingredient ingredient, int amount, int x, int y) {
     RequirementDurabilityPerTick requirement = new RequirementDurabilityPerTick(IOType.OUTPUT, ingredient, amount, new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, 1));
+    return addRequirement(new RecipeRequirement<>(requirement));
   }
 
   default MachineRecipeBuilderJS damageItemPerTick(Ingredient ingredient) {

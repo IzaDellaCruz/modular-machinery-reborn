@@ -280,6 +280,16 @@ public class MachineHatchTypeRegistration {
       MACHINE_COMPONENTS.register(rootLC("FUEL_TANK_HUGE".toLowerCase(Locale.ENGLISH)),
       MachineHatchType::create);
 
+  public static final Supplier<MachineHatchType> EFFECT_DISPENSER_SMALL =
+      MACHINE_COMPONENTS.register(rootLC("EFFECT_DISPENSER_SMALL".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> EFFECT_DISPENSER_MEDIUM =
+      MACHINE_COMPONENTS.register(rootLC("EFFECT_DISPENSER_MEDIUM".toLowerCase(Locale.ENGLISH)),
+          MachineHatchType::create);
+  public static final Supplier<MachineHatchType> EFFECT_DISPENSER_BIG =
+      MACHINE_COMPONENTS.register(rootLC("EFFECT_DISPENSER_BIG".toLowerCase(Locale.ENGLISH)),
+          MachineHatchType::create);
+
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);
   }

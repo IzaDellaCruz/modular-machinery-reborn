@@ -127,6 +127,8 @@ public final class ZhCnLang extends Lang {
     add(mm(ingredient("durability.consume")), "消耗 %s 耐久值");
     add(mm(ingredient("durability.repair")), "修复 %s 耐久值");
     add(jeiIngredient("fuel"), "Require %s burntime");
+    add(jeiIngredient("effect.info.tick"), "Give %s %s for %s ticks each tick");
+    add(jeiIngredient("effect.info.whitelist"), "Entity Whitelist :");
   }
 
   @Override
@@ -241,6 +243,10 @@ public final class ZhCnLang extends Lang {
     addBlock(BlockRegistration.FUEL_TANK_REINFORCED, "Reinforced Fuel Tank");
     addBlock(BlockRegistration.FUEL_TANK_BIG, "Big Fuel Tank");
     addBlock(BlockRegistration.FUEL_TANK_HUGE, "Huge Fuel Tank");
+
+    addBlock(BlockRegistration.EFFECT_DISPENSER_SMALL, "Small Effect Dispenser");
+    addBlock(BlockRegistration.EFFECT_DISPENSER_MEDIUM, "Medium Effect Dispenser");
+    addBlock(BlockRegistration.EFFECT_DISPENSER_BIG, "Big Effect Dispenser");
   }
 
   @Override
@@ -295,6 +301,9 @@ public final class ZhCnLang extends Lang {
 
     add(tooltip("fueltank.storage"), "Can store %s burntime (ticks)");
     add(tooltip("fuel_tank.tank"), "%s / %s ticks");
+
+    add(tooltip("effectdispenser.interdimensional"), "Gives effects interdimensionally");
+    add(tooltip("effectdispenser.radius"), "Gives effects in a radius of %s blocks around this block");
   }
 
   @Override
@@ -317,6 +326,7 @@ public final class ZhCnLang extends Lang {
     add(missingComponent("durability.input"), "未找到耐久值损耗仓！");
     add(missingComponent("durability.output"), "未找到耐久值修复仓！");
     add(missingComponent("fuel"), "No Fuel Tank found!");
+    add(missingComponent("effect"), "No Effect Dispenser found!");
   }
 
   @Override

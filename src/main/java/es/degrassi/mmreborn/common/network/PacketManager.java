@@ -19,6 +19,7 @@ import es.degrassi.mmreborn.common.network.server.SUpdateCraftingStatusPacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineColorPacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateCoresPacket;
+import es.degrassi.mmreborn.common.network.server.component.SUpdateEffectComponent;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateEnergyComponentPacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateExperienceComponentPacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateFluidComponentPacket;
@@ -55,6 +56,7 @@ public class PacketManager {
     registrar.playToClient(SUpdateContainerPacket.TYPE, SUpdateContainerPacket.CODEC, SUpdateContainerPacket::handle);
     registrar.playToClient(SUpdateCoresPacket.TYPE, SUpdateCoresPacket.CODEC, SUpdateCoresPacket::handle);
     registrar.playToClient(SStopSoundInstancePacket.TYPE, SStopSoundInstancePacket.CODEC, SStopSoundInstancePacket::handle);
+    registrar.playToClient(SUpdateEffectComponent.TYPE, SUpdateEffectComponent.CODEC, SUpdateEffectComponent::handle);
 
     // TO SERVER
     registrar.playToServer(CPlaceStructurePacket.TYPE, CPlaceStructurePacket.CODEC, CPlaceStructurePacket::handle);

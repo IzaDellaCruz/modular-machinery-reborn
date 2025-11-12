@@ -10,7 +10,7 @@ import es.degrassi.mmreborn.common.integration.kubejs.RecipeJSBuilder;
 public interface EmptyRequirementJS extends RecipeJSBuilder {
   default MachineRecipeBuilderJS emptyItem(int x, int y) {
     if (!isJei()) return error("Empty Item Requirement can only be used after .jei() call");
-    return addRequirement(new RecipeRequirement<>(new RequirementEmpty(EmptyRequirementTypeRegistration.ITEM.get(), new PositionedRequirement(x, y)), 1));
+    return addRequirement(new RecipeRequirement<>(new RequirementEmpty(EmptyRequirementTypeRegistration.ITEM.get(), new PositionedRequirement(x, y))));
   }
   default MachineRecipeBuilderJS emptyItem() {
     return emptyItem(0, 0);

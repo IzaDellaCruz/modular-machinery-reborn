@@ -10,30 +10,43 @@ import es.degrassi.mmreborn.common.manager.ComponentManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class RecipeRequirement<C extends MachineComponent<?>, R extends IRequirement<C>> {
   public static final NamedCodec<RecipeRequirement<?, ?>> CODEC = NamedCodec.record(recipeRequirementInstance ->
       recipeRequirementInstance.group(
           IRequirement.CODEC.forGetter(RecipeRequirement::requirement),
-          NamedCodec.floatRange(0.0f, 1.0f).optionalFieldOf("chance", 1.0f).forGetter(requirement -> requirement.chance)
-      ).apply(recipeRequirementInstance, RecipeRequirement::new), "Recipe requirement"
+          NamedCodec.floatRange(0.0f, 1.0f).optionalFieldOf("chance", 1.0f).forGetter(requirement -> requirement.chance),
+          DisplayInfoTemplate.CODEC.optionalFieldOf("info").forGetter(req -> Optional.ofNullable(req.info))
+      ).apply(recipeRequirementInstance, (req, chance, info) ->
+          new RecipeRequirement<>(req, chance, info.orElse(null))),
+      "Recipe requirement"
   );
 
   private final R requirement;
   private float chance;
+  @Nullable
+  public DisplayInfoTemplate info;
 
-  public RecipeRequirement(R requirement, float chance) {
+  public RecipeRequirement(R requirement, float chance, @Nullable DisplayInfoTemplate info) {
     this.requirement = requirement;
     this.chance = chance;
+    this.info = info;
+  }
+
+  public RecipeRequirement(R requirement, float chance) {
+    this(requirement, chance, null);
+  }
+
+  public RecipeRequirement(R requirement) {
+    this(requirement, 1.0f, null);
   }
 
   @SuppressWarnings("unchecked")
   public RecipeRequirement<C, R> castRequirement(RecipeRequirement<?, ?> requirement) {
     return (RecipeRequirement<C, R>) requirement;
-  }
-
-  public RecipeRequirement(R requirement) {
-    this(requirement, 1.0f);
   }
 
   @SuppressWarnings("unchecked")
@@ -70,6 +83,10 @@ public class RecipeRequirement<C extends MachineComponent<?>, R extends IRequire
 
   public boolean isModified() {
     return requirement().isModified();
+  }
+
+  public void getDisplayInfo(RequirementDisplayInfo info) {
+    this.requirement.getDefaultDisplayInfo(info, this);
   }
 
   public JsonObject asJson() {

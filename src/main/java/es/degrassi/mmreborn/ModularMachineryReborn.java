@@ -11,6 +11,7 @@ import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.client.util.EnergyDisplayUtil;
 import es.degrassi.mmreborn.common.block.BlockController;
 import es.degrassi.mmreborn.common.block.prop.ConfigLoaded;
+import es.degrassi.mmreborn.common.block.prop.EffectDispenserSize;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
@@ -21,6 +22,7 @@ import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.command.MMRCommand;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.data.config.DurabilityHatchConfig;
+import es.degrassi.mmreborn.common.data.config.EffectDispenserConfig;
 import es.degrassi.mmreborn.common.data.config.EnergyHatchConfig;
 import es.degrassi.mmreborn.common.data.config.ExperienceHatchConfig;
 import es.degrassi.mmreborn.common.data.config.FluidHatchConfig;
@@ -115,6 +117,7 @@ public class ModularMachineryReborn {
     container.registerConfig(ModConfig.Type.COMMON, ExperienceHatchConfig.getSpec(), config("experience_hatch"));
     container.registerConfig(ModConfig.Type.COMMON, ParallelHatchConfig.getSpec(), config("parallel_hatch"));
     container.registerConfig(ModConfig.Type.COMMON, FuelTankConfig.getSpec(), config("fuel_tank"));
+    container.registerConfig(ModConfig.Type.COMMON, EffectDispenserConfig.getSpec(), config("effect_dispenser"));
   }
 
   private static String config(String name) {
@@ -140,7 +143,12 @@ public class ModularMachineryReborn {
         }),
         Pair.of(ExperienceHatchSize.class, (ExperienceHatchSize size) -> size.capacity = ExperienceHatchConfig.get().experienceSize(size)),
         Pair.of(ParallelHatchSize.class, (ParallelHatchSize size) -> size.max = ParallelHatchConfig.get().maxParallel(size)),
-        Pair.of(FuelTankSize.class, (FuelTankSize size) -> size.burnTimeCapacity = FuelTankConfig.get().fuelCapacity(size))
+        Pair.of(FuelTankSize.class, (FuelTankSize size) -> size.burnTimeCapacity = FuelTankConfig.get().fuelCapacity(size)),
+        Pair.of(EffectDispenserSize.class, (EffectDispenserSize size) -> {
+          size.radius = EffectDispenserConfig.get().radius(size);
+          size.interdimensional = EffectDispenserConfig.get().interdimensional(size);
+          size.showParticles = EffectDispenserConfig.get().showParticles(size);
+        })
     );
   }
 

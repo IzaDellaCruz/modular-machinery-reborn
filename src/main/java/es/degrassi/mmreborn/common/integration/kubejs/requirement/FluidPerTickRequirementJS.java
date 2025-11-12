@@ -35,7 +35,7 @@ public interface FluidPerTickRequirementJS extends RecipeJSBuilder {
       return this.error("Chance can not be greater than 1");
     RequirementFluidPerTick requirement = new RequirementFluidPerTick(IOType.INPUT, stack, new PositionedRequirement(x,
         y));
-    return addRequirement(new RecipeRequirement<>(requirement, chance));
+    return addRequirement(new RecipeRequirement<>(requirement, chance, null));
   }
 
   default MachineRecipeBuilderJS produceFluidPerTick(FluidStack stack, float chance, int x, int y) {
@@ -44,7 +44,7 @@ public interface FluidPerTickRequirementJS extends RecipeJSBuilder {
     if (chance > 1)
       return this.error("Chance can not be greater than 1");
     RequirementFluidPerTick requirement = new RequirementFluidPerTick(IOType.OUTPUT, new SizedFluidIngredient(FluidIngredient.single(stack), stack.getAmount()), new PositionedRequirement(x, y));
-    return addRequirement(new RecipeRequirement<>(requirement, chance));
+    return addRequirement(new RecipeRequirement<>(requirement, chance, null));
   }
 
   default MachineRecipeBuilderJS requireFluidPerTick(SizedFluidIngredient stack, float chance) {

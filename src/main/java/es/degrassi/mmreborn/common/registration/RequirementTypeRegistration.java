@@ -8,6 +8,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementDimension;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurability;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurabilityPerTick;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDuration;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementEffect;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEmpty;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
@@ -99,6 +100,9 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementFuel>> FUEL =
       MACHINE_REQUIREMENTS.register(rootLC("fuel"),
       () -> RequirementType.inventory(RequirementFuel.CODEC));
+  public static final Supplier<RequirementType<RequirementEffect>> EFFECT =
+      MACHINE_REQUIREMENTS.register(rootLC("effect"),
+      () -> RequirementType.world(RequirementEffect.CODEC));
 
   public static void register(IEventBus bus) {
     MACHINE_REQUIREMENTS.register(bus);
