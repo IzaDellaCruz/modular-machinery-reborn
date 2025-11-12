@@ -5,8 +5,10 @@ import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.api.codec.DefaultCodecs;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.DimensionComponent;
@@ -15,6 +17,8 @@ import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -22,8 +26,7 @@ import java.util.List;
 public class RequirementDimension implements IRequirement<DimensionComponent> {
   public static final NamedCodec<RequirementDimension> CODEC = NamedCodec.record(instance -> instance.group(
       DefaultCodecs.RESOURCE_LOCATION.listOf().fieldOf("filter").forGetter(RequirementDimension::filter),
-      NamedCodec.BOOL.optionalFieldOf("blacklist", false).forGetter(RequirementDimension::blacklist),
-      PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
+      NamedCodec.BOOL.optionalFieldOf("blacklist", false).forGetter(RequirementDimension::blacklist)
   ).apply(instance, RequirementDimension::new), "Dimension Requirement");
 
   @Getter
@@ -31,10 +34,10 @@ public class RequirementDimension implements IRequirement<DimensionComponent> {
   private final List<ResourceLocation> filter;
   private final boolean blacklist;
 
-  public RequirementDimension(List<ResourceLocation> filter, boolean blacklist, PositionedRequirement position) {
+  public RequirementDimension(List<ResourceLocation> filter, boolean blacklist) {
     this.filter = filter;
     this.blacklist = blacklist;
-    this.position = position;
+    this.position = new PositionedRequirement(0, 0);
   }
 
   public List<ResourceLocation> filter() {
@@ -88,5 +91,19 @@ public class RequirementDimension implements IRequirement<DimensionComponent> {
   @Override
   public boolean isComponentValid(DimensionComponent m, ICraftingContext context) {
     return getMode().equals(m.getIOType());
+  }
+
+  @Override
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+    StringBuilder dimensions = new StringBuilder();
+    filter.forEach(dimension -> dimensions.append(dimension.toString()).append(","));
+    int index = dimensions.lastIndexOf(",");
+    if (index >= dimensions.length() - 1)
+      dimensions.deleteCharAt(index);
+    info.addTooltip(Component.translatable(
+        "modular_machinery_reborn.jei.ingredient.dimension." + blacklist(),
+        dimensions.toString()
+    ));
+    info.setSpriteIcon(InventoryMenu.BLOCK_ATLAS, ResourceLocation.withDefaultNamespace("block/nether_portal"));
   }
 }

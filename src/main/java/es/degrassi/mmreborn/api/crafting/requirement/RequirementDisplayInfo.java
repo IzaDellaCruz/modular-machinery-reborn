@@ -64,7 +64,7 @@ public class RequirementDisplayInfo implements IDisplayInfo {
   }
 
   public boolean handleClick(DynamicMachine machine, MachineRecipe recipe, int button) {
-    if(hasClickAction()) {
+    if (hasClickAction()) {
       this.clickAction.handleClick(machine, recipe, button);
       return true;
     }

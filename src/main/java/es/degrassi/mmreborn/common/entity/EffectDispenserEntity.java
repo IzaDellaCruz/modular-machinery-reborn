@@ -66,7 +66,8 @@ public class EffectDispenserEntity extends ColorableMachineComponentEntity imple
   @Override
   public void doRestrictedTick() {
     if (getController() == null || getController().getStatus() != MachineStatus.RUNNING) {
-      this.getHandler().resetEffect();
+      if (getEffect().isPresent())
+        this.getHandler().resetEffect();
     }
   }
 

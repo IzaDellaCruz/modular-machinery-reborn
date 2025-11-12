@@ -3,8 +3,10 @@ package es.degrassi.mmreborn.common.crafting.requirement;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.WeatherType;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -14,6 +16,7 @@ import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.NotNull;
@@ -22,17 +25,16 @@ import java.util.Locale;
 
 public class RequirementWeather implements IRequirement<WeatherComponent> {
   public static final NamedCodec<RequirementWeather> CODEC = NamedCodec.record(instance -> instance.group(
-      WeatherType.CODEC.fieldOf("weather").forGetter(RequirementWeather::weather),
-      PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
+      WeatherType.CODEC.fieldOf("weather").forGetter(RequirementWeather::weather)
   ).apply(instance, RequirementWeather::new), "Weather Requirement");
 
   private final WeatherType weather;
   @Getter
   private final PositionedRequirement position;
 
-  public RequirementWeather(WeatherType filter, PositionedRequirement position) {
+  public RequirementWeather(WeatherType filter) {
     this.weather = filter;
-    this.position = position;
+    this.position = new PositionedRequirement(0, 0);
   }
 
   public WeatherType weather() {
@@ -92,5 +94,14 @@ public class RequirementWeather implements IRequirement<WeatherComponent> {
   @Override
   public boolean isComponentValid(WeatherComponent m, ICraftingContext context) {
     return getMode().equals(m.getIOType());
+  }
+
+  @Override
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+    info.addTooltip(Component.translatable(
+        "modular_machinery_reborn.jei.ingredient.weather",
+        weather().name().toLowerCase(Locale.ROOT)
+    ));
+    info.setItemIcon(Items.SUNFLOWER);
   }
 }
