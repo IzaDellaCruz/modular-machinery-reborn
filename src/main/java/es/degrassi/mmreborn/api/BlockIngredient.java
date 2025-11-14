@@ -197,16 +197,16 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   public boolean test(BlockInWorld block) {
     boolean isTag = !this.tags.isEmpty();
     if (isTag) {
-      if (not) {
+      if (this.not) {
         return this.tags.stream().noneMatch(tag -> block.getState().is(tag));
       } else {
         return this.tags.stream().anyMatch(tag -> block.getState().is(tag));
       }
     } else {
-      if (not) {
-        return getUniqueStates().stream().noneMatch(state -> state.test(block));
+      if (this.not) {
+        return this.uniqueStates.stream().noneMatch(state -> state.test(block));
       } else {
-        return getUniqueStates().stream().anyMatch(state -> state.test(block));
+        return this.uniqueStates.stream().anyMatch(state -> state.test(block));
       }
     }
   }
