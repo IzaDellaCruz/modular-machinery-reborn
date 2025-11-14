@@ -8,6 +8,8 @@ import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
 import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
+import es.degrassi.mmreborn.common.crafting.requirement.entity.RequirementEntity;
+import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.registration.BlockRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import net.minecraft.data.PackOutput;
@@ -138,6 +140,11 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
     addHatch(BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(), false, effect(EffectDispenserSize.MEDIUM), false);
     addHatch(BlockRegistration.EFFECT_DISPENSER_BIG.get(), true, effect(EffectDispenserSize.BIG), false);
 
+    addHatch(BlockRegistration.ENTITY_DETECTOR.get(), false, entity(RequirementEntity.Action.CHECK_AMOUNT), false);
+    addHatch(BlockRegistration.ENTITY_KILLER.get(), true, entity(RequirementEntity.Action.KILL), false);
+    addHatch(BlockRegistration.ENTITY_SPAWNER.get(), true, entity(RequirementEntity.Action.SPAWN), false);
+    addHatch(BlockRegistration.ENTITY_HEALER.get(), false, entity(RequirementEntity.Action.ADD_HEALTH), false);
+    addHatch(BlockRegistration.ENTITY_DAMAGER.get(), false, entity(RequirementEntity.Action.CONSUME_HEALTH), false);
   }
 
   private void addDefaultModels() {
@@ -272,5 +279,14 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
   }
   private ResourceLocation effect(EffectDispenserSize size) {
     return modLoc("block/overlay_effectdispenser_" + size.getSerializedName());
+  }
+  private ResourceLocation entity(RequirementEntity.Action mode) {
+    return modLoc("block/overlay_entity" + switch(mode) {
+      case CHECK_AMOUNT, CHECK_HEALTH -> "detector";
+      case KILL -> "killer";
+      case SPAWN -> "spawner";
+      case CONSUME_HEALTH -> "damager";
+      case ADD_HEALTH -> "healer";
+    });
   }
 }

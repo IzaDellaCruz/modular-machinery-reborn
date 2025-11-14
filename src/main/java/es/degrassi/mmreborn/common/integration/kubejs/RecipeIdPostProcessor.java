@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorT
 import dev.latvian.mods.rhino.util.HideFromJS;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class RecipeIdPostProcessor implements RecipePostProcessor {
         IDS.get(RecipeRegistration.RECIPE_TYPE.getId()).put(machine, uniqueID + 1);
         recipe.id = ResourceLocation.fromNamespaceAndPath("kubejs",
             RecipeRegistration.RECIPE_TYPE.getId().getPath() + "/" + machine.getNamespace() + "/" + machine.getPath() + "/" + uniqueID);
+        MMRLogger.INSTANCE.info("Built recipe with id: {}", recipe.id);
       }
     }
   }

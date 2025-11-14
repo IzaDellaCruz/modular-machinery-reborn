@@ -12,6 +12,9 @@ import es.degrassi.mmreborn.common.block.BlockEffectDispenser;
 import es.degrassi.mmreborn.common.block.BlockEnergyHatch;
 import es.degrassi.mmreborn.common.block.BlockEnergyInputHatch;
 import es.degrassi.mmreborn.common.block.BlockEnergyOutputHatch;
+import es.degrassi.mmreborn.common.block.BlockEntityDetector;
+import es.degrassi.mmreborn.common.block.BlockEntityKiller;
+import es.degrassi.mmreborn.common.block.BlockEntitySpawner;
 import es.degrassi.mmreborn.common.block.BlockExperienceHatch;
 import es.degrassi.mmreborn.common.block.BlockExperienceInputHatch;
 import es.degrassi.mmreborn.common.block.BlockExperienceOutputHatch;
@@ -19,7 +22,9 @@ import es.degrassi.mmreborn.common.block.BlockFluidHatch;
 import es.degrassi.mmreborn.common.block.BlockFluidInputHatch;
 import es.degrassi.mmreborn.common.block.BlockFluidOutputHatch;
 import es.degrassi.mmreborn.common.block.BlockFuelTank;
+import es.degrassi.mmreborn.common.block.BlockEntityHealer;
 import es.degrassi.mmreborn.common.block.BlockHeightMeter;
+import es.degrassi.mmreborn.common.block.BlockEntityDamager;
 import es.degrassi.mmreborn.common.block.BlockInputBus;
 import es.degrassi.mmreborn.common.block.BlockOutputBus;
 import es.degrassi.mmreborn.common.block.BlockTimeCounter;
@@ -256,6 +261,22 @@ public class BlockRegistration {
   public static final DeferredBlock<BlockEffectDispenser> EFFECT_DISPENSER_BIG =
       BLOCKS.register(rootLC("effect_dispenser_" + EffectDispenserSize.BIG.getSerializedName()),
           () -> new BlockEffectDispenser(EffectDispenserSize.BIG));
+
+  public static final DeferredBlock<BlockEntityDetector> ENTITY_DETECTOR =
+      BLOCKS.register(rootLC("entity_detector"),
+      BlockEntityDetector::new);
+  public static final DeferredBlock<BlockEntityDamager> ENTITY_DAMAGER =
+      BLOCKS.register(rootLC("entity_damager"),
+      BlockEntityDamager::new);
+  public static final DeferredBlock<BlockEntityHealer> ENTITY_HEALER =
+      BLOCKS.register(rootLC("entity_healer"),
+      BlockEntityHealer::new);
+  public static final DeferredBlock<BlockEntitySpawner> ENTITY_SPAWNER =
+      BLOCKS.register(rootLC("entity_spawner"),
+      BlockEntitySpawner::new);
+  public static final DeferredBlock<BlockEntityKiller> ENTITY_KILLER =
+      BLOCKS.register(rootLC("entity_killer"),
+      BlockEntityKiller::new);
 
   public static void register(final IEventBus bus) {
     BLOCKS.register(bus);

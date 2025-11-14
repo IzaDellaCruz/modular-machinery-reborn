@@ -1,0 +1,57 @@
+package es.degrassi.mmreborn.common.crafting.requirement.entity;
+
+import es.degrassi.mmreborn.api.codec.NamedCodec;
+import es.degrassi.mmreborn.api.codec.RegistrarCodec;
+import es.degrassi.mmreborn.api.crafting.CraftingResult;
+import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
+import es.degrassi.mmreborn.common.machine.component.EntityComponent;
+import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import lombok.Getter;
+import net.minecraft.world.entity.EntityType;
+
+@Getter
+public class RequirementSpawnEntity extends RequirementEntity {
+  public static final NamedCodec<RequirementSpawnEntity> CODEC = NamedCodec.record(instance -> instance.group(
+      NamedCodec.INT.fieldOf("amount").forGetter(RequirementEntity::getAmount),
+      NamedCodec.INT.fieldOf("radius").forGetter(RequirementEntity::getRadius),
+      RegistrarCodec.ENTITY.fieldOf("entity").forGetter(RequirementSpawnEntity::getEntityType)
+  ).apply(instance, RequirementSpawnEntity::new), "Spawn Entity Requirement");
+
+  private final EntityType<?> entityType;
+
+  public RequirementSpawnEntity(int amount, int radius, EntityType<?> entityType) {
+    super(Action.SPAWN, amount, radius);
+    this.entityType = entityType;
+  }
+
+  @Override
+  public RequirementType<RequirementSpawnEntity> getType() {
+    return RequirementTypeRegistration.SPAWN_ENTITY.get();
+  }
+
+  @Override
+  public boolean test(EntityComponent component, ICraftingContext context) {
+    return true;
+  }
+
+  @Override
+  public void gatherRequirements(IRequirementList<EntityComponent> list) {
+    list.process(this.getMode(), this::process);
+  }
+
+  private CraftingResult process(EntityComponent component, ICraftingContext context) {
+    int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
+    int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
+    component.getContainerProvider().spawnEntities(radius, amount, entityType);
+    return CraftingResult.success();
+  }
+
+  @Override
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+    super.getDefaultDisplayInfo(info, requirement);
+  }
+}

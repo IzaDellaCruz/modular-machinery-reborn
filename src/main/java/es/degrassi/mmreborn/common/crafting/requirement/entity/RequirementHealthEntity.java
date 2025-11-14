@@ -1,0 +1,101 @@
+package es.degrassi.mmreborn.common.crafting.requirement.entity;
+
+import es.degrassi.mmreborn.api.codec.NamedCodec;
+import es.degrassi.mmreborn.api.codec.RegistrarCodec;
+import es.degrassi.mmreborn.api.crafting.CraftingResult;
+import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
+import es.degrassi.mmreborn.common.machine.IOType;
+import es.degrassi.mmreborn.common.machine.component.EntityComponent;
+import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import lombok.Getter;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Predicate;
+
+@Getter
+public class RequirementHealthEntity extends RequirementEntity {
+  public static final NamedCodec<RequirementHealthEntity> CODEC = NamedCodec.record(instance -> instance.group(
+      NamedCodec.INT.fieldOf("amount").forGetter(RequirementEntity::getAmount),
+      NamedCodec.INT.fieldOf("radius").forGetter(RequirementEntity::getRadius),
+      Mode.CODEC.fieldOf("mode").forGetter(RequirementHealthEntity::getHealthMode),
+      RegistrarCodec.ENTITY.listOf().optionalFieldOf("entity", Collections.emptyList()).forGetter(RequirementHealthEntity::getEntityTypes)
+  ).apply(instance, RequirementHealthEntity::new), "Add or Remove Health Entity Requirement");
+
+  private final List<EntityType<?>> entityTypes;
+  private final Mode healthMode;
+
+  public RequirementHealthEntity(int amount, int radius, Mode healthMode, List<EntityType<?>> entityTypes) {
+    super(healthMode.toIOType(), healthMode.isInput() ? Action.CONSUME_HEALTH : Action.ADD_HEALTH, amount, radius);
+    this.entityTypes = entityTypes;
+    this.healthMode = healthMode;
+  }
+
+  @Override
+  public RequirementType<RequirementHealthEntity> getType() {
+    return RequirementTypeRegistration.HEATH_ENTITY.get();
+  }
+
+  @Override
+  public boolean test(EntityComponent component, ICraftingContext context) {
+    return switch (healthMode) {
+      case INPUT -> component.getContainerProvider().canHurtEntitiesInRadius(this.getRadius(), this.getFilter(), this.getAmount());
+      case OUTPUT -> component.getContainerProvider().canHealEntitiesInRadius(this.getRadius(), this.getFilter(), this.getAmount());
+    };
+  }
+
+  private Predicate<Entity> getFilter() {
+    return entity -> entityTypes.isEmpty() || entityTypes.contains(entity.getType());
+  }
+
+  @Override
+  public void gatherRequirements(IRequirementList<EntityComponent> list) {
+    switch (healthMode) {
+      case INPUT -> list.processOnStart(this::process);
+      case OUTPUT -> list.processOnEnd(this::process);
+    }
+  }
+
+  public CraftingResult process(EntityComponent component, ICraftingContext context) {
+    int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
+    int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
+    switch (healthMode) {
+      case INPUT -> component.getContainerProvider().removeEntitiesHealth(radius, this.getFilter(), amount);
+      case OUTPUT -> component.getContainerProvider().addEntitiesHealth(radius, this.getFilter(), amount);
+    };
+    return CraftingResult.success();
+  }
+
+  @Override
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+    super.getDefaultDisplayInfo(info, requirement);
+  }
+
+  public enum Mode {
+    INPUT,
+    OUTPUT;
+    public static final NamedCodec<Mode> CODEC = NamedCodec.enumCodec(Mode.class);
+
+    public static Mode value(String mode) {
+      return valueOf(mode.toUpperCase(Locale.ENGLISH));
+    }
+
+    public IOType toIOType() {
+      return switch(this) {
+        case INPUT -> IOType.INPUT;
+        case OUTPUT -> IOType.OUTPUT;
+      };
+    }
+
+    private boolean isInput() {
+      return this == INPUT;
+    }
+  }
+}

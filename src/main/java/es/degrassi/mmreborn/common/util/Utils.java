@@ -1,8 +1,10 @@
 package es.degrassi.mmreborn.common.util;
 
 import net.minecraft.ResourceLocationException;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -12,6 +14,10 @@ public class Utils {
   public static final RandomSource RAND = RandomSource.create(42L);
   private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("#,###");
   public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+
+  public static Vec3 vec3dFromBlockPos(BlockPos pos) {
+    return new Vec3(pos.getX(), pos.getY(), pos.getZ());
+  }
 
   public static boolean isResourceNameValid(String resourceLocation) {
     try {

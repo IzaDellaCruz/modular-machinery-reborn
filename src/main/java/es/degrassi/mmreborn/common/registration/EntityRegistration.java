@@ -8,12 +8,17 @@ import es.degrassi.mmreborn.common.entity.DimensionalDetectorEntity;
 import es.degrassi.mmreborn.common.entity.EffectDispenserEntity;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.EnergyOutputHatchEntity;
+import es.degrassi.mmreborn.common.entity.EntityDetectorEntity;
+import es.degrassi.mmreborn.common.entity.EntitySpawnerEntity;
+import es.degrassi.mmreborn.common.entity.EntityKillerEntity;
 import es.degrassi.mmreborn.common.entity.ExperienceInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.ExperienceOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FluidInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FluidOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FuelTankEntity;
+import es.degrassi.mmreborn.common.entity.EntityHealerEntity;
 import es.degrassi.mmreborn.common.entity.HeightMeterEntity;
+import es.degrassi.mmreborn.common.entity.EntityDamagerEntity;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.entity.ItemOutputBusEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
@@ -299,6 +304,51 @@ public class EntityRegistration {
               BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(),
               BlockRegistration.EFFECT_DISPENSER_BIG.get()
           ),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<EntityDetectorEntity>> ENTITY_DETECTOR = ENTITY_TYPE.register(
+     rootLC("entity_detector"),
+      () -> new BlockEntityType<>(
+          EntityDetectorEntity::new,
+          Set.of(BlockRegistration.ENTITY_DETECTOR.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<EntitySpawnerEntity>> ENTITY_SPAWNER = ENTITY_TYPE.register(
+      rootLC("entity_spawner"),
+      () -> new BlockEntityType<>(
+          EntitySpawnerEntity::new,
+          Set.of(BlockRegistration.ENTITY_SPAWNER.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<EntityDamagerEntity>> ENTITY_DAMAGER = ENTITY_TYPE.register(
+      rootLC("entity_damager"),
+      () -> new BlockEntityType<>(
+          EntityDamagerEntity::new,
+          Set.of(BlockRegistration.ENTITY_DAMAGER.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<EntityHealerEntity>> ENTITY_HEALER = ENTITY_TYPE.register(
+      rootLC("entity_healer"),
+      () -> new BlockEntityType<>(
+          EntityHealerEntity::new,
+          Set.of(BlockRegistration.ENTITY_HEALER.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<EntityKillerEntity>> ENTITY_KILLER = ENTITY_TYPE.register(
+      rootLC("entity_killer"),
+      () -> new BlockEntityType<>(
+          EntityKillerEntity::new,
+          Set.of(BlockRegistration.ENTITY_KILLER.get()),
           null
       )
   );

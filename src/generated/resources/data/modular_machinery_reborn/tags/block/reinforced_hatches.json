@@ -42,6 +42,8 @@
     "modular_machinery_reborn:fuel_tank_reinforced",
     "modular_machinery_reborn:fuel_tank_big",
     "modular_machinery_reborn:fuel_tank_huge",
-    "modular_machinery_reborn:effect_dispenser_big"
+    "modular_machinery_reborn:effect_dispenser_big",
+    "modular_machinery_reborn:entity_killer",
+    "modular_machinery_reborn:entity_spawner"
   ]
 }

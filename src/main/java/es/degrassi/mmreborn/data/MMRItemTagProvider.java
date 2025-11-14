@@ -163,6 +163,15 @@ public class MMRItemTagProvider extends ItemTagsProvider {
             BlockRegistration.EFFECT_DISPENSER_BIG.get().asItem()
         );
 
+    tag(MMRTags.Items.ENTITY)
+        .add(
+            BlockRegistration.ENTITY_DETECTOR.get().asItem(),
+            BlockRegistration.ENTITY_SPAWNER.get().asItem(),
+            BlockRegistration.ENTITY_KILLER.get().asItem(),
+            BlockRegistration.ENTITY_DAMAGER.get().asItem(),
+            BlockRegistration.ENTITY_HEALER.get().asItem()
+        );
+
     tag(MMRTags.Items.CASINGS)
         .add(
             BlockRegistration.CASING_PLAIN.get().asItem(),
@@ -183,6 +192,7 @@ public class MMRItemTagProvider extends ItemTagsProvider {
         .addTag(MMRTags.Items.DURABILITY)
         .addTag(MMRTags.Items.FUEL_TANK)
         .addTag(MMRTags.Items.EFFECT_DISPENSER)
+        .addTag(MMRTags.Items.ENTITY)
         .add(BlockRegistration.BIOME_READER.get().asItem())
         .add(BlockRegistration.DIMENSIONAL_DETECTOR.get().asItem())
         .add(BlockRegistration.WEATHER_SENSOR.get().asItem())

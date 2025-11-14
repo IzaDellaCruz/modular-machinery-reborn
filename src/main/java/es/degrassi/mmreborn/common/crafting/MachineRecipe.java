@@ -289,14 +289,14 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
 
     public MachineRecipe build() {
       try {
-        MMRLogger.INSTANCE.info("Building recipe...");
+        MMRLogger.INSTANCE.debug("Building recipe...");
         MachineRecipe recipe = new MachineRecipe(machine, time, prio, voidF, width, height, shouldRenderProgress, progressData);
         requirements.forEach(recipe::addRequirement);
         jeiRequirements.forEach(recipe::addJeiRequirement);
         if (!recipe.modified)
           recipe.setModified(modified);
         recipe.hide(hidden);
-        MMRLogger.INSTANCE.info("Finished building recipe {}", recipe);
+        MMRLogger.INSTANCE.debug("Finished building recipe {}", recipe);
         return recipe;
       } catch (Exception ex) {
         MMRLogger.INSTANCE.error("Error while building recipe for machine: {}", machine, ex);

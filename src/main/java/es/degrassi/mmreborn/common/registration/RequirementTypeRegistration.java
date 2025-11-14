@@ -24,6 +24,10 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementTime;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementHeight;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementWeather;
+import es.degrassi.mmreborn.common.crafting.requirement.entity.RequirementCheckEntity;
+import es.degrassi.mmreborn.common.crafting.requirement.entity.RequirementHealthEntity;
+import es.degrassi.mmreborn.common.crafting.requirement.entity.RequirementKillEntity;
+import es.degrassi.mmreborn.common.crafting.requirement.entity.RequirementSpawnEntity;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -103,6 +107,18 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementEffect>> EFFECT =
       MACHINE_REQUIREMENTS.register(rootLC("effect"),
       () -> RequirementType.world(RequirementEffect.CODEC));
+  public static final Supplier<RequirementType<RequirementKillEntity>> KILL_ENTITY =
+      MACHINE_REQUIREMENTS.register(rootLC("kill_entity"),
+      () -> RequirementType.world(RequirementKillEntity.CODEC));
+  public static final Supplier<RequirementType<RequirementCheckEntity>> CHECK_ENTITY =
+      MACHINE_REQUIREMENTS.register(rootLC("check_entity"),
+      () -> RequirementType.world(RequirementCheckEntity.CODEC));
+  public static final Supplier<RequirementType<RequirementSpawnEntity>> SPAWN_ENTITY =
+      MACHINE_REQUIREMENTS.register(rootLC("spawn_entity"),
+      () -> RequirementType.world(RequirementSpawnEntity.CODEC));
+  public static final Supplier<RequirementType<RequirementHealthEntity>> HEATH_ENTITY =
+      MACHINE_REQUIREMENTS.register(rootLC("health_entity"),
+      () -> RequirementType.world(RequirementHealthEntity.CODEC));
 
   public static void register(IEventBus bus) {
     MACHINE_REQUIREMENTS.register(bus);

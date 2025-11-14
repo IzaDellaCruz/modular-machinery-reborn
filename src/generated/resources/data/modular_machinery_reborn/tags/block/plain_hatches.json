@@ -42,6 +42,9 @@
     "modular_machinery_reborn:fuel_tank_small",
     "modular_machinery_reborn:fuel_tank_normal",
     "modular_machinery_reborn:effect_dispenser_small",
-    "modular_machinery_reborn:effect_dispenser_medium"
+    "modular_machinery_reborn:effect_dispenser_medium",
+    "modular_machinery_reborn:entity_detector",
+    "modular_machinery_reborn:entity_damager",
+    "modular_machinery_reborn:entity_healer"
   ]
 }

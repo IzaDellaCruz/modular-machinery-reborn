@@ -163,6 +163,15 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
           BlockRegistration.EFFECT_DISPENSER_BIG.get()
         );
 
+    tag(MMRTags.Blocks.ENTITY)
+        .add(
+          BlockRegistration.ENTITY_DETECTOR.get(),
+          BlockRegistration.ENTITY_SPAWNER.get(),
+          BlockRegistration.ENTITY_KILLER.get(),
+          BlockRegistration.ENTITY_DAMAGER.get(),
+          BlockRegistration.ENTITY_HEALER.get()
+        );
+
     tag(MMRTags.Blocks.CASINGS)
         .add(
             BlockRegistration.CASING_PLAIN.get(),
@@ -183,6 +192,7 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
         .addTag(MMRTags.Blocks.DURABILITY)
         .addTag(MMRTags.Blocks.FUEL_TANK)
         .addTag(MMRTags.Blocks.EFFECT_DISPENSER)
+        .addTag(MMRTags.Blocks.ENTITY)
         .add(BlockRegistration.BIOME_READER.get())
         .add(BlockRegistration.DIMENSIONAL_DETECTOR.get())
         .add(BlockRegistration.WEATHER_SENSOR.get())
@@ -238,7 +248,10 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.FUEL_TANK_SMALL.get(),
             BlockRegistration.FUEL_TANK_NORMAL.get(),
             BlockRegistration.EFFECT_DISPENSER_SMALL.get(),
-            BlockRegistration.EFFECT_DISPENSER_MEDIUM.get()
+            BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(),
+            BlockRegistration.ENTITY_DETECTOR.get(),
+            BlockRegistration.ENTITY_DAMAGER.get(),
+            BlockRegistration.ENTITY_HEALER.get()
         );
 
     tag(MMRTags.Blocks.PLAIN_CONNECTABLE)
@@ -297,7 +310,9 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.FUEL_TANK_REINFORCED.get(),
             BlockRegistration.FUEL_TANK_BIG.get(),
             BlockRegistration.FUEL_TANK_HUGE.get(),
-            BlockRegistration.EFFECT_DISPENSER_BIG.get()
+            BlockRegistration.EFFECT_DISPENSER_BIG.get(),
+            BlockRegistration.ENTITY_KILLER.get(),
+            BlockRegistration.ENTITY_SPAWNER.get()
         );
 
     tag(MMRTags.Blocks.REINFORCED_CONNECTABLE)

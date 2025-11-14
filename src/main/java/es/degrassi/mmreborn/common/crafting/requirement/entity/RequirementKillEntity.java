@@ -1,0 +1,69 @@
+package es.degrassi.mmreborn.common.crafting.requirement.entity;
+
+import es.degrassi.mmreborn.api.codec.NamedCodec;
+import es.degrassi.mmreborn.api.codec.RegistrarCodec;
+import es.degrassi.mmreborn.api.crafting.CraftingResult;
+import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
+import es.degrassi.mmreborn.common.machine.component.EntityComponent;
+import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import lombok.Getter;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+
+import java.util.Collections;
+import java.util.List;
+
+@Getter
+public class RequirementKillEntity extends RequirementEntity {
+  public static final NamedCodec<RequirementKillEntity> CODEC = NamedCodec.record(instance -> instance.group(
+      NamedCodec.INT.fieldOf("amount").forGetter(RequirementEntity::getAmount),
+      NamedCodec.INT.fieldOf("radius").forGetter(RequirementEntity::getRadius),
+      RegistrarCodec.ENTITY.listOf().optionalFieldOf("entity", Collections.emptyList()).forGetter(RequirementKillEntity::getEntityTypes)
+  ).apply(instance, RequirementKillEntity::new), "Add Health Entity Requirement");
+
+  private final List<EntityType<?>> entityTypes;
+
+  public RequirementKillEntity(int amount, int radius, List<EntityType<?>> entityTypes) {
+    super(Action.SPAWN, amount, radius);
+    this.entityTypes = entityTypes;
+  }
+
+  @Override
+  public RequirementType<RequirementKillEntity> getType() {
+    return RequirementTypeRegistration.KILL_ENTITY.get();
+  }
+
+  @Override
+  public boolean test(EntityComponent component, ICraftingContext context) {
+    int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
+    int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
+    return component.getContainerProvider().getEntitiesInRadiusHealth(radius, this::predicate) >= amount;
+  }
+
+  @Override
+  public void gatherRequirements(IRequirementList<EntityComponent> list) {
+    list.process(this.getMode(), this::process);
+  }
+
+  private CraftingResult process(EntityComponent component, ICraftingContext context) {
+    if (component.getContainerProvider().getEntitiesInRadius(getRadius(), this::predicate) >= getAmount()) {
+      component.getContainerProvider().killEntities(getRadius(), this::predicate, getAmount());
+      return CraftingResult.success();
+    }
+    return CraftingResult.error(Component.translatable("craftcheck.failure.entity.amount"));
+  }
+
+  private boolean predicate(Entity entity) {
+    return this.entityTypes.contains(entity.getType());
+  }
+
+  @Override
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+    super.getDefaultDisplayInfo(info, requirement);
+  }
+}

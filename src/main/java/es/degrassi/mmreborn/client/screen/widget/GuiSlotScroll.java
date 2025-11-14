@@ -47,7 +47,8 @@ public class GuiSlotScroll extends GuiElement {
         y,
         ySlots * BaseScreen.SLOT_SIZE,
         () -> Mth.ceil((double) getSlotList().size() / this.xSlots),
-        () -> this.ySlots, needsScrolling));
+        () -> this.ySlots, needsScrolling
+    ));
   }
 
   @Override
@@ -108,22 +109,26 @@ public class GuiSlotScroll extends GuiElement {
     return scrollBar.adjustScroll(yDelta) || super.mouseScrolled(mouseX, mouseY, xDelta, yDelta);
   }
 
+  // TODO: look where is being the slot clicked when is not visible
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    return Optional.ofNullable(getSlot(mouseX, mouseY)).map(slot -> {
-      getChildAt(mouseX, mouseY).ifPresentOrElse(this::setFocused, gui()::clearFocus);
-      if (this.active && this.visible) {
-        if (this.isValidClickButton(button)) {
-          boolean flag = this.clicked(mouseX, mouseY);
-          if (flag) {
-            this.playDownSound(Minecraft.getInstance().getSoundManager());
-            this.onClick(mouseX, mouseY, button);
-            return true;
+    return Optional.ofNullable(getSlot(mouseX, mouseY))
+        .map(slot -> {
+          if (!slot.isActive()) return false;
+          getChildAt(mouseX, mouseY).ifPresentOrElse(this::setFocused, gui()::clearFocus);
+          if (this.active && this.visible) {
+            if (this.isValidClickButton(button)) {
+              boolean flag = this.clicked(mouseX, mouseY);
+              if (flag) {
+                this.playDownSound(Minecraft.getInstance().getSoundManager());
+                this.onClick(mouseX, mouseY, button);
+                return true;
+              }
+            }
           }
-        }
-      }
-      return false;
-    }).orElse(false);
+          return false;
+        })
+        .orElse(false);
   }
 
   protected boolean isValidClickButton(int button) {

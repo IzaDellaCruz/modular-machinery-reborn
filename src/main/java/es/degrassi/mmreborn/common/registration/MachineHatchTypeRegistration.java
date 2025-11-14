@@ -285,10 +285,26 @@ public class MachineHatchTypeRegistration {
       MachineHatchType::create);
   public static final Supplier<MachineHatchType> EFFECT_DISPENSER_MEDIUM =
       MACHINE_COMPONENTS.register(rootLC("EFFECT_DISPENSER_MEDIUM".toLowerCase(Locale.ENGLISH)),
-          MachineHatchType::create);
+      MachineHatchType::create);
   public static final Supplier<MachineHatchType> EFFECT_DISPENSER_BIG =
       MACHINE_COMPONENTS.register(rootLC("EFFECT_DISPENSER_BIG".toLowerCase(Locale.ENGLISH)),
-          MachineHatchType::create);
+      MachineHatchType::create);
+
+  public static final Supplier<MachineHatchType> ENTITY_DETECTOR =
+      MACHINE_COMPONENTS.register(rootLC("ENTITY_DETECTOR".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> ENTITY_SPAWNER =
+      MACHINE_COMPONENTS.register(rootLC("ENTITY_SPAWNER".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> ENTITY_KILLER =
+      MACHINE_COMPONENTS.register(rootLC("ENTITY_KILLER".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> ENTITY_HEALER =
+      MACHINE_COMPONENTS.register(rootLC("ENTITY_HEALER".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+  public static final Supplier<MachineHatchType> ENTITY_DAMAGER =
+      MACHINE_COMPONENTS.register(rootLC("ENTITY_DAMAGER".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
 
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);

@@ -72,6 +72,7 @@ public final class EsEsLang extends Lang {
     add(mmr("place.non_air"), "Tried to place %s in %s but found no valid structure block");
     add(mmr("place.no_item"), "Tried to place %s in %s but couldn't find the item %s in the player inventory");
     add(mmr("place.replace"), "Breaking %s at %s to place new block...");
+    add(mmr("damagesource.kill"), "%s was killed by a %s");
   }
 
   @Override
@@ -128,6 +129,14 @@ public final class EsEsLang extends Lang {
     add(jeiIngredient("fuel"), "Require %s burntime");
     add(jeiIngredient("effect.info.tick"), "Give %s %s for %s ticks each tick");
     add(jeiIngredient("effect.info.whitelist"), "Entity Whitelist :");
+    add(jeiIngredient("entity.whitelist"), "Entity whitelist:");
+    add(jeiIngredient("entity.blacklist"), "Entity blacklist:");
+    add(jeiIngredient("entity.kill.info"), "Kill %s entities in %s blocks radius");
+    add(jeiIngredient("entity.spawn.info"), "Spawns %s entities in %s blocks radius");
+    add(jeiIngredient("entity.check_health.info"), "Requires %s entity HP in a %s blocks radius (not consumed)");
+    add(jeiIngredient("entity.check_amount.info"), "Requires %s entities in a %s blocks radius");
+    add(jeiIngredient("entity.consume_health.info"), "Requires and consume %s entity HP in a %s blocks radius");
+    add(jeiIngredient("entity.add_health.info"), "Requires missing and heals %s entity HP in a %s blocks radius");
   }
 
   @Override
@@ -246,6 +255,12 @@ public final class EsEsLang extends Lang {
     addBlock(BlockRegistration.EFFECT_DISPENSER_SMALL, "Small Effect Dispenser");
     addBlock(BlockRegistration.EFFECT_DISPENSER_MEDIUM, "Medium Effect Dispenser");
     addBlock(BlockRegistration.EFFECT_DISPENSER_BIG, "Big Effect Dispenser");
+
+    addBlock(BlockRegistration.ENTITY_DETECTOR, "Entity Detector");
+    addBlock(BlockRegistration.ENTITY_KILLER, "Entity Killer");
+    addBlock(BlockRegistration.ENTITY_SPAWNER, "Entity Spawner");
+    addBlock(BlockRegistration.ENTITY_HEALER, "Entity Healer");
+    addBlock(BlockRegistration.ENTITY_DAMAGER, "Entity Damager");
   }
 
   @Override
@@ -326,6 +341,11 @@ public final class EsEsLang extends Lang {
     add(missingComponent("durability.output"), "No se ha Durability Hatch!");
     add(missingComponent("fuel"), "No Fuel Tank found!");
     add(missingComponent("effect"), "No Effect Dispenser found!");
+    add(missingComponent("entity.detector"), "No Entity Detector found!");
+    add(missingComponent("entity.healer"), "No Entity Healer found!");
+    add(missingComponent("entity.damager"), "No Entity Damager found!");
+    add(missingComponent("entity.killer"), "No Entity Killer found!");
+    add(missingComponent("entity.spawner"), "No Entity Spawner found!");
   }
 
   @Override
@@ -353,6 +373,8 @@ public final class EsEsLang extends Lang {
     add(craftCheck("function.no_listener"), "Función requerida con id: %s no tiene asociado ningún KubeJS event");
     add(craftCheck("function.interrupt"), "Parado por KubeJS event");
     add(craftCheck("fuel"), "Not enough burntime, needed: %s but found %s");
+    add(craftCheck("entity.amount"), "Not enough entities nearby !");
+    add(craftCheck("entity.health"), "Can't collect %s health points with nearby entities !");
   }
 
   @Override
