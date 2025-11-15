@@ -2,7 +2,7 @@ package es.degrassi.mmreborn.common.block;
 
 import net.minecraft.world.level.block.SoundType;
 
-public class BlockCommandExecutioner extends BlockMachineComponent implements BlockTickEntity {
+public class BlockCommandExecutioner extends BlockMachineComponent {
   protected BlockCommandExecutioner() {
     super(
         Properties.of()

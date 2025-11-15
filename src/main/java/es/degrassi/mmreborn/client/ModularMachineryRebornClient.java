@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.client;
 import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.entity.renderer.ControllerRenderer;
+import es.degrassi.mmreborn.client.entity.renderer.StructureCheckerRenderer;
 import es.degrassi.mmreborn.client.integration.athena.MMRAthenaModels;
 import es.degrassi.mmreborn.client.integration.emi.MMREmiClientIntegration;
 import es.degrassi.mmreborn.client.integration.jei.MMRJeiClientIntegration;
@@ -92,6 +93,7 @@ public class ModularMachineryRebornClient {
   @SubscribeEvent
   public void registerBlockEntityRenderers(final EntityRenderersEvent.RegisterRenderers event) {
     event.registerBlockEntityRenderer(EntityRegistration.CONTROLLER.get(), ControllerRenderer::new);
+    event.registerBlockEntityRenderer(EntityRegistration.STRUCTURE_CHECKER.get(), StructureCheckerRenderer::new);
   }
 
   @SubscribeEvent

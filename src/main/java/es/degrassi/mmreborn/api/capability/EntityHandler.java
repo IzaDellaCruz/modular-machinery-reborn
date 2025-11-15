@@ -101,27 +101,26 @@ public class EntityHandler {
         .forEach(entity -> entity.hurt(this.damageSource.get(), Float.MAX_VALUE));
   }
 
-  public void spawnEntities(int radius, int amount, EntityType<?> type) {
+  public boolean spawnEntities(int radius, int amount, EntityType<?> type) {
     BlockPos pos = delegate.getBlockPos();
     RandomSource rand = delegate.getLevel().random;
     AABB bb = new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + radius, pos.getY() + radius, pos.getZ() + radius);
     for (int i = 0; i < amount; i++) {
       BlockPos toSpawnPos;
-      do {
-        int x = rand.nextIntBetweenInclusive((int) bb.minX, (int) bb.maxX);
-        int y = rand.nextIntBetweenInclusive((int) bb.minY, (int) bb.maxY);
-        int z = rand.nextIntBetweenInclusive((int) bb.minZ, (int) bb.maxZ);
-        toSpawnPos = new BlockPos(x, y, z);
-      } while (!delegate.getLevel().getBlockState(toSpawnPos).isValidSpawn(
-          delegate.getLevel(),
-          toSpawnPos,
-          type
-      ) || !delegate.getLevel().getBlockState(toSpawnPos).isAir());
+      int x = rand.nextIntBetweenInclusive((int) bb.minX, (int) bb.maxX);
+      int y = rand.nextIntBetweenInclusive((int) bb.minY, (int) bb.maxY);
+      int z = rand.nextIntBetweenInclusive((int) bb.minZ, (int) bb.maxZ);
+      toSpawnPos = new BlockPos(x, y, z);
+      if(!delegate.getLevel().getBlockState(toSpawnPos).isAir()) {
+        i--;
+        continue;
+      };
       type.spawn(
           (ServerLevel) delegate.getLevel(),
           toSpawnPos,
           MobSpawnType.SPAWNER
       );
     }
+    return true;
   }
 }

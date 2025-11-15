@@ -20,6 +20,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementFuel;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFunction;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementItem;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementLootTable;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementStructure;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementTime;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementHeight;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
@@ -119,6 +120,9 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementHealthEntity>> HEATH_ENTITY =
       MACHINE_REQUIREMENTS.register(rootLC("health_entity"),
       () -> RequirementType.world(RequirementHealthEntity.CODEC));
+  public static final Supplier<RequirementType<RequirementStructure>> STRUCTURE =
+      MACHINE_REQUIREMENTS.register(rootLC("structure"),
+      () -> RequirementType.world(RequirementStructure.CODEC));
 
   public static void register(IEventBus bus) {
     MACHINE_REQUIREMENTS.register(bus);

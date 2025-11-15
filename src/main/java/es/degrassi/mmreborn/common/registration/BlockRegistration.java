@@ -27,6 +27,7 @@ import es.degrassi.mmreborn.common.block.BlockHeightMeter;
 import es.degrassi.mmreborn.common.block.BlockEntityDamager;
 import es.degrassi.mmreborn.common.block.BlockInputBus;
 import es.degrassi.mmreborn.common.block.BlockOutputBus;
+import es.degrassi.mmreborn.common.block.BlockStructureChecker;
 import es.degrassi.mmreborn.common.block.BlockTimeCounter;
 import es.degrassi.mmreborn.common.block.BlockWeatherSensor;
 import es.degrassi.mmreborn.common.block.ParallelHatchBlock;
@@ -277,6 +278,10 @@ public class BlockRegistration {
   public static final DeferredBlock<BlockEntityKiller> ENTITY_KILLER =
       BLOCKS.register(rootLC("entity_killer"),
       BlockEntityKiller::new);
+
+  public static final DeferredBlock<BlockStructureChecker> STRUCTURE_CHECKER =
+      BLOCKS.register(rootLC("structure_checker"),
+      BlockStructureChecker::new);
 
   public static void register(final IEventBus bus) {
     BLOCKS.register(bus);

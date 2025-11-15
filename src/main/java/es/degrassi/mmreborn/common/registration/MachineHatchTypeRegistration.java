@@ -306,6 +306,10 @@ public class MachineHatchTypeRegistration {
       MACHINE_COMPONENTS.register(rootLC("ENTITY_DAMAGER".toLowerCase(Locale.ENGLISH)),
       MachineHatchType::create);
 
+  public static final Supplier<MachineHatchType> STRUCTURE_CHECKER =
+      MACHINE_COMPONENTS.register(rootLC("STRUCTURE_CHECKER".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);
   }

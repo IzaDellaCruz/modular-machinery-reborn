@@ -14,6 +14,7 @@
     "modular_machinery_reborn:weather_sensor",
     "modular_machinery_reborn:time_counter",
     "modular_machinery_reborn:chunkloader",
-    "modular_machinery_reborn:height_meter"
+    "modular_machinery_reborn:height_meter",
+    "modular_machinery_reborn:structure_checker"
   ]
 }

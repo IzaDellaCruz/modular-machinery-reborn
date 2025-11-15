@@ -9,7 +9,6 @@ import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.crafting.requirement.entity.RequirementEntity;
-import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.registration.BlockRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import net.minecraft.data.PackOutput;
@@ -145,6 +144,8 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
     addHatch(BlockRegistration.ENTITY_SPAWNER.get(), true, entity(RequirementEntity.Action.SPAWN), false);
     addHatch(BlockRegistration.ENTITY_HEALER.get(), false, entity(RequirementEntity.Action.ADD_HEALTH), false);
     addHatch(BlockRegistration.ENTITY_DAMAGER.get(), false, entity(RequirementEntity.Action.CONSUME_HEALTH), false);
+
+    addHatch(BlockRegistration.STRUCTURE_CHECKER.get(), true, modLoc("block/overlay_structure_checker"), false);
   }
 
   private void addDefaultModels() {

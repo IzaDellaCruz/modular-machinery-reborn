@@ -51,6 +51,8 @@ public class ComponentRegistration {
       ComponentType::create);
   public static final Supplier<ComponentType> COMPONENT_ENTITY = MACHINE_COMPONENTS.register(rootLC("entity"),
       ComponentType::create);
+  public static final Supplier<ComponentType> COMPONENT_STRUCTURE = MACHINE_COMPONENTS.register(rootLC("structure"),
+      ComponentType::create);
 
   public static final Supplier<ComponentType> COMPONENT_EMPTY = MACHINE_COMPONENTS.register(rootLC("empty"),
       ComponentType::create);

@@ -11,6 +11,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.component.EntityComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 
@@ -47,8 +48,9 @@ public class RequirementSpawnEntity extends RequirementEntity {
   private CraftingResult process(EntityComponent component, ICraftingContext context) {
     int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
     int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
-    component.getContainerProvider().spawnEntities(radius, amount, entityType);
-    return CraftingResult.success();
+    if (component.getContainerProvider().spawnEntities(radius, amount, entityType))
+      return CraftingResult.success();
+    return CraftingResult.error(Component.translatable("craftcheck.failure.entity.spawn", getAmount(), entityType.getDescription(), getRadius()));
   }
 
   @Override

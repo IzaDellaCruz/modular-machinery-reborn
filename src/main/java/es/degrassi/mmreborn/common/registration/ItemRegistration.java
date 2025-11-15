@@ -28,6 +28,7 @@ import es.degrassi.mmreborn.common.item.ItemBlueprint;
 import es.degrassi.mmreborn.common.item.ItemModularium;
 import es.degrassi.mmreborn.common.item.OutputBusItem;
 import es.degrassi.mmreborn.common.item.ParallelHatchItem;
+import es.degrassi.mmreborn.common.item.StructureCheckerItem;
 import es.degrassi.mmreborn.common.item.StructureCreatorItem;
 import es.degrassi.mmreborn.common.item.TimeCounterItem;
 import es.degrassi.mmreborn.common.item.WeatherSensorItem;
@@ -351,6 +352,11 @@ public class ItemRegistration {
   public static final DeferredItem<EntityItem> ENTITY_KILLER =
       ITEMS.register(rootLC("entity_killer"),
       () -> new EntityItem(BlockRegistration.ENTITY_KILLER.get()));
+
+  public static final DeferredItem<StructureCheckerItem> STRUCTURE_CHECKER =
+      ITEMS.register(rootLC("structure_checker"),
+      () -> new StructureCheckerItem(BlockRegistration.STRUCTURE_CHECKER.get()));
+
   public static void register(final IEventBus bus) {
     ITEMS.register(bus);
   }

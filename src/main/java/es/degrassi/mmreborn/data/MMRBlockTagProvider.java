@@ -198,7 +198,8 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.WEATHER_SENSOR.get(),
             BlockRegistration.TIME_COUNTER.get(),
             BlockRegistration.CHUNKLOADER.get(),
-            BlockRegistration.HEIGHT_METER.get()
+            BlockRegistration.HEIGHT_METER.get(),
+            BlockRegistration.STRUCTURE_CHECKER.get()
         );
 
     tag(MMRTags.Blocks.ALL_CASINGS)
@@ -317,7 +318,8 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.FUEL_TANK_HUGE.get(),
             BlockRegistration.EFFECT_DISPENSER_BIG.get(),
             BlockRegistration.ENTITY_KILLER.get(),
-            BlockRegistration.ENTITY_SPAWNER.get()
+            BlockRegistration.ENTITY_SPAWNER.get(),
+            BlockRegistration.STRUCTURE_CHECKER.get()
         );
 
     tag(MMRTags.Blocks.REINFORCED_CONNECTABLE)

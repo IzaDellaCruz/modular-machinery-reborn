@@ -5,7 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DataResult;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.common.block.BlockController;
+import es.degrassi.mmreborn.common.block.BlockStructureChecker;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
+import es.degrassi.mmreborn.common.entity.StructureCheckerEntity;
 import lombok.Getter;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
@@ -55,6 +57,18 @@ public class PartialBlockState implements Predicate<BlockInWorld> {
     @Override
     public String toString() {
       return "MACHINE";
+    }
+  };
+
+  public static final PartialBlockState STRUCTURE_CHECKER = new PartialBlockState(Blocks.AIR.defaultBlockState(), Collections.emptyList(), null) {
+    @Override
+    public boolean test(BlockInWorld cachedBlockInfo) {
+      return cachedBlockInfo.getState().getBlock() instanceof BlockStructureChecker || cachedBlockInfo.getEntity() instanceof StructureCheckerEntity;
+    }
+
+    @Override
+    public String toString() {
+      return "STRUCTURE_CHECKER";
     }
   };
 

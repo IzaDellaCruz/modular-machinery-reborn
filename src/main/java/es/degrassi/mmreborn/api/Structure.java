@@ -38,16 +38,18 @@ import java.util.Map;
 @Getter
 public class Structure {
   public static final NamedCodec<Structure> CODEC = NamedCodec.record(structure -> structure.group(
+      DefaultCodecs.CHARACTER.optionalFieldOf("machine_key", 'm').forGetter(Structure::getMachineKey),
       NamedCodec.STRING.listOf().listOf().fieldOf("pattern").forGetter(s -> s.pattern.asList()),
       NamedCodec.unboundedMap(DefaultCodecs.CHARACTER, BlockIngredient.CODEC, "Map<Character, Block>").fieldOf("keys").forGetter(s -> s.pattern.asMap()),
       ModifierReplacement.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(s -> s.pattern.getModifiers())
   ).apply(structure, Structure::makeStructure), "Structure with modifiers");
 
-  public static final Structure EMPTY = new Structure(Map.of(), List.of(List.of("m")), Map.of(), List.of());
+  public static final Structure EMPTY = new Structure('m', Map.of(), List.of(List.of("m")), Map.of(), List.of());
   private static final RandomSource random = RandomSource.create(42L);
 
-  private static Structure makeStructure(List<List<String>> pattern, Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
-    Structure.Builder builder = Structure.Builder.start();
+  private static Structure makeStructure(Character machineKey, List<List<String>> pattern,
+                                         Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
+    Structure.Builder builder = Structure.Builder.start(machineKey);
     for (List<String> levels : pattern)
       builder.aisle(levels.toArray(new String[0]));
     for (Map.Entry<Character, BlockIngredient> key : keys.entrySet())
@@ -195,10 +197,18 @@ public class Structure {
   }
 
   private final Pattern pattern;
+  private final Character machineKey;
 
-  public Structure(Map<BlockPos, BlockIngredient> blocks, List<List<String>> pattern,
+  public Structure(Character machineKey, Map<BlockPos, BlockIngredient> blocks, List<List<String>> pattern,
                    Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
     this.pattern = new Pattern(blocks, pattern, keys, modifiers);
+    this.machineKey = machineKey;
+  }
+
+  public Structure(Character machineKey, Map<BlockPos, BlockIngredient> blocks, List<List<String>> pattern,
+                   Map<Character, BlockIngredient> keys) {
+    this.pattern = new Pattern(blocks, pattern, keys);
+    this.machineKey = machineKey;
   }
 
   public Map<BlockPos, BlockIngredient> getBlocks(Direction direction) {
@@ -231,11 +241,17 @@ public class Structure {
     private final Map<Character, BlockIngredient> symbolMap = Maps.newHashMap();
     private int aisleHeight;
     private int rowWidth;
+    private final char machineKey;
 
-    private Builder() {
+    private Builder(char machineKey) {
+      this(machineKey, BlockIngredient.MACHINE, BlockIngredient.NOT_MACHINE);
+    }
+
+    private Builder(char machineKey, BlockIngredient machine, BlockIngredient notMachine) {
+      this.machineKey = machineKey;
       this.symbolMap.put(' ', BlockIngredient.ANY);
-      this.symbolMap.put('m', BlockIngredient.MACHINE);
-      this.symbolMap.put('_', BlockIngredient.NOT_MACHINE);
+      this.symbolMap.put(machineKey, machine);
+      this.symbolMap.put('_', notMachine);
     }
 
     /**
@@ -272,8 +288,9 @@ public class Structure {
       }
     }
 
-    public static Builder start() {
-      return new Builder();
+    public static Builder start(char machineKey) {
+      return machineKey == 'm' ? new Builder(machineKey) : new Builder(machineKey, BlockIngredient.STRUCTURE_CHECKER,
+          BlockIngredient.NOT_STRUCTURE_CHECKER);
     }
 
     public Builder where(char symbol, BlockIngredient blockMatcher) {
@@ -281,7 +298,8 @@ public class Structure {
       return this;
     }
 
-    public Structure build(List<List<String>> pattern, Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
+    public Structure build(List<List<String>> pattern, Map<Character, BlockIngredient> keys,
+                           List<ModifierReplacement> modifiers) {
       this.checkMissingPredicates();
       BlockPos machinePos = this.getMachinePos();
       Map<BlockPos, BlockIngredient> blocks = Maps.newHashMap();
@@ -292,7 +310,7 @@ public class Structure {
           }
         }
       }
-      return new Structure(blocks, pattern, keys, modifiers);
+      return new Structure(machineKey, blocks, pattern, keys, modifiers);
     }
 
     private BlockPos getMachinePos() {
@@ -300,11 +318,13 @@ public class Structure {
       for (int i = 0; i < this.depth.size(); ++i) {
         for (int j = 0; j < this.aisleHeight; ++j) {
           for (int k = 0; k < this.rowWidth; ++k) {
-            if ((this.depth.get(i))[j].charAt(k) == 'm')
+            if ((this.depth.get(i))[j].charAt(k) == machineKey)
               if (machinePos == null)
                 machinePos = new BlockPos(k, i, j);
               else
-                throw new IllegalStateException("The structure pattern need exactly one 'm' character to defined the machine position, several found !");
+                throw new IllegalStateException(
+                    String.format("The structure pattern need exactly one '%s' character to defined the machine position, several found !", machineKey)
+                );
           }
         }
       }

@@ -12,6 +12,7 @@ import com.mojang.serialization.DataResult;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -44,10 +45,11 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   public static final BlockIngredient ANY = new BlockIngredient(false, PartialBlockState.ANY);
   public static final BlockIngredient MACHINE = new BlockIngredient(false, PartialBlockState.MACHINE);
   public static final BlockIngredient NOT_MACHINE = new BlockIngredient(true, PartialBlockState.MACHINE);
+  public static final BlockIngredient STRUCTURE_CHECKER = new BlockIngredient(false, PartialBlockState.STRUCTURE_CHECKER);
+  public static final BlockIngredient NOT_STRUCTURE_CHECKER = new BlockIngredient(true, PartialBlockState.STRUCTURE_CHECKER);
 
   public static final NamedCodec<BlockIngredient> STRING_CODEC = NamedCodec.STRING.comapFlatMap(s -> {
     try {
-      final String original = s;
       StringReader reader = new StringReader(s);
       reader.skipWhitespace();
       boolean not = false;
@@ -211,6 +213,23 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     }
   }
 
+  public boolean test(Block block) {
+    boolean isTag = !this.tags.isEmpty();
+    if (isTag) {
+      if (not) {
+        return this.tags.stream().noneMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
+      } else {
+        return this.tags.stream().anyMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
+      }
+    } else {
+      if (this.not) {
+        return this.uniqueStates.stream().noneMatch(state -> state.getBlockState().getBlock() == block);
+      } else {
+        return this.uniqueStates.stream().anyMatch(state -> state.getBlockState().getBlock() == block);
+      }
+    }
+  }
+
   public List<ItemStack> getStacks(int amount) {
     List<ItemStack> stacks = getTagStacks(amount);
     stacks.addAll(getNonTagStacks(amount));
@@ -267,21 +286,18 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
 
   public MutableComponent getNamesUnified() {
     MutableComponent name = Component.empty();
-    MutableComponent last = Component.empty();
     Component current;
     Iterator<Component> iterator = getNames().iterator();
-    if (getNames().size() > 1) {
-      name.append("[");
-      last.append("]");
+    if (not) {
+      name.append(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.not"));
     }
     while (iterator.hasNext()) {
       current = iterator.next();
       name.append(current);
       if (iterator.hasNext()) {
-        name.append(", ");
+        name.append(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.or"));
       }
     }
-    name.append(last);
     return name;
   }
 
@@ -328,7 +344,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     json.addProperty("not", not);
     json.addProperty("tags", tags.toString());
     JsonArray array = new JsonArray();
-    getAll().forEach(state -> array.add(state.toString()));
+    this.uniqueStates.forEach(state -> array.add(state.toString()));
     json.add("states", array);
     return json;
   }

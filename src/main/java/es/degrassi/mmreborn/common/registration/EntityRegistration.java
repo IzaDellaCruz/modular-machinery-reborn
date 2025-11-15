@@ -23,6 +23,7 @@ import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.entity.ItemOutputBusEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
+import es.degrassi.mmreborn.common.entity.StructureCheckerEntity;
 import es.degrassi.mmreborn.common.entity.TimeCounterEntity;
 import es.degrassi.mmreborn.common.entity.WeatherSensorEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
@@ -349,6 +350,15 @@ public class EntityRegistration {
       () -> new BlockEntityType<>(
           EntityKillerEntity::new,
           Set.of(BlockRegistration.ENTITY_KILLER.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<StructureCheckerEntity>> STRUCTURE_CHECKER = ENTITY_TYPE.register(
+      rootLC("structure_checker"),
+      () -> new BlockEntityType<>(
+          StructureCheckerEntity::new,
+          Set.of(BlockRegistration.STRUCTURE_CHECKER.get()),
           null
       )
   );

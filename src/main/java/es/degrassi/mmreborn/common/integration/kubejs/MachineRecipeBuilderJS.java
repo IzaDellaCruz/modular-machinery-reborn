@@ -27,6 +27,7 @@ import es.degrassi.mmreborn.common.integration.kubejs.requirement.FunctionRequir
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.HeightRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.ItemRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.LootTableRequirementJS;
+import es.degrassi.mmreborn.common.integration.kubejs.requirement.StructureRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.TimeRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.WeatherRequirementJS;
 import lombok.Getter;
@@ -57,7 +58,8 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
     FuelRequirementJS,
     EmptyRequirementJS,
     EffectRequirementJS,
-    EntityRequirementJS
+    EntityRequirementJS,
+    StructureRequirementJS
 {
 
   @HideFromJS

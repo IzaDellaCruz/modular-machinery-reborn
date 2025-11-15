@@ -138,6 +138,15 @@ public final class EnUsLang extends Lang {
     add(jeiIngredient("entity.check_amount.info"), "Requires %s entities in a %s blocks radius");
     add(jeiIngredient("entity.consume_health.info"), "Requires and consume %s entity HP in a %s blocks radius");
     add(jeiIngredient("entity.add_health.info"), "Requires missing and heals %s entity HP in a %s blocks radius");
+    add(jeiIngredient("structure.info"), "Requires a structure");
+    add(jeiIngredient("structure.click"), "Click to view the required structure");
+    add(jeiIngredient("structure.shift"), "Press [Ctrl] to view blocks list");
+    add(jeiIngredient("structure.list"), "  %sx %s");
+    add(jeiIngredient("structure.break"), "Will break structure");
+    add(jeiIngredient("structure.destroy"), "Will destroy structure");
+    add(jeiIngredient("structure.place"), "Will place structure");
+    add(jeiIngredient("structure.not"), "Not %s");
+    add(jeiIngredient("structure.or"), " or ");
   }
 
   @Override
@@ -262,6 +271,8 @@ public final class EnUsLang extends Lang {
     addBlock(BlockRegistration.ENTITY_SPAWNER, "Entity Spawner");
     addBlock(BlockRegistration.ENTITY_HEALER, "Entity Healer");
     addBlock(BlockRegistration.ENTITY_DAMAGER, "Entity Damager");
+
+    addBlock(BlockRegistration.STRUCTURE_CHECKER, "Structure Checker");
   }
 
   @Override
@@ -347,6 +358,7 @@ public final class EnUsLang extends Lang {
     add(missingComponent("entity.damager"), "No Entity Damager found!");
     add(missingComponent("entity.killer"), "No Entity Killer found!");
     add(missingComponent("entity.spawner"), "No Entity Spawner found!");
+    add(missingComponent("structure"), "No Structure Checker found!");
   }
 
   @Override
@@ -376,6 +388,7 @@ public final class EnUsLang extends Lang {
     add(craftCheck("fuel"), "Not enough burntime, needed: %s but found %s");
     add(craftCheck("entity.amount"), "Not enough entities nearby !");
     add(craftCheck("entity.health"), "Can't collect %s health points with nearby entities !");
+    add(craftCheck("structure"), "Invalid structure!");
   }
 
   @Override
