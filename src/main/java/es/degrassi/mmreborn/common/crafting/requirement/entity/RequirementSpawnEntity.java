@@ -12,6 +12,7 @@ import es.degrassi.mmreborn.common.machine.component.EntityComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
 
 @Getter
 public class RequirementSpawnEntity extends RequirementEntity {
@@ -53,5 +54,6 @@ public class RequirementSpawnEntity extends RequirementEntity {
   @Override
   public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
     super.getDefaultDisplayInfo(info, requirement);
+    info.setItemIcon(Items.SLIME_SPAWN_EGG);
   }
 }

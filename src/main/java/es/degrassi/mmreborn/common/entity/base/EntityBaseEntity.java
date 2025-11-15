@@ -48,11 +48,12 @@ TextureableMachineEntity, ControllerAccessible {
 
   private final RequirementEntity.Action[] validActions;
 
-  public EntityBaseEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, IOType mode,
+  public EntityBaseEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState,
                           RequirementEntity.Action... validActions) {
     super(entityType, pos, blockState);
+    if (validActions.length < 1) throw new IllegalArgumentException("Actions must be at least 1");
     this.handler = new EntityHandler(this);
-    this.mode = mode;
+    this.mode = validActions[0].getMode();
     this.validActions = validActions;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_entity" + fromMode());
     this.overlayTexture = defaultOverlayTexture;

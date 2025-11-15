@@ -56,8 +56,7 @@ public interface EntityRequirementJS extends RecipeJSBuilder {
     return healEntitiesInRadius(1, amount, filter);
   }
 
-  default MachineRecipeBuilderJS checkEntitiesAmountInRadius(int radius, int amount,
-                                                             boolean whitelist, ResourceLocation...filter) {
+  default MachineRecipeBuilderJS checkEntitiesAmountInRadius(int radius, int amount, boolean whitelist, ResourceLocation...filter) {
     if (radius <= 0) return error("Radius can not be less than 1 for Check Entity Requirement");
     if (amount <= 0) return error("Amount can not be less than 1 for Check Entity Requirement");
     List<EntityType<?>> entities = Lists.newArrayList();
@@ -73,12 +72,15 @@ public interface EntityRequirementJS extends RecipeJSBuilder {
         RequirementCheckEntity.CheckAction.AMOUNT, entities, whitelist)));
   }
 
+  default MachineRecipeBuilderJS checkEntitiesAmountInRadius(int radius, int amount, ResourceLocation...filter) {
+    return checkEntitiesAmountInRadius(radius, amount, true, filter);
+  }
+
   default MachineRecipeBuilderJS checkEntitiesAmount(int amount, boolean whitelist, ResourceLocation... filter) {
     return checkEntitiesAmountInRadius(1, amount, whitelist, filter);
   }
 
-  default MachineRecipeBuilderJS checkEntitiesHealthInRadius(int radius, int amount, boolean whitelist,
-                                                             ResourceLocation...filter) {
+  default MachineRecipeBuilderJS checkEntitiesHealthInRadius(int radius, int amount, boolean whitelist, ResourceLocation...filter) {
     if (radius <= 0) return error("Radius can not be less than 1 for Check Entity Requirement");
     if (amount <= 0) return error("Amount can not be less than 1 for Check Entity Requirement");
     List<EntityType<?>> entities = Lists.newArrayList();
@@ -92,6 +94,10 @@ public interface EntityRequirementJS extends RecipeJSBuilder {
     }
     return addRequirement(new RecipeRequirement<>(new RequirementCheckEntity(amount, radius,
         RequirementCheckEntity.CheckAction.HEALTH, entities, whitelist)));
+  }
+
+  default MachineRecipeBuilderJS checkEntitiesHealthInRadius(int radius, int amount, ResourceLocation...filter) {
+    return checkEntitiesHealthInRadius(radius, amount, true, filter);
   }
 
   default MachineRecipeBuilderJS checkEntitiesHealth(int amount, boolean whitelist, ResourceLocation...filter) {

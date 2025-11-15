@@ -14,6 +14,7 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +25,12 @@ public class RequirementKillEntity extends RequirementEntity {
       NamedCodec.INT.fieldOf("amount").forGetter(RequirementEntity::getAmount),
       NamedCodec.INT.fieldOf("radius").forGetter(RequirementEntity::getRadius),
       RegistrarCodec.ENTITY.listOf().optionalFieldOf("entity", Collections.emptyList()).forGetter(RequirementKillEntity::getEntityTypes)
-  ).apply(instance, RequirementKillEntity::new), "Add Health Entity Requirement");
+  ).apply(instance, RequirementKillEntity::new), "Kill Entity Requirement");
 
   private final List<EntityType<?>> entityTypes;
 
   public RequirementKillEntity(int amount, int radius, List<EntityType<?>> entityTypes) {
-    super(Action.SPAWN, amount, radius);
+    super(Action.KILL, amount, radius);
     this.entityTypes = entityTypes;
   }
 
@@ -42,7 +43,7 @@ public class RequirementKillEntity extends RequirementEntity {
   public boolean test(EntityComponent component, ICraftingContext context) {
     int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
     int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
-    return component.getContainerProvider().getEntitiesInRadiusHealth(radius, this::predicate) >= amount;
+    return component.getContainerProvider().getEntitiesInRadius(radius, this::predicate) >= amount;
   }
 
   @Override
@@ -65,5 +66,10 @@ public class RequirementKillEntity extends RequirementEntity {
   @Override
   public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
     super.getDefaultDisplayInfo(info, requirement);
+    if (!this.entityTypes.isEmpty()) {
+      info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity.whitelist"));
+      this.entityTypes.forEach(type -> info.addTooltip(Component.literal("*").append(type.getDescription())));
+    }
+    info.setItemIcon(Items.MOOSHROOM_SPAWN_EGG);
   }
 }

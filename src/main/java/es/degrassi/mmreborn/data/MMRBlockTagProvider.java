@@ -182,8 +182,7 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.CASING_CIRCUITRY.get()
         );
 
-    tag(MMRTags.Blocks.ALL_CASINGS)
-        .addTag(MMRTags.Blocks.CASINGS)
+    tag(MMRTags.Blocks.HATCHES)
         .addTag(MMRTags.Blocks.ENERGY)
         .addTag(MMRTags.Blocks.ITEM)
         .addTag(MMRTags.Blocks.FLUID)
@@ -193,12 +192,18 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
         .addTag(MMRTags.Blocks.FUEL_TANK)
         .addTag(MMRTags.Blocks.EFFECT_DISPENSER)
         .addTag(MMRTags.Blocks.ENTITY)
-        .add(BlockRegistration.BIOME_READER.get())
-        .add(BlockRegistration.DIMENSIONAL_DETECTOR.get())
-        .add(BlockRegistration.WEATHER_SENSOR.get())
-        .add(BlockRegistration.TIME_COUNTER.get())
-        .add(BlockRegistration.CHUNKLOADER.get())
-        .add(BlockRegistration.HEIGHT_METER.get());
+        .add(
+            BlockRegistration.BIOME_READER.get(),
+            BlockRegistration.DIMENSIONAL_DETECTOR.get(),
+            BlockRegistration.WEATHER_SENSOR.get(),
+            BlockRegistration.TIME_COUNTER.get(),
+            BlockRegistration.CHUNKLOADER.get(),
+            BlockRegistration.HEIGHT_METER.get()
+        );
+
+    tag(MMRTags.Blocks.ALL_CASINGS)
+        .addTag(MMRTags.Blocks.CASINGS)
+        .addTag(MMRTags.Blocks.HATCHES);
 
     tag(MMRTags.Blocks.REPLACEABLE)
         .addTag(MMRTags.Blocks.ALL_CASINGS)

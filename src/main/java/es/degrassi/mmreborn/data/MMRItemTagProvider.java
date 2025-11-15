@@ -182,8 +182,7 @@ public class MMRItemTagProvider extends ItemTagsProvider {
             BlockRegistration.CASING_CIRCUITRY.get().asItem()
         );
 
-    tag(MMRTags.Items.ALL_CASINGS)
-        .addTag(MMRTags.Items.CASINGS)
+    tag(MMRTags.Items.HATCHES)
         .addTag(MMRTags.Items.ENERGY)
         .addTag(MMRTags.Items.ITEM)
         .addTag(MMRTags.Items.FLUID)
@@ -193,11 +192,17 @@ public class MMRItemTagProvider extends ItemTagsProvider {
         .addTag(MMRTags.Items.FUEL_TANK)
         .addTag(MMRTags.Items.EFFECT_DISPENSER)
         .addTag(MMRTags.Items.ENTITY)
-        .add(BlockRegistration.BIOME_READER.get().asItem())
-        .add(BlockRegistration.DIMENSIONAL_DETECTOR.get().asItem())
-        .add(BlockRegistration.WEATHER_SENSOR.get().asItem())
-        .add(BlockRegistration.TIME_COUNTER.get().asItem())
-        .add(BlockRegistration.CHUNKLOADER.get().asItem())
-        .add(BlockRegistration.HEIGHT_METER.get().asItem());
+        .add(
+            BlockRegistration.BIOME_READER.get().asItem(),
+            BlockRegistration.DIMENSIONAL_DETECTOR.get().asItem(),
+            BlockRegistration.WEATHER_SENSOR.get().asItem(),
+            BlockRegistration.TIME_COUNTER.get().asItem(),
+            BlockRegistration.CHUNKLOADER.get().asItem(),
+            BlockRegistration.HEIGHT_METER.get().asItem()
+        );
+
+    tag(MMRTags.Items.ALL_CASINGS)
+        .addTag(MMRTags.Items.CASINGS)
+        .addTag(MMRTags.Items.HATCHES);
   }
 }

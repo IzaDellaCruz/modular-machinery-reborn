@@ -5,7 +5,6 @@ import es.degrassi.mmreborn.api.codec.RegistrarCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
-import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
@@ -29,7 +28,7 @@ public class RequirementCheckEntity extends RequirementEntity {
       CheckAction.CODEC.fieldOf("check_type").forGetter(RequirementCheckEntity::getCheckActionMode),
       RegistrarCodec.ENTITY.listOf().optionalFieldOf("filter", Collections.emptyList()).forGetter(RequirementCheckEntity::getEntityTypes),
       NamedCodec.BOOL.optionalFieldOf("whitelist", false).forGetter(RequirementCheckEntity::isWhitelist)
-  ).apply(instance, RequirementCheckEntity::new), "Spawn Entity Requirement");
+  ).apply(instance, RequirementCheckEntity::new), "Check Entity Requirement");
 
   private final List<EntityType<?>> entityTypes;
   private final boolean whitelist;
@@ -53,7 +52,12 @@ public class RequirementCheckEntity extends RequirementEntity {
 
   @Override
   public boolean test(EntityComponent component, ICraftingContext context) {
-    return false;
+    int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
+    int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
+    return switch (getCheckActionMode()) {
+      case HEALTH -> component.getContainerProvider().getEntitiesInRadiusHealth(radius, this::predicate) >= amount;
+      case AMOUNT -> component.getContainerProvider().getEntitiesInRadius(radius, this::predicate) >= amount;
+    };
   }
 
   @Override
@@ -81,6 +85,7 @@ public class RequirementCheckEntity extends RequirementEntity {
       info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity." + (whitelist ? "whitelist" : "blacklist")));
       this.entityTypes.forEach(type -> info.addTooltip(Component.literal("*").append(type.getDescription())));
     }
+    info.setItemIcon(Items.TROPICAL_FISH_SPAWN_EGG);
   }
 
   public enum CheckAction {

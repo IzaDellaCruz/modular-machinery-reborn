@@ -12,8 +12,10 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.EntityComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,9 +47,11 @@ public class RequirementHealthEntity extends RequirementEntity {
 
   @Override
   public boolean test(EntityComponent component, ICraftingContext context) {
+    int amount = (int)context.getIntegerModifiedValue(this.getAmount(), this);
+    int radius = (int)context.getIntegerModifiedValue(this.getRadius(), this);
     return switch (healthMode) {
-      case INPUT -> component.getContainerProvider().canHurtEntitiesInRadius(this.getRadius(), this.getFilter(), this.getAmount());
-      case OUTPUT -> component.getContainerProvider().canHealEntitiesInRadius(this.getRadius(), this.getFilter(), this.getAmount());
+      case INPUT -> component.getContainerProvider().canHurtEntitiesInRadius(radius, this.getFilter(), amount);
+      case OUTPUT -> component.getContainerProvider().canHealEntitiesInRadius(radius, this.getFilter(), amount);
     };
   }
 
@@ -76,6 +80,14 @@ public class RequirementHealthEntity extends RequirementEntity {
   @Override
   public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
     super.getDefaultDisplayInfo(info, requirement);
+    if (!this.entityTypes.isEmpty()) {
+      info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity.whitelist"));
+      this.entityTypes.forEach(type -> info.addTooltip(Component.literal("*").append(type.getDescription())));
+    }
+    switch (healthMode) {
+      case INPUT -> info.setItemIcon(Items.MOOSHROOM_SPAWN_EGG);
+      case OUTPUT -> info.setItemIcon(Items.SLIME_SPAWN_EGG);
+    }
   }
 
   public enum Mode {

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.phys.AABB;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -51,7 +52,7 @@ public class EntityHandler {
         .getEntitiesOfClass(LivingEntity.class, bb, entity -> filter.test(entity) && entity.distanceToSqr(Utils.vec3dFromBlockPos(pos)) <= radius * radius)
         .stream()
         .mapToDouble(entity -> entity.getMaxHealth() - entity.getHealth())
-        .anyMatch(toHeal -> toHeal >= amount);
+        .sum() >= amount;
   }
 
   public boolean canHurtEntitiesInRadius(int radius, Predicate<Entity> filter, int amount) {
@@ -61,7 +62,7 @@ public class EntityHandler {
         .getEntitiesOfClass(LivingEntity.class, bb, entity -> filter.test(entity) && entity.distanceToSqr(Utils.vec3dFromBlockPos(pos)) <= radius * radius)
         .stream()
         .mapToDouble(LivingEntity::getHealth)
-        .anyMatch(toHurt -> toHurt >= amount);
+        .sum() >= amount;
   }
 
   public void removeEntitiesHealth(int radius, Predicate<Entity> filter, int amount) {
@@ -79,13 +80,14 @@ public class EntityHandler {
 
   public void addEntitiesHealth(int radius, Predicate<Entity> filter, int amount) {
     BlockPos pos = delegate.getBlockPos();
-    AtomicInteger toAdd = new AtomicInteger(amount);
+    AtomicReference<Float> toAdd = new AtomicReference<>(amount * 1f);
     AABB bb = new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + radius, pos.getY() + radius, pos.getZ() + radius);
     delegate.getLevel()
         .getEntitiesOfClass(LivingEntity.class, bb, entity -> filter.test(entity) && entity.distanceToSqr(Utils.vec3dFromBlockPos(pos)) <= radius * radius)
         .forEach(entity -> {
           float maxAdd = Math.min(entity.getMaxHealth() - entity.getHealth(), toAdd.get());
           entity.heal(maxAdd);
+          toAdd.set(toAdd.get() - maxAdd);
         });
   }
 
@@ -104,12 +106,20 @@ public class EntityHandler {
     RandomSource rand = delegate.getLevel().random;
     AABB bb = new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + radius, pos.getY() + radius, pos.getZ() + radius);
     for (int i = 0; i < amount; i++) {
-      int x = rand.nextIntBetweenInclusive((int)bb.minX, (int)bb.maxX);
-      int y = rand.nextIntBetweenInclusive((int)bb.minY, (int)bb.maxY);
-      int z = rand.nextIntBetweenInclusive((int)bb.minZ, (int)bb.maxZ);
+      BlockPos toSpawnPos;
+      do {
+        int x = rand.nextIntBetweenInclusive((int) bb.minX, (int) bb.maxX);
+        int y = rand.nextIntBetweenInclusive((int) bb.minY, (int) bb.maxY);
+        int z = rand.nextIntBetweenInclusive((int) bb.minZ, (int) bb.maxZ);
+        toSpawnPos = new BlockPos(x, y, z);
+      } while (!delegate.getLevel().getBlockState(toSpawnPos).isValidSpawn(
+          delegate.getLevel(),
+          toSpawnPos,
+          type
+      ) || !delegate.getLevel().getBlockState(toSpawnPos).isAir());
       type.spawn(
           (ServerLevel) delegate.getLevel(),
-          new BlockPos(x, y, z),
+          toSpawnPos,
           MobSpawnType.SPAWNER
       );
     }

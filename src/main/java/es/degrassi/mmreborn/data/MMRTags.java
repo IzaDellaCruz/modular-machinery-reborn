@@ -11,6 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MMRTags {
   private MMRTags() {}
@@ -72,9 +73,10 @@ public class MMRTags {
     public static final TagKey<Block> PLAIN_HATCHES = new Blocks(false, "plain_hatches", "Plain Hatches").get();
     public static final TagKey<Block> REINFORCED_CONNECTABLE = new Blocks(false, "reinforced_connectable", "Reinforced Connectable").get();
     public static final TagKey<Block> REINFORCED_HATCHES = new Blocks(false, "reinforced_hatches", "Reinforced Hatches").get();
+    public static final TagKey<Block> HATCHES = new Blocks(false, "hatches").get();
 
     private Blocks(boolean isNeoForge, String name) {
-      this(isNeoForge, name, "");
+      this(isNeoForge, name, capitalize(name));
     }
 
     private Blocks(boolean isNeoForge, String name, String enTranslation) {
@@ -109,11 +111,32 @@ public class MMRTags {
     public static final TagKey<Item> CASINGS = new Items(false, "casing", "Casings").get();
     public static final TagKey<Item> ALL_CASINGS = new Items(false, "all_casing", "All Casings").get();
 
+    public static final TagKey<Item> HATCHES = new Items(false, "hatches").get();
+
     private Items(boolean isNeoForge, String name) {
-      this(isNeoForge, name, "");
+      this(isNeoForge, name, capitalize(name));
     }
     private Items(boolean isNeoForge, String name, String enTranslation) {
       super(itemTag(name, isNeoForge), enTranslation);
     }
+  }
+
+  private static String capitalize(String toCapitalize) {
+    if (toCapitalize.trim().isEmpty()) return toCapitalize;
+    String[] splitted = toCapitalize.split("_");
+    StringBuilder builder = new StringBuilder();
+    for (var part : splitted) {
+      if (part.trim().isEmpty()) continue;
+      if (part.trim().length() == 1) {
+        builder.append(part.trim().toUpperCase(Locale.ENGLISH))
+            .append(" ");
+        continue;
+      }
+      String first = (part.trim().charAt(0) + "").toUpperCase(Locale.ENGLISH);
+      builder.append(first)
+          .append(part.substring(1))
+          .append(" ");
+    }
+    return builder.toString().trim();
   }
 }

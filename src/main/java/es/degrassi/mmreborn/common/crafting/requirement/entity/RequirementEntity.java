@@ -26,10 +26,7 @@ public abstract class RequirementEntity implements IRequirement<EntityComponent>
   private final int radius;
 
   public RequirementEntity(Action action, int amount, int radius) {
-    this.mode = action.validMode;
-    this.action = action;
-    this.amount = amount;
-    this.radius = radius;
+    this(action.validMode, action, amount, radius);
   }
 
   protected RequirementEntity(IOType mode, Action action, int amount, int radius) {
@@ -63,7 +60,6 @@ public abstract class RequirementEntity implements IRequirement<EntityComponent>
   @MustBeInvokedByOverriders
   public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
     info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity." + this.action.toString().toLowerCase(Locale.ENGLISH) + ".info", this.amount, this.radius));
-    info.setItemIcon(Items.COW_SPAWN_EGG);
   }
 
   public enum Action {
@@ -84,6 +80,10 @@ public abstract class RequirementEntity implements IRequirement<EntityComponent>
 
     public Component missingComponent() {
       return this.message;
+    }
+
+    public IOType getMode() {
+      return validMode;
     }
 
     public static final NamedCodec<Action> CODEC = NamedCodec.enumCodec(Action.class);
