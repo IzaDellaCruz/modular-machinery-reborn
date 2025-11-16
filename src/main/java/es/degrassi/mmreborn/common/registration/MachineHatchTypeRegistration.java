@@ -310,6 +310,10 @@ public class MachineHatchTypeRegistration {
       MACHINE_COMPONENTS.register(rootLC("STRUCTURE_CHECKER".toLowerCase(Locale.ENGLISH)),
       MachineHatchType::create);
 
+  public static final Supplier<MachineHatchType> REDSTONE_PORT =
+      MACHINE_COMPONENTS.register(rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);
   }

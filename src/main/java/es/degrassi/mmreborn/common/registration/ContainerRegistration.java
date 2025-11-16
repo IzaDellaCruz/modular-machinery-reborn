@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.client.container.FuelTankContainer;
 import es.degrassi.mmreborn.client.container.ItemBusContainer;
 import es.degrassi.mmreborn.client.container.ItemDurabilityContainer;
 import es.degrassi.mmreborn.client.container.ParallelHatchContainer;
+import es.degrassi.mmreborn.client.container.RedstonePortContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
@@ -38,6 +39,8 @@ public class ContainerRegistration {
       CONTAINERS.register(rootLC("parallel_hatch"), () -> IMenuTypeExtension.create(ParallelHatchContainer::new));
   public static final DeferredHolder<MenuType<?>, MenuType<FuelTankContainer>> FUEL_TANK =
       CONTAINERS.register(rootLC("fuel_tank"), () -> IMenuTypeExtension.create(FuelTankContainer::new));
+  public static final DeferredHolder<MenuType<?>, MenuType<RedstonePortContainer>> REDSTONE_PORT =
+      CONTAINERS.register(rootLC("redstone_port"), () -> IMenuTypeExtension.create(RedstonePortContainer::new));
 
   public static void register(IEventBus bus) {
     CONTAINERS.register(bus);

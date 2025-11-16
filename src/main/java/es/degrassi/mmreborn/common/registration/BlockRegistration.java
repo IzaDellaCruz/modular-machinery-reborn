@@ -27,6 +27,7 @@ import es.degrassi.mmreborn.common.block.BlockHeightMeter;
 import es.degrassi.mmreborn.common.block.BlockEntityDamager;
 import es.degrassi.mmreborn.common.block.BlockInputBus;
 import es.degrassi.mmreborn.common.block.BlockOutputBus;
+import es.degrassi.mmreborn.common.block.BlockRedstonePort;
 import es.degrassi.mmreborn.common.block.BlockStructureChecker;
 import es.degrassi.mmreborn.common.block.BlockTimeCounter;
 import es.degrassi.mmreborn.common.block.BlockWeatherSensor;
@@ -42,6 +43,8 @@ import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.Locale;
 
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
@@ -282,6 +285,10 @@ public class BlockRegistration {
   public static final DeferredBlock<BlockStructureChecker> STRUCTURE_CHECKER =
       BLOCKS.register(rootLC("structure_checker"),
       BlockStructureChecker::new);
+
+  public static final DeferredBlock<BlockRedstonePort> REDSTONE_PORT =
+      BLOCKS.register(rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
+      BlockRedstonePort::new);
 
   public static void register(final IEventBus bus) {
     BLOCKS.register(bus);

@@ -16,7 +16,7 @@ public abstract class MachineComponent<T> implements Comparable<MachineComponent
     this.ioType = ioType;
   }
 
-  public final IOType getIOType() {
+  public IOType getIOType() {
     return ioType;
   }
 

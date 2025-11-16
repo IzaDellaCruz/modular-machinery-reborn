@@ -146,6 +146,7 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
     addHatch(BlockRegistration.ENTITY_DAMAGER.get(), false, entity(RequirementEntity.Action.CONSUME_HEALTH), false);
 
     addHatch(BlockRegistration.STRUCTURE_CHECKER.get(), true, modLoc("block/overlay_structure_checker"), false);
+    addHatch(BlockRegistration.REDSTONE_PORT.get(), false, modLoc("block/overlay_redstone_port"), false);
   }
 
   private void addDefaultModels() {

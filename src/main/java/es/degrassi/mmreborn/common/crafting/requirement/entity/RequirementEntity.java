@@ -12,7 +12,6 @@ import es.degrassi.mmreborn.common.machine.component.EntityComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 

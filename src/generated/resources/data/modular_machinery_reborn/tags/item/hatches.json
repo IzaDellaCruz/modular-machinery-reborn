@@ -15,6 +15,7 @@
     "modular_machinery_reborn:time_counter",
     "modular_machinery_reborn:chunkloader",
     "modular_machinery_reborn:height_meter",
-    "modular_machinery_reborn:structure_checker"
+    "modular_machinery_reborn:structure_checker",
+    "modular_machinery_reborn:redstone_port"
   ]
 }

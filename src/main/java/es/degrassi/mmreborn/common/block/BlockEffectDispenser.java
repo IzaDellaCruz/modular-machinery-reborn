@@ -39,10 +39,10 @@ public class BlockEffectDispenser extends BlockMachineComponent implements Block
   @Override
   public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
     super.animateTick(state, level, pos, random);
+    if (!ModularMachineryRebornClient.shouldAddParticles(random)) return;
     if (size.interdimensional || !size.showParticles) return;
     if (level.getBlockEntity(pos) instanceof EffectDispenserEntity entity) {
       entity.getEffect().ifPresent(effect -> {
-        if (!ModularMachineryRebornClient.shouldAddParticles(random)) return;
         var particle = effect.getParticleOptions();
         AABB bb = new AABB(pos).inflate(size.radius)
             .setMaxY(pos.getY())

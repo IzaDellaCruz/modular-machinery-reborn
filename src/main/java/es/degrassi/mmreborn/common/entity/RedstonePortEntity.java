@@ -2,13 +2,17 @@ package es.degrassi.mmreborn.common.entity;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.network.ISyncable;
+import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.IntegerSyncable;
+import es.degrassi.mmreborn.api.network.syncable.StringSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
-import es.degrassi.mmreborn.common.machine.DynamicMachine;
+import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
-import es.degrassi.mmreborn.common.machine.component.StructureComponent;
+import es.degrassi.mmreborn.common.machine.component.RedstoneComponent;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
@@ -23,42 +27,45 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
+
 @MethodsReturnNonnullByDefault
 @Getter
 @Setter
-public class StructureCheckerEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<StructureComponent>, TextureableMachineEntity, ControllerAccessible {
+public class RedstonePortEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<RedstoneComponent>, TextureableMachineEntity, ControllerAccessible,
+    ISyncableStuff {
   private ResourceLocation baseTexture;
   private ResourceLocation overlayTexture;
   @Nullable
   private BlockPos controllerPos;
-  private static final ResourceLocation defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_structure_checker");
+  private static final ResourceLocation defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_redstone_port");
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
-  public StructureCheckerEntity(BlockPos pos, BlockState blockState) {
-    super(EntityRegistration.STRUCTURE_CHECKER.get(), pos, blockState);
+  private IOType mode;
+  private int outputAmount = 0;
+  public RedstonePortEntity(BlockPos pos, BlockState blockState) {
+    super(EntityRegistration.REDSTONE_PORT.get(), pos, blockState);
     this.overlayTexture = defaultOverlayTexture;
     this.baseTexture = defaultBaseTexture;
+    this.mode = IOType.INPUT;
   }
 
   @Override
-  public @Nullable StructureComponent provideComponent() {
-    return new StructureComponent(this);
+  @NotNull
+  public RedstoneComponent provideComponent() {
+    return new RedstoneComponent(this);
   }
 
-  @Nullable
-  public DynamicMachine getBoundMachine() {
-    if (getController() == null) return null;
-    return getController().getFoundMachine();
-  }
-
-  public Direction getControllerFacing() {
-    if (getController() == null) return Direction.NORTH;
-    return getController().getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+  public void setOutputAmount(int outputAmount) {
+    this.outputAmount = outputAmount;
+    getLevel().updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+    for(Direction direction : Direction.values()) {
+      getLevel().updateNeighborsAt(getBlockPos().relative(direction), getBlockState().getBlock());
+    }
   }
 
   @Override
@@ -77,6 +84,11 @@ public class StructureCheckerEntity extends ColorableMachineComponentEntity impl
       PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()),
           new SUpdateMachineTexturePacket(baseTexture, true, getBlockPos()));
     }
+  }
+
+  public void setMode(IOType mode) {
+    this.mode = mode;
+    setChanged();
   }
 
   @Override
@@ -99,7 +111,7 @@ public class StructureCheckerEntity extends ColorableMachineComponentEntity impl
 
   @Override
   public MachineHatchType getHatchType() {
-    return MachineHatchTypeRegistration.STRUCTURE_CHECKER.get();
+    return MachineHatchTypeRegistration.REDSTONE_PORT.get();
   }
 
   @Override
@@ -133,8 +145,11 @@ public class StructureCheckerEntity extends ColorableMachineComponentEntity impl
       controllerPos = BlockPos.of(compound.getLong("controllerPos"));
     }
 
+    this.mode = compound.contains("mode") ? IOType.value(compound.getString("mode")) : IOType.INPUT;
+
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
+    this.outputAmount = compound.getInt("outputAmount");
   }
 
   @Override
@@ -142,10 +157,17 @@ public class StructureCheckerEntity extends ColorableMachineComponentEntity impl
     super.saveAdditional(compound, pRegistries);
     if (controllerPos != null)
       compound.putLong("controllerPos", controllerPos.asLong());
+    compound.putString("mode", mode.getSerializedName());
     if (baseTexture != null)
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
+    compound.putInt("outputAmount", this.outputAmount);
   }
 
+  @Override
+  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+    container.accept(StringSyncable.create(mode::getSerializedName, s -> setMode(IOType.value(s))));
+    container.accept(IntegerSyncable.create(this::getOutputAmount, this::setOutputAmount));
+  }
 }

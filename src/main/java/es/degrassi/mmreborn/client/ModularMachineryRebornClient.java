@@ -20,12 +20,14 @@ import es.degrassi.mmreborn.client.screen.FuelTankScreen;
 import es.degrassi.mmreborn.client.screen.ItemBusScreen;
 import es.degrassi.mmreborn.client.screen.ItemDurabilityScreen;
 import es.degrassi.mmreborn.client.screen.ParallelHatchScreen;
+import es.degrassi.mmreborn.client.screen.RedstonePortScreen;
 import es.degrassi.mmreborn.common.block.BlockDynamicColor;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.FuelTankEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
+import es.degrassi.mmreborn.common.entity.RedstonePortEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.ExperienceHatchEntity;
@@ -238,6 +240,7 @@ public class ModularMachineryRebornClient {
     event.register(ContainerRegistration.EXPERIENCE_HATCH.get(), ExperienceHatchScreen::new);
     event.register(ContainerRegistration.PARALLEL_HATCH.get(), ParallelHatchScreen::new);
     event.register(ContainerRegistration.FUEL_TANK.get(), FuelTankScreen::new);
+    event.register(ContainerRegistration.REDSTONE_PORT.get(), RedstonePortScreen::new);
   }
 
   @NotNull
@@ -311,5 +314,14 @@ public class ModularMachineryRebornClient {
         return controller;
     }
     throw new IllegalStateException("Trying to open a Fuel Tank container without clicking on a Fuel Tank block");
+  }
+
+  public static RedstonePortEntity getClientSideRedstonePortEntity(BlockPos pos) {
+    if (Minecraft.getInstance().level != null) {
+      BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(pos);
+      if (tile instanceof RedstonePortEntity controller)
+        return controller;
+    }
+    throw new IllegalStateException("Trying to open a Redstone Port container without clicking on a Redstone Port block");
   }
 }

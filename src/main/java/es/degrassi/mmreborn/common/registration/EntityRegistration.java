@@ -23,6 +23,7 @@ import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.entity.ItemOutputBusEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
+import es.degrassi.mmreborn.common.entity.RedstonePortEntity;
 import es.degrassi.mmreborn.common.entity.StructureCheckerEntity;
 import es.degrassi.mmreborn.common.entity.TimeCounterEntity;
 import es.degrassi.mmreborn.common.entity.WeatherSensorEntity;
@@ -37,6 +38,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -359,6 +361,15 @@ public class EntityRegistration {
       () -> new BlockEntityType<>(
           StructureCheckerEntity::new,
           Set.of(BlockRegistration.STRUCTURE_CHECKER.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<RedstonePortEntity>> REDSTONE_PORT = ENTITY_TYPE.register(
+      rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
+      () -> new BlockEntityType<>(
+          RedstonePortEntity::new,
+          Set.of(BlockRegistration.REDSTONE_PORT.get()),
           null
       )
   );

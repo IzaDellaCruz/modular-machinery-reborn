@@ -34,7 +34,7 @@ public abstract class ContainerBase<T extends ColorableMachineComponentEntity> e
   protected final List<SlotItemComponent> inputSlotComponents = new ArrayList<>();
   protected int firstComponentSlotIndex = 0;
 
-  protected ContainerBase(T entity, Player player, @Nullable MenuType<?> menuType, int containerId) {
+  protected <C extends ContainerBase<T>>ContainerBase(T entity, Player player, @Nullable MenuType<C> menuType, int containerId) {
     super(menuType, containerId);
     this.player = player;
     this.entity = entity;

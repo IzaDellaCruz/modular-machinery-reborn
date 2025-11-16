@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.screen.TooltipRender;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
@@ -26,6 +28,8 @@ public class StringButton extends Button implements TooltipRender {
   private final boolean renderString;
 
   private boolean renderTooltip = true;
+  @Getter
+  @Nullable
   private List<Component> tooltips;
 
   public StringButton(Builder builder, boolean renderString) {
@@ -67,8 +71,8 @@ public class StringButton extends Button implements TooltipRender {
 
   @Override
   public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-    if (isMouseOver(mouseX, mouseY) && renderTooltip && tooltips != null && !tooltips.isEmpty()) {
-      for (Component tooltip : tooltips) {
+    if (isMouseOver(mouseX, mouseY) && renderTooltip && getTooltips() != null && !getTooltips().isEmpty()) {
+      for (Component tooltip : getTooltips()) {
         guiGraphics.renderTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
       }
     }

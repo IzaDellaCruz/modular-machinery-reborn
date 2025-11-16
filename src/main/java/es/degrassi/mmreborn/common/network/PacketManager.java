@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.common.network.client.CBreakStructurePacket;
 import es.degrassi.mmreborn.common.network.client.CCoreButtonClickedPacked;
 import es.degrassi.mmreborn.common.network.client.CExperienceButtonClickedPacket;
 import es.degrassi.mmreborn.common.network.client.CPlaceStructurePacket;
+import es.degrassi.mmreborn.common.network.client.CRedstoneButtonModeClickedPacket;
 import es.degrassi.mmreborn.common.network.client.emi.FillRecipeC2SPacket;
 import es.degrassi.mmreborn.common.network.server.SAddControllerRenderer;
 import es.degrassi.mmreborn.common.network.server.SLootTablesPacket;
@@ -63,6 +64,7 @@ public class PacketManager {
     registrar.playToServer(CBreakStructurePacket.TYPE, CBreakStructurePacket.CODEC, CBreakStructurePacket::handle);
     registrar.playToServer(CExperienceButtonClickedPacket.TYPE, CExperienceButtonClickedPacket.CODEC, CExperienceButtonClickedPacket::handle);
     registrar.playToServer(CCoreButtonClickedPacked.TYPE, CCoreButtonClickedPacked.CODEC, CCoreButtonClickedPacked::handle);
+    registrar.playToServer(CRedstoneButtonModeClickedPacket.TYPE, CRedstoneButtonModeClickedPacket.CODEC, CRedstoneButtonModeClickedPacket::handle);
 
     // EMI packet
     if (Mods.isJEIorEMILoaded()) {

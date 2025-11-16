@@ -199,7 +199,8 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.TIME_COUNTER.get(),
             BlockRegistration.CHUNKLOADER.get(),
             BlockRegistration.HEIGHT_METER.get(),
-            BlockRegistration.STRUCTURE_CHECKER.get()
+            BlockRegistration.STRUCTURE_CHECKER.get(),
+            BlockRegistration.REDSTONE_PORT.get()
         );
 
     tag(MMRTags.Blocks.ALL_CASINGS)
@@ -257,7 +258,8 @@ public class MMRBlockTagProvider extends BlockTagsProvider {
             BlockRegistration.EFFECT_DISPENSER_MEDIUM.get(),
             BlockRegistration.ENTITY_DETECTOR.get(),
             BlockRegistration.ENTITY_DAMAGER.get(),
-            BlockRegistration.ENTITY_HEALER.get()
+            BlockRegistration.ENTITY_HEALER.get(),
+            BlockRegistration.REDSTONE_PORT.get()
         );
 
     tag(MMRTags.Blocks.PLAIN_CONNECTABLE)

@@ -199,7 +199,8 @@ public class MMRItemTagProvider extends ItemTagsProvider {
             BlockRegistration.TIME_COUNTER.get().asItem(),
             BlockRegistration.CHUNKLOADER.get().asItem(),
             BlockRegistration.HEIGHT_METER.get().asItem(),
-            BlockRegistration.STRUCTURE_CHECKER.get().asItem()
+            BlockRegistration.STRUCTURE_CHECKER.get().asItem(),
+            BlockRegistration.REDSTONE_PORT.get().asItem()
         );
 
     tag(MMRTags.Items.ALL_CASINGS)

@@ -63,6 +63,7 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
 
   @Override
   public void clicked(int slotId, int button, ClickType clickType, Player player) {
+    super.clicked(slotId, button, clickType, player);
     if (Mods.isEMILoaded()) {
       List<Slot> prevSlots = this.slots.stream().toList();
       List<Slot> newSlots = MMREmiRecipeHandler.getSlots(this);
@@ -70,12 +71,9 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
       newSlots.stream()
           .filter(Objects::nonNull)
           .forEach(this.slots::add);
-      super.clicked(slotId, button, clickType, player);
       this.slots.clear();
       this.slots.addAll(prevSlots);
-      return;
     }
-    super.clicked(slotId, button, clickType, player);
   }
 
   @Override

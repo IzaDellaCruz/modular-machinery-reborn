@@ -104,6 +104,9 @@ public final class EnUsLang extends Lang {
     add(mm(ingredient("chance.output")), "Chance to be produced: %s%s");
     add(mm(ingredient("chance.not_consumed")), "Not Consumed");
     add(mm(ingredient("chance.nc")), "NC");
+    add(mm("requirement.mode.input"), "Input");
+    add(mm("requirement.mode.output"), "Output");
+    add(mm("requirement.mode.none"), "None");
     add(jeiIngredient("long"), "%s");
     add(jeiIngredient("int"), "%s");
     add(jeiIngredient("energy.input"), "Require: %s RF");
@@ -147,6 +150,8 @@ public final class EnUsLang extends Lang {
     add(jeiIngredient("structure.place"), "Will place structure");
     add(jeiIngredient("structure.not"), "Not %s");
     add(jeiIngredient("structure.or"), " or ");
+    add(jeiIngredient("redstone.input"), "Requires applying %s redstone power");
+    add(jeiIngredient("redstone.output"), "Emits %s redstone power");
   }
 
   @Override
@@ -273,6 +278,7 @@ public final class EnUsLang extends Lang {
     addBlock(BlockRegistration.ENTITY_DAMAGER, "Entity Damager");
 
     addBlock(BlockRegistration.STRUCTURE_CHECKER, "Structure Checker");
+    addBlock(BlockRegistration.REDSTONE_PORT, "Redstone Port");
   }
 
   @Override
@@ -359,6 +365,7 @@ public final class EnUsLang extends Lang {
     add(missingComponent("entity.killer"), "No Entity Killer found!");
     add(missingComponent("entity.spawner"), "No Entity Spawner found!");
     add(missingComponent("structure"), "No Structure Checker found!");
+    add(missingComponent("redstone"), "No Redstone Port found!");
   }
 
   @Override
@@ -389,6 +396,7 @@ public final class EnUsLang extends Lang {
     add(craftCheck("entity.amount"), "Not enough entities nearby !");
     add(craftCheck("entity.health"), "Can't collect %s health points with nearby entities !");
     add(craftCheck("structure"), "Invalid structure!");
+    add(craftCheck("redstone"), "Required redstone power: %s but found %s");
   }
 
   @Override
@@ -399,6 +407,7 @@ public final class EnUsLang extends Lang {
     add(mm(gui("title.item_bus")), "Item Bus");
     add(mm(gui("title.parallel_hatch")), "Parallel Hatch");
     add(mm(gui("title.fuel_tank")), "Fuel Tank");
+    add(mm(gui("title.redstone_port")), "Redstone Port");
     add(mmr(gui("button.back")), "Back");
     add(mmr(gui("button.close")), "Close");
     add(mmr(gui("button.page.next")), "Next Page");
@@ -426,6 +435,10 @@ public final class EnUsLang extends Lang {
     add(mmr(gui("popup.cancel")), "Cancel");
     add("emi." + tooltip("show.recipes"), "Show Recipes");
     add(mmr("emi.no_items"), "No items in recipe");
+    add(mmr(gui(tooltip("redstone.button.mode.input"))), "Input");
+    add(mmr(gui(tooltip("redstone.button.mode.output"))), "Output");
+    add(mmr(gui(tooltip("redstone.button.mode.none"))), "None");
+    add(mmr(gui(tooltip("button.enum.cycle"))), "Next: %s");
   }
 
   @Override

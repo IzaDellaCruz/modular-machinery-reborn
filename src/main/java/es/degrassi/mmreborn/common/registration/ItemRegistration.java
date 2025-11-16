@@ -28,6 +28,7 @@ import es.degrassi.mmreborn.common.item.ItemBlueprint;
 import es.degrassi.mmreborn.common.item.ItemModularium;
 import es.degrassi.mmreborn.common.item.OutputBusItem;
 import es.degrassi.mmreborn.common.item.ParallelHatchItem;
+import es.degrassi.mmreborn.common.item.RedstonePortItem;
 import es.degrassi.mmreborn.common.item.StructureCheckerItem;
 import es.degrassi.mmreborn.common.item.StructureCreatorItem;
 import es.degrassi.mmreborn.common.item.TimeCounterItem;
@@ -37,6 +38,8 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.Locale;
 
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 
@@ -356,6 +359,10 @@ public class ItemRegistration {
   public static final DeferredItem<StructureCheckerItem> STRUCTURE_CHECKER =
       ITEMS.register(rootLC("structure_checker"),
       () -> new StructureCheckerItem(BlockRegistration.STRUCTURE_CHECKER.get()));
+
+  public static final DeferredItem<RedstonePortItem> REDSTONE_PORT =
+      ITEMS.register(rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
+      () -> new RedstonePortItem(BlockRegistration.REDSTONE_PORT.get()));
 
   public static void register(final IEventBus bus) {
     ITEMS.register(bus);

@@ -1,13 +1,15 @@
 package es.degrassi.mmreborn.common.machine;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.client.ComponentTranslatable;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public enum IOType implements StringRepresentable {
+public enum IOType implements StringRepresentable, ComponentTranslatable {
   INPUT,
   OUTPUT,
   NONE;
@@ -41,7 +43,8 @@ public enum IOType implements StringRepresentable {
     return name().toLowerCase(Locale.ROOT);
   }
 
-  public String getTranslationKey() {
-    return ModularMachineryReborn.MODID + ".requirement.mode." + getSerializedName();
+  @Override
+  public Component getTranslation() {
+    return Component.translatable(ModularMachineryReborn.MODID + ".requirement.mode." + getSerializedName());
   }
 }

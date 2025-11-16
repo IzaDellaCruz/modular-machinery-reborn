@@ -81,11 +81,13 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
         serverLevel.getServer().tell(new TickTask(1, () -> PacketDistributor.sendToPlayersTrackingChunk(serverLevel,
             new ChunkPos(pPos), new SMachineUpdatePacket(id, pPos))));
     }
+    super.onPlace(pState, pLevel, pPos, pOldState, pMovedByPiston);
   }
 
   //When placed by an entity
   @Override
   public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    super.setPlacedBy(level, pos, state, placer, stack);
     ControllerItem.getMachine(stack).ifPresent(machine -> {
       BlockEntity tile = level.getBlockEntity(pos);
       if (tile instanceof MachineControllerEntity machineTile) {
