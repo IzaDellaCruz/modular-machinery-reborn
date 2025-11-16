@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.integration.kubejs.requirement;
 
+import dev.latvian.mods.rhino.util.HideFromJS;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementStructure;
 import es.degrassi.mmreborn.common.integration.kubejs.MachineRecipeBuilderJS;
@@ -27,6 +28,7 @@ public interface StructureRequirementJS extends RecipeJSBuilder {
     return requireStructure(builder, drops ? RequirementStructure.Action.PLACE_BREAK : RequirementStructure.Action.PLACE_DESTROY);
   }
 
+  @HideFromJS
   default MachineRecipeBuilderJS requireStructure(StructureBuilderJS builder, RequirementStructure.Action action) {
     try {
       return addRequirement(new RecipeRequirement<>(new RequirementStructure(builder.build(), action)));

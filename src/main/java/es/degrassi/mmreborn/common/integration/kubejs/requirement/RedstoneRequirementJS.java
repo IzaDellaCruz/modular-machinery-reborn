@@ -12,7 +12,7 @@ public interface RedstoneRequirementJS extends RecipeJSBuilder {
     return addRequirement(new RecipeRequirement<>(new RequirementRedstone(amount, IOType.INPUT)));
   }
 
-  default MachineRecipeBuilderJS produceRedstone(int amount) {
+  default MachineRecipeBuilderJS emitRedstone(int amount) {
     if (amount < 0 || amount > 15) return error("Amount must be between [0,15], found: {}", amount);
     return addRequirement(new RecipeRequirement<>(new RequirementRedstone(amount, IOType.OUTPUT)));
   }
