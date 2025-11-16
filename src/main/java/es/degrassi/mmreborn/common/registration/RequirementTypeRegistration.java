@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementBiome;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementChunkload;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementCommand;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDimension;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurability;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurabilityPerTick;
@@ -127,6 +128,9 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementRedstone>> REDSTONE =
       MACHINE_REQUIREMENTS.register(rootLC("redstone"),
       () -> RequirementType.world(RequirementRedstone.CODEC));
+  public static final Supplier<RequirementType<RequirementCommand>> COMMAND =
+      MACHINE_REQUIREMENTS.register(rootLC("command"),
+      () -> RequirementType.world(RequirementCommand.CODEC));
 
   public static void register(IEventBus bus) {
     MACHINE_REQUIREMENTS.register(bus);

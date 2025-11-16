@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.common.block.BlockBiomeReader;
 import es.degrassi.mmreborn.common.block.BlockCasing;
 import es.degrassi.mmreborn.common.block.BlockCasing.CasingType;
 import es.degrassi.mmreborn.common.block.BlockChunkloader;
+import es.degrassi.mmreborn.common.block.BlockCommandExecutioner;
 import es.degrassi.mmreborn.common.block.BlockController;
 import es.degrassi.mmreborn.common.block.BlockDimensionDetector;
 import es.degrassi.mmreborn.common.block.BlockDurabilityHatch;
@@ -289,6 +290,10 @@ public class BlockRegistration {
   public static final DeferredBlock<BlockRedstonePort> REDSTONE_PORT =
       BLOCKS.register(rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
       BlockRedstonePort::new);
+
+  public static final DeferredBlock<BlockCommandExecutioner> COMMAND_EXECUTIONER =
+      BLOCKS.register(rootLC("command_executioner"),
+      BlockCommandExecutioner::new);
 
   public static void register(final IEventBus bus) {
     BLOCKS.register(bus);

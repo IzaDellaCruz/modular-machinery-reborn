@@ -1,9 +1,15 @@
 package es.degrassi.mmreborn.common.block;
 
+import es.degrassi.mmreborn.common.entity.CommandExecutionerEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockCommandExecutioner extends BlockMachineComponent {
-  protected BlockCommandExecutioner() {
+  public BlockCommandExecutioner() {
     super(
         Properties.of()
             .strength(2F, 10F)
@@ -12,5 +18,10 @@ public class BlockCommandExecutioner extends BlockMachineComponent {
             .dynamicShape()
             .noOcclusion()
     );
+  }
+
+  @Override
+  public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
+    return new CommandExecutionerEntity(blockPos, blockState);
   }
 }

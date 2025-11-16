@@ -147,6 +147,9 @@ public final class PtBrLang extends Lang {
     add(jeiIngredient("structure.place"), "Will place structure");
     add(jeiIngredient("structure.not"), "Not %s");
     add(jeiIngredient("structure.or"), " or ");
+    add(jeiIngredient("redstone.input"), "Requires applying %s redstone power");
+    add(jeiIngredient("redstone.output"), "Emits %s redstone power");
+    add(jeiIngredient("command.info"), "Run %s on %s");
   }
 
   @Override
@@ -273,6 +276,8 @@ public final class PtBrLang extends Lang {
     addBlock(BlockRegistration.ENTITY_DAMAGER, "Entity Damager");
 
     addBlock(BlockRegistration.STRUCTURE_CHECKER, "Structure Checker");
+    addBlock(BlockRegistration.REDSTONE_PORT, "Redstone Port");
+    addBlock(BlockRegistration.COMMAND_EXECUTIONER, "Command Executioner");
   }
 
   @Override
@@ -359,6 +364,8 @@ public final class PtBrLang extends Lang {
     add(missingComponent("entity.killer"), "No Entity Killer found!");
     add(missingComponent("entity.spawner"), "No Entity Spawner found!");
     add(missingComponent("structure"), "No Structure Checker found!");
+    add(missingComponent("redstone"), "No Redstone Port found!");
+    add(missingComponent("command"), "No Command Executioner found!");
   }
 
   @Override
@@ -389,6 +396,7 @@ public final class PtBrLang extends Lang {
     add(craftCheck("entity.amount"), "Not enough entities nearby !");
     add(craftCheck("entity.health"), "Can't collect %s health points with nearby entities !");
     add(craftCheck("structure"), "Invalid structure!");
+    add(craftCheck("redstone"), "Required redstone power: %s but found %s");
   }
 
   @Override
@@ -399,6 +407,7 @@ public final class PtBrLang extends Lang {
     add(mm(gui("title.item_bus")), "Escotilha de Itens");
     add(mm(gui("title.parallel_hatch")), "Escotilha Paralela");
     add(mm(gui("title.fuel_tank")), "Fuel Tank");
+    add(mm(gui("title.redstone_port")), "Redstone Port");
     add(mmr(gui("button.back")), "Voltar");
     add(mmr(gui("button.close")), "Fechar");
     add(mmr(gui("button.page.next")), "Próxima Página");
@@ -426,6 +435,10 @@ public final class PtBrLang extends Lang {
     add(mmr(gui("popup.cancel")), "Cancelar");
     add("emi." + tooltip("show.recipes"), "Mostrar Receitas");
     add(mmr("emi.no_items"), "Nenhum item na receita");
+    add(mmr(gui(tooltip("redstone.button.mode.input"))), "Input");
+    add(mmr(gui(tooltip("redstone.button.mode.output"))), "Output");
+    add(mmr(gui(tooltip("redstone.button.mode.none"))), "None");
+    add(mmr(gui(tooltip("button.enum.cycle"))), "Next: %s");
   }
 
   @Override

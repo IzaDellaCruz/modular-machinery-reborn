@@ -314,6 +314,10 @@ public class MachineHatchTypeRegistration {
       MACHINE_COMPONENTS.register(rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
       MachineHatchType::create);
 
+  public static final Supplier<MachineHatchType> COMMAND_EXECUTIONER =
+      MACHINE_COMPONENTS.register(rootLC("COMMAND_EXECUTIONER".toLowerCase(Locale.ENGLISH)),
+      MachineHatchType::create);
+
   public static void register(final IEventBus bus) {
     MACHINE_COMPONENTS.register(bus);
   }

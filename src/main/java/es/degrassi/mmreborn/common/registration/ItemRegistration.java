@@ -13,6 +13,7 @@ import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.item.BiomeReaderItem;
 import es.degrassi.mmreborn.common.item.CasingItem;
 import es.degrassi.mmreborn.common.item.ChunkloaderItem;
+import es.degrassi.mmreborn.common.item.CommandExecutionerItem;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.item.DimensionalDetectorItem;
 import es.degrassi.mmreborn.common.item.DurabilityHatchItem;
@@ -363,6 +364,10 @@ public class ItemRegistration {
   public static final DeferredItem<RedstonePortItem> REDSTONE_PORT =
       ITEMS.register(rootLC("REDSTONE_PORT".toLowerCase(Locale.ENGLISH)),
       () -> new RedstonePortItem(BlockRegistration.REDSTONE_PORT.get()));
+
+  public static final DeferredItem<CommandExecutionerItem> COMMAND_EXECUTIONER =
+      ITEMS.register(rootLC("command_executioner"),
+      () -> new CommandExecutionerItem(BlockRegistration.COMMAND_EXECUTIONER.get()));
 
   public static void register(final IEventBus bus) {
     ITEMS.register(bus);

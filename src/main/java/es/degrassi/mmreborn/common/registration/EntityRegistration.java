@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.block.BlockDynamicColor;
 import es.degrassi.mmreborn.common.entity.BiomeReaderEntity;
 import es.degrassi.mmreborn.common.entity.ChunkloaderEntity;
+import es.degrassi.mmreborn.common.entity.CommandExecutionerEntity;
 import es.degrassi.mmreborn.common.entity.DimensionalDetectorEntity;
 import es.degrassi.mmreborn.common.entity.EffectDispenserEntity;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
@@ -33,6 +34,7 @@ import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -370,6 +372,15 @@ public class EntityRegistration {
       () -> new BlockEntityType<>(
           RedstonePortEntity::new,
           Set.of(BlockRegistration.REDSTONE_PORT.get()),
+          null
+      )
+  );
+
+  public static final Supplier<BlockEntityType<CommandExecutionerEntity>> COMMAND_EXECUTIONER = ENTITY_TYPE.register(
+      rootLC("command_executioner"),
+      () -> new BlockEntityType<>(
+          CommandExecutionerEntity::new,
+          Set.of(BlockRegistration.COMMAND_EXECUTIONER.get()),
           null
       )
   );

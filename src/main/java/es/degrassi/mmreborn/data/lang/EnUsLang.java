@@ -152,6 +152,7 @@ public final class EnUsLang extends Lang {
     add(jeiIngredient("structure.or"), " or ");
     add(jeiIngredient("redstone.input"), "Requires applying %s redstone power");
     add(jeiIngredient("redstone.output"), "Emits %s redstone power");
+    add(jeiIngredient("command.info"), "Run %s on %s");
   }
 
   @Override
@@ -279,6 +280,7 @@ public final class EnUsLang extends Lang {
 
     addBlock(BlockRegistration.STRUCTURE_CHECKER, "Structure Checker");
     addBlock(BlockRegistration.REDSTONE_PORT, "Redstone Port");
+    addBlock(BlockRegistration.COMMAND_EXECUTIONER, "Command Executioner");
   }
 
   @Override
@@ -366,6 +368,7 @@ public final class EnUsLang extends Lang {
     add(missingComponent("entity.spawner"), "No Entity Spawner found!");
     add(missingComponent("structure"), "No Structure Checker found!");
     add(missingComponent("redstone"), "No Redstone Port found!");
+    add(missingComponent("command"), "No Command Executioner found!");
   }
 
   @Override

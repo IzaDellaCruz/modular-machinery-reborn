@@ -55,6 +55,8 @@ public class ComponentRegistration {
       ComponentType::create);
   public static final Supplier<ComponentType> COMPONENT_REDSTONE = MACHINE_COMPONENTS.register(rootLC("redstone"),
       ComponentType::create);
+  public static final Supplier<ComponentType> COMPONENT_COMMAND = MACHINE_COMPONENTS.register(rootLC("command"),
+      ComponentType::create);
 
   public static final Supplier<ComponentType> COMPONENT_EMPTY = MACHINE_COMPONENTS.register(rootLC("empty"),
       ComponentType::create);

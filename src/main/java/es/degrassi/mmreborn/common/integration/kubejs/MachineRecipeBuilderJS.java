@@ -10,6 +10,7 @@ import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ProgressDataJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.BiomeRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.ChunkloadRequirementJS;
+import es.degrassi.mmreborn.common.integration.kubejs.requirement.CommandRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.DimensionRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.DurabilityPerTickRequirementJS;
 import es.degrassi.mmreborn.common.integration.kubejs.requirement.DurabilityRequirementJS;
@@ -61,7 +62,8 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
     EffectRequirementJS,
     EntityRequirementJS,
     StructureRequirementJS,
-    RedstoneRequirementJS
+    RedstoneRequirementJS,
+    CommandRequirementJS
 {
 
   @HideFromJS
