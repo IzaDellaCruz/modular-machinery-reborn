@@ -7,8 +7,16 @@ import es.degrassi.mmreborn.client.container.SlotItemComponent;
 import es.degrassi.mmreborn.client.screen.widget.GuiElement;
 import es.degrassi.mmreborn.client.screen.widget.GuiSlotScroll;
 import es.degrassi.mmreborn.client.screen.widget.IGuiWrapper;
+import es.degrassi.mmreborn.client.screen.widget.tabs.AutoInputTabWidget;
+import es.degrassi.mmreborn.client.screen.widget.tabs.AutoOutputTabWidget;
+import es.degrassi.mmreborn.client.screen.widget.tabs.ITabGroupScreen;
+import es.degrassi.mmreborn.client.screen.widget.tabs.TabGroupWidget;
 import es.degrassi.mmreborn.client.util.GuiUtils;
+import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
+import es.degrassi.mmreborn.common.entity.ItemOutputBusEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
+import es.degrassi.mmreborn.common.util.TextureSizeHelper;
+import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -26,14 +34,16 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
-public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> implements IGuiWrapper {
+public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> implements IGuiWrapper, ITabGroupScreen {
   private static final int MAX_VISIBLE_ROWS = ItemBusContainer.MAX_VISIBLE_ROWS;
 
   private int visibleRows;
   private long lastMSInitialized;
-  private boolean hasClicked = false;
   private boolean needsScrolling;
   public static int maxZOffset;
+
+  @Getter
+  private TabGroupWidget tabs;
 
   public ItemBusScreen(ItemBusContainer pMenu, Inventory pPlayerInventory, Component pTitle) {
     super(pMenu, pPlayerInventory, pTitle, false);
@@ -86,6 +96,12 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     ));
 
     scroll.visitWidgets(this::addRenderableWidget);
+
+    tabs = TabGroupWidget.createLeft(getGuiLeft() - TextureSizeHelper.getWidth(AutoOutputTabWidget.TAB), getGuiTop());
+    if (this.entity.getIoType().isInput()) tabs.addTab(new AutoInputTabWidget<>((ItemInputBusEntity)this.entity));
+    else tabs.addTab(new AutoOutputTabWidget<>((ItemOutputBusEntity)this.entity));
+
+    addRenderableWidget(tabs);
   }
 
   @Override
@@ -214,6 +230,16 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     pose.popPose();
   }
 
+  @Override
+  protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
+    super.renderTooltip(guiGraphics, x, y);
+    for (var element : children()) {
+      if(element instanceof TabGroupWidget widget) {
+        widget.renderTooltip(guiGraphics, x, y);
+      }
+    }
+  }
+
   protected void drawForegroundText(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
   }
 
@@ -238,6 +264,11 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     } else {
       //If we can't find a child, allow clearing whatever focus we currently have
       clearFocus();
+    }
+    for (var element : children()) {
+      if (element instanceof TabGroupWidget widget && widget.isMouseOver(mouseX, mouseY)) {
+        widget.onClick(mouseX, mouseY, button);
+      }
     }
     return super.mouseClicked(mouseX, mouseY, button);
   }

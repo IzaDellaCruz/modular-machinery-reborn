@@ -33,8 +33,8 @@ import java.util.function.Consumer;
 @MethodsReturnNonnullByDefault
 @Getter
 @Setter
-public class CommandExecutionerEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<CommandComponent>, TextureableMachineEntity, ControllerAccessible,
-    ISyncableStuff {
+public class CommandExecutionerEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<CommandComponent>, TextureableMachineEntity,
+    ControllerAccessible, ISyncableStuff {
   private ResourceLocation baseTexture;
   private ResourceLocation overlayTexture;
   @Nullable

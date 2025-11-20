@@ -1,12 +1,15 @@
 package es.degrassi.mmreborn.common.entity.base;
 
+import com.google.common.collect.Maps;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
 import es.degrassi.experiencelib.api.capability.IExperienceHandler;
 import es.degrassi.experiencelib.impl.capability.BasicExperienceHandler;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.network.ISyncable;
+import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
-import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.ExperienceHatchSize;
 import es.degrassi.mmreborn.common.entity.ExperienceInputHatchEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -20,6 +23,7 @@ import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -28,8 +32,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -37,10 +43,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public abstract class ExperienceHatchEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<ExperienceComponent>,
-    ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IExperienceHandler>, ITickEntity, IServerTickEntity {
+    ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IExperienceHandler>, ITickEntity, IServerTickEntity, ISyncableStuff,
+    IAutoEntity<IExperienceHandler> {
   protected ExperienceHatchSize size;
   protected IOType ioType;
   @Getter
@@ -64,6 +73,9 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick;
 
+  @Getter
+  private final Map<Direction, BlockCapabilityCache<IExperienceHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
+
   protected ExperienceHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ExperienceHatchSize size,
                           IOType ioType) {
     super(type, pos, state);
@@ -73,6 +85,8 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
     this.overlayTexture = defaultOverlayTexture;
     this.experienceTank = buildTank();
     this.capabilityInventory = this.createCapabilityInventory();
+    this.shouldAutoOutput = ioType.isOutput();
+    this.shouldAutoInput = ioType.isInput();
   }
 
   @Override
@@ -232,6 +246,9 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
     this.capabilityInventory.deserialize(compound.getCompound("inventory"), pRegistries);
+
+    this.shouldAutoOutput = ioType.isOutput() && shouldAutoOutput;
+    this.shouldAutoInput = ioType.isInput() && shouldAutoInput;
   }
 
   @Override
@@ -342,5 +359,11 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
       }).get();
       default -> null;
     };
+  }
+
+  @Override
+  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+    container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
+    container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
   }
 }

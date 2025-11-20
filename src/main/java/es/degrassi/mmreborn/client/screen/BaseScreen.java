@@ -29,12 +29,13 @@ import java.util.function.Predicate;
 public abstract class BaseScreen<T extends ContainerBase<E>, E extends ColorableMachineComponentEntity> extends AbstractContainerScreen<T> implements IGuiWrapper {
   public static final ResourceLocation BASE_SLOT = ModularMachineryReborn.rl("textures/gui/base_slot.png");
   public static final ResourceLocation BASE_SLOT_HOVERED = ModularMachineryReborn.rl("textures/gui/base_slot_hovered.png");
-  public static final ResourceLocation TAB = ModularMachineryReborn.rl("textures/gui/widget/base_tab.png");
-  public static final ResourceLocation TAB_HOVERED = ModularMachineryReborn.rl("textures/gui/widget/base_tab_hovered.png");
+  public static final ResourceLocation TAB = ModularMachineryReborn.rl("textures/gui/widget/base_tab_top.png");
+  public static final ResourceLocation TAB_HOVERED = ModularMachineryReborn.rl("textures/gui/widget/base_tab_hovered_top.png");
   public static final ResourceLocation SCROLLBAR_BACKGROUND = ModularMachineryReborn.rl("small_scroller_disabled");
   public static final ResourceLocation SCROLLBAR_THUMB = ModularMachineryReborn.rl("small_scroller");
 
   public static final int SLOT_SIZE = 18;
+  protected boolean hasClicked = false;
 
   protected final E entity;
   protected final boolean shouldRenderLabels;
@@ -51,7 +52,8 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
 
   @Override
   public @Nullable BaseScreen<?, ?> getWindowHovering(double mouseX, double mouseY) {
-    if (mouseX >= getGuiLeft() && mouseX <= getGuiLeft() + this.imageWidth && mouseY >= getGuiTop() && mouseY <= getGuiTop() + this.imageHeight)
+    if (mouseX >= getGuiLeft() && mouseX <= getGuiLeft() + this.imageWidth && mouseY >= getGuiTop() && mouseY <= getGuiTop() + this.imageHeight
+        || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY)))
       return this;
     return null;
   }

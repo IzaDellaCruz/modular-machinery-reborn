@@ -35,11 +35,11 @@ public class GuiScrollbar extends GuiScrollableElement {
       //Draw background and border
       guiGraphics.blitSprite(BACK_BAR,
           barX, barY,
-          400,
+          0,
           barWidth, height);
       guiGraphics.blitSprite(getResource(),
           barX, barY + getScroll(),
-          400,
+          0,
           barWidth, barHeight);
     }
   }

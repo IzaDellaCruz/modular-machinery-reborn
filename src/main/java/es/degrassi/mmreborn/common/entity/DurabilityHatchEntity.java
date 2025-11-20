@@ -1,9 +1,17 @@
 package es.degrassi.mmreborn.common.entity;
 
+import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.network.ISyncable;
+import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
+import es.degrassi.mmreborn.common.entity.base.IAutoEntity;
+import es.degrassi.mmreborn.common.entity.base.IAutoInputEntity;
+import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
+import es.degrassi.mmreborn.common.entity.base.ITickEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.TileInventory;
@@ -14,43 +22,47 @@ import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponent
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.ItemSlot;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Getter
-public class DurabilityHatchEntity extends TileInventory implements MachineComponentEntity<DurabilityComponent>, ControllerAccessible, TextureableMachineEntity {
+public class DurabilityHatchEntity extends TileInventory implements MachineComponentEntity<DurabilityComponent>, ControllerAccessible, TextureableMachineEntity,
+    IAutoEntity<IItemHandler>, IAutoInputEntity, ISyncableStuff, ITickEntity, IServerTickEntity {
+  @Setter
   private BlockPos controllerPos;
   private ItemDurabilityHatchSize size;
 
-  @Getter
   @Setter
   private ResourceLocation baseTexture;
-  @Getter
   @Setter
   private ResourceLocation overlayTexture;
-  @Getter
   private ResourceLocation defaultOverlayTexture;
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
+  private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
-  private DurabilityHatchEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState,
-                          ItemDurabilityHatchSize size) {
-    super(entityType, pos, blockState, size.getSlotCount());
+  public DurabilityHatchEntity(BlockPos pos, BlockState blockState, ItemDurabilityHatchSize size) {
+    super(EntityRegistration.ITEM_DURABILITY_HATCH.get(), pos, blockState, size.getSlotCount());
     this.size = size;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_durabilityhatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
@@ -71,13 +83,12 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
         }
       }
     });
+
+    this.shouldAutoInput = true;
   }
 
-  public DurabilityHatchEntity(BlockPos pos, BlockState blockState, ItemDurabilityHatchSize size) {
-    this(EntityRegistration.ITEM_DURABILITY_HATCH.get(), pos, blockState, size);
-  }
   public DurabilityHatchEntity(BlockPos pos, BlockState blockState) {
-    this(EntityRegistration.ITEM_DURABILITY_HATCH.get(), pos, blockState, ItemDurabilityHatchSize.TINY);
+    this(pos, blockState, ItemDurabilityHatchSize.TINY);
   }
 
   @Override
@@ -86,7 +97,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], stack -> stack.has(DataComponents.DAMAGE), Direction.values());
+    return new IOInventory(inSlots, new int[0], ItemStack::isDamageableItem, Direction.values());
   }
 
   @Nullable
@@ -138,11 +149,6 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
-  }
-
-  @Override
-  public void setControllerPos(BlockPos pos) {
-    this.controllerPos = pos;
   }
 
   @Override
@@ -211,5 +217,37 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
       case NORMAL -> MachineHatchTypeRegistration.DURABILITY_HATCH_NORMAL;
       case BIG -> MachineHatchTypeRegistration.DURABILITY_HATCH_BIG;
     }).get();
+  }
+
+  @Override
+  public void tickAutoInput() {
+    if (!shouldAutoInput) return;
+    for (Direction side : Direction.values()) {
+      var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
+      if (neighbour == null) continue;
+
+      inventory.getInventory()
+          .stream()
+          .filter(ItemSlot::isInput)
+          .forEachOrdered(slot -> moveStacks(neighbour, slot, Integer.MAX_VALUE));
+    }
+  }
+
+  protected void moveStacks(IItemHandler from, IItemHandler to, int maxAmount) {
+    for (int i = 0; i < from.getSlots(); i++) {
+      ItemStack canExtract = from.extractItem(i, maxAmount, true);
+      if (canExtract.isEmpty()) continue;
+      ItemStack canInsert = ItemHandlerHelper.insertItem(to, canExtract, false);
+      if (canInsert.isEmpty()) {
+        from.extractItem(i, maxAmount, false);
+      } else{
+        from.extractItem(i, canExtract.getCount() - canInsert.getCount(), false);
+      }
+    }
+  }
+
+  @Override
+  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+    container.accept(BooleanSyncable.create(this::isShouldAutoInput, this::setShouldAutoInput));
   }
 }

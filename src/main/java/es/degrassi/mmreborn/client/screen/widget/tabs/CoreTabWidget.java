@@ -12,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public class CoreTabWidget extends TabWidget {
+public class CoreTabWidget extends TopTabWidget {
   private final ControllerScreen parentScreen;
 
   public final Component component = Component.translatable("modular_machinery_reborn.gui.core_button");
@@ -25,12 +25,12 @@ public class CoreTabWidget extends TabWidget {
   @Override
   public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     super.renderTooltip(guiGraphics, x, y);
-      guiGraphics.renderTooltip(
-          Minecraft.getInstance().font,
-          List.of(component.getVisualOrderText()),
-          x,
-          y
-      );
+    guiGraphics.renderTooltip(
+        Minecraft.getInstance().font,
+        List.of(component.getVisualOrderText()),
+        x,
+        y
+    );
   }
 
   @Override

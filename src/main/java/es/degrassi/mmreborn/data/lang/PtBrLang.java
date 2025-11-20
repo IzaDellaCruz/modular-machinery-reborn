@@ -439,6 +439,10 @@ public final class PtBrLang extends Lang {
     add(mmr(gui(tooltip("redstone.button.mode.output"))), "Output");
     add(mmr(gui(tooltip("redstone.button.mode.none"))), "None");
     add(mmr(gui(tooltip("button.enum.cycle"))), "Next: %s");
+    add(mmr(gui(tooltip("auto_output.change"))), "Actual Mode: %s, Change to: %s");
+    add(mmr(gui(tooltip("auto_output"))), "Auto Output");
+    add(mmr(gui(tooltip("auto_input.change"))), "Actual Mode: %s, Change to: %s");
+    add(mmr(gui(tooltip("auto_input"))), "Auto Input");
   }
 
   @Override

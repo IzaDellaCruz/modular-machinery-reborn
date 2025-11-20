@@ -116,6 +116,10 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
     setChanged();
   }
 
+  public boolean isEmpty() {
+    return this.stack == null || this.stack.isEmpty();
+  }
+
   @Override
   public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
     if(stack.isEmpty() || !isItemValid(0, stack) || (!this.stack.isEmpty() && !ItemStack.isSameItemSameComponents(this.stack, stack)))

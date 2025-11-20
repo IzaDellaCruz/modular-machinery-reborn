@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class BlockExperienceInputHatch extends BlockExperienceHatch {
+public class BlockExperienceInputHatch extends BlockExperienceHatch implements BlockTickEntity {
   public BlockExperienceInputHatch(ExperienceHatchSize size) {
     super(size);
   }

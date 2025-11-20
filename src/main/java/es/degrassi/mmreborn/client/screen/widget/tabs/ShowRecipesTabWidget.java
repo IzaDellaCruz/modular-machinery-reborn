@@ -14,7 +14,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public class ShowRecipesTabWidget extends TabWidget {
+public class ShowRecipesTabWidget extends TopTabWidget {
   public ShowRecipesTabWidget(@Nullable ItemOrIconButton icon, DynamicMachine machine) {
     super(0, 0, icon, (mouseX, mouseY, button) -> {
       if (Mods.isEMILoaded()) {

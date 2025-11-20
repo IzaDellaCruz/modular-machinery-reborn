@@ -9,6 +9,8 @@ import es.degrassi.mmreborn.client.screen.widget.tabs.ShowRecipesTabWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.StructureBreakWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.StructurePlacerWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.TabGroupWidget;
+import es.degrassi.mmreborn.client.screen.widget.tabs.TopTabGroupWidget;
+import es.degrassi.mmreborn.client.screen.widget.tabs.TopTabWidget;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.util.Mods;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
@@ -32,12 +34,11 @@ import java.util.List;
 
 @Getter
 public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
-  public static final ResourceLocation TAB = ModularMachineryReborn.rl("textures/gui/widget/base_tab.png");
   protected static final ResourceLocation BASE_SLOT = ModularMachineryReborn.rl("textures/gui/base_slot.png");
   protected static final ResourceLocation BASE_SLOT_HOVERED = ModularMachineryReborn.rl("textures/gui/base_slot_hovered.png");
   private static final int screenWidth = 158;
 
-  private TabGroupWidget tabs;
+  private TopTabGroupWidget tabs;
 
   public ControllerScreen(ControllerContainer pMenu, Inventory pPlayerInventory, Component pTitle) {
     super(pMenu, pPlayerInventory, pTitle, TextureSizeHelper.getWidth(getTexture()), TextureSizeHelper.getHeight(getTexture()));
@@ -58,7 +59,7 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
   }
 
   private void createWidgets() {
-    tabs = addRenderableWidget(new TabGroupWidget(x, y - TextureSizeHelper.getHeight(TAB)));
+    tabs = addRenderableWidget(TabGroupWidget.createTop(x, y - TextureSizeHelper.getHeight(TopTabWidget.TAB)));
     tabs.addTab(new StructurePlacerWidget(
             this,
             getMenu().getId(),

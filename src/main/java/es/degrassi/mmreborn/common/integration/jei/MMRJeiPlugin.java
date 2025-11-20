@@ -5,7 +5,9 @@ import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.integration.almostunified.RecipeIndicator;
+import es.degrassi.mmreborn.client.screen.BaseScreen;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
+import es.degrassi.mmreborn.client.screen.widget.tabs.ITabGroupScreen;
 import es.degrassi.mmreborn.client.screen.widget.tabs.TabGroupWidget;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.integration.almostunified.AlmostUnifiedAdapter;
@@ -20,7 +22,6 @@ import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
-import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -36,6 +37,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -77,6 +79,21 @@ public class MMRJeiPlugin implements IModPlugin {
   }
 
   @Override
+  public void registerIngredientAliases(IIngredientAliasRegistration registration) {
+    Collection<ItemStack> stacks = ModularMachineryReborn.MACHINES
+        .values()
+        .stream()
+        .map(DynamicMachine::getRegistryName)
+        .map(ControllerItem::makeMachineItem)
+        .toList();
+    registration.addAliases(VanillaTypes.ITEM_STACK, stacks, List.of(
+        "Controller",
+        "multiblock",
+        "Multiblock"
+    ));
+  }
+
+  @Override
   public void registerModInfo(IModInfoRegistration register) {
     register.addModAliases(
         ModularMachineryReborn.rootLC(ModularMachineryReborn.MODID),
@@ -100,16 +117,27 @@ public class MMRJeiPlugin implements IModPlugin {
 
   @Override
   public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+    registration.addGuiContainerHandler(BaseScreen.class, new IGuiContainerHandler<>() {
+      @Override
+      public List<Rect2i> getGuiExtraAreas(BaseScreen screen) {
+        List<Rect2i> extraAreas = Lists.newArrayList();
+        if (!(screen instanceof ITabGroupScreen tabScreen)) return extraAreas;
+        TabGroupWidget tabs = tabScreen.getTabs();
+        extraAreas.add(new Rect2i(tabs.getX(), tabs.getY(), tabs.getWidth(), tabs.getHeight()));
+        return extraAreas;
+      }
+    });
     registration.addGuiContainerHandler(ControllerScreen.class, new IGuiContainerHandler<>() {
       @Override
       public Collection<IGuiClickableArea> getGuiClickableAreas(ControllerScreen containerScreen, double mouseX, double mouseY) {
         if (containerScreen.getPopupUnderMouse(mouseX, mouseY) != null)
           return List.of();
+        var tab = containerScreen.getTabs().getTabs().get(0);
         return List.of(createBasic(
-            TextureSizeHelper.getWidth(ControllerScreen.TAB) * 3,
-            -TextureSizeHelper.getHeight(ControllerScreen.TAB),
-            TextureSizeHelper.getWidth(ControllerScreen.TAB),
-            TextureSizeHelper.getHeight(ControllerScreen.TAB),
+            tab.getWidth() * 3,
+            -tab.getHeight(),
+            tab.getWidth(),
+            tab.getHeight(),
             containerScreen.getMenu().getId()
         ));
       }
@@ -123,7 +151,6 @@ public class MMRJeiPlugin implements IModPlugin {
         return extraAreas;
       }
     });
-    // TODO: add ghost ingredient handler if needed
   }
 
   private static IGuiClickableArea createBasic(

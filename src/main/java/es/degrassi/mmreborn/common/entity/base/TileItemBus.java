@@ -1,9 +1,12 @@
 package es.degrassi.mmreborn.common.entity.base;
 
+import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.network.ISyncable;
+import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
-import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -15,6 +18,7 @@ import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -23,14 +27,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Getter
-public abstract class TileItemBus extends TileInventory implements MachineComponentEntity<ItemComponent>, ControllerAccessible, TextureableMachineEntity {
+public abstract class TileItemBus extends TileInventory implements MachineComponentEntity<ItemComponent>, ControllerAccessible, TextureableMachineEntity, ITickEntity,
+    IServerTickEntity, ISyncableStuff, IAutoEntity<IItemHandler> {
   private BlockPos controllerPos;
   private ItemBusSize size;
   private IOType ioType;
@@ -40,9 +50,9 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
   private ResourceLocation defaultOverlayTexture;
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
+  private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
-  protected TileItemBus(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, ItemBusSize size,
-                   IOType ioType) {
+  protected TileItemBus(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, ItemBusSize size, IOType ioType) {
     super(entityType, pos, blockState, size.getSlotCount());
     this.size = size;
     this.ioType = ioType;
@@ -65,6 +75,8 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
         }
       }
     });
+    this.shouldAutoOutput = ioType.isOutput();
+    this.shouldAutoInput = ioType.isInput();
   }
 
   @Nullable
@@ -104,6 +116,9 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
         }
       }
     });
+
+    this.shouldAutoOutput = ioType.isOutput() && shouldAutoOutput;
+    this.shouldAutoInput = ioType.isInput() && shouldAutoInput;
   }
 
   @Override
@@ -145,6 +160,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
         false
     );
   }
+
   @Override
   public ResourceLocation getMachineBaseTexture() {
     return baseTexture;
@@ -209,5 +225,24 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
       }).get();
       default -> null;
     };
+  }
+
+  @Override
+  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+    container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
+    container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
+  }
+
+  protected void moveStacks(IItemHandler from, IItemHandler to, int maxAmount) {
+    for (int i = 0; i < from.getSlots(); i++) {
+      ItemStack canExtract = from.extractItem(i, maxAmount, true);
+      if (canExtract.isEmpty()) continue;
+      ItemStack canInsert = ItemHandlerHelper.insertItemStacked(to, canExtract, false);
+      if (canInsert.isEmpty()) {
+        from.extractItem(i, maxAmount, false);
+      } else{
+        from.extractItem(i, canExtract.getCount() - canInsert.getCount(), false);
+      }
+    }
   }
 }

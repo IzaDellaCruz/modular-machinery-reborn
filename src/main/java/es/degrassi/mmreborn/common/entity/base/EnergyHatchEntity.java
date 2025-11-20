@@ -1,9 +1,12 @@
 package es.degrassi.mmreborn.common.entity.base;
 
+import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.network.ISyncable;
+import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
-import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
@@ -19,6 +22,7 @@ import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -26,6 +30,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -35,11 +40,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity implements IEnergyHandler,
-    MachineComponentEntity<EnergyComponent>, ControllerAccessible, TextureableMachineEntity,
-    CapabilityInventoryEntity<IEnergyStorage>, ITickEntity, IServerTickEntity {
+    MachineComponentEntity<EnergyComponent>, ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IEnergyStorage>, ITickEntity, IServerTickEntity,
+    ISyncableStuff, IAutoEntity<IEnergyStorage> {
 
   protected long energy = 0;
   protected EnergyHatchSize size;
@@ -68,6 +75,9 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
+  @Getter
+  private final Map<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
+
   protected EnergyHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EnergyHatchSize size,
                           IOType ioType) {
     super(type, pos, state);
@@ -76,6 +86,8 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_energy" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
     this.capabilityInventory = createCapabilityInventory();
+    this.shouldAutoOutput = ioType.isOutput();
+    this.shouldAutoInput = ioType.isInput();
   }
 
   @Override
@@ -217,6 +229,8 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
     this.capabilityInventory.deserialize(compound.getCompound("inventory"), pRegistries);
+    this.shouldAutoOutput = this.ioType.isOutput() && this.shouldAutoOutput;
+    this.shouldAutoInput = ioType.isInput() && shouldAutoInput;
   }
 
   @Override
@@ -356,5 +370,11 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   public void resetTextures() {
     setMachineBaseTexture(defaultBaseTexture);
     setMachineOverlayTexture(defaultOverlayTexture);
+  }
+
+  @Override
+  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+    container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
+    container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
   }
 }

@@ -11,6 +11,7 @@ import snownee.jade.api.WailaPlugin;
 
 @WailaPlugin
 public class MMRWailaPlugin implements IWailaPlugin {
+  // TODO: Add fuel, and auto output/input status
 
   @Override
   public void registerClient(IWailaClientRegistration registration) {

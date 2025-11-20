@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BlockOutputBus extends BlockMachineComponent {
+public class BlockOutputBus extends BlockMachineComponent implements BlockTickEntity {
   private final ItemBusSize size;
   public BlockOutputBus(ItemBusSize size) {
     super(

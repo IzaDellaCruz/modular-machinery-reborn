@@ -175,6 +175,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void doRestrictedTick() {
+    IServerTickEntity.super.doRestrictedTick();
     tryPause();
     checkStructure(false);
 

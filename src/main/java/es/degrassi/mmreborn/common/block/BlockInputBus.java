@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class BlockInputBus extends BlockMachineComponent {
+public class BlockInputBus extends BlockMachineComponent implements BlockTickEntity {
   private final ItemBusSize size;
   public BlockInputBus(ItemBusSize size) {
     super(

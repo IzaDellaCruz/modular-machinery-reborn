@@ -78,6 +78,7 @@ public class ChunkloaderEntity extends BlockEntityRestrictedTick implements Mach
 
   @Override
   public void doRestrictedTick() {
+    IServerTickEntity.super.doRestrictedTick();
     chunkloader.serverTick();
   }
 

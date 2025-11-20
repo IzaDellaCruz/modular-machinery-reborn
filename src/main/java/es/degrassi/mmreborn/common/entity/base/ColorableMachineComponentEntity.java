@@ -3,6 +3,8 @@ package es.degrassi.mmreborn.common.entity.base;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineColorPacket;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -19,13 +21,21 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class ColorableMachineComponentEntity extends BlockEntitySynchronized implements ColorableMachineEntity {
   private int definedColor = Config.machineColor;
+  @Getter
+  @Setter
+  protected boolean shouldAutoOutput;
+  @Getter
+  @Setter
+  protected boolean shouldAutoInput;
 
   public ColorableMachineComponentEntity(BlockPos pos, BlockState blockState) {
-    super(EntityRegistration.COLORABLE_MACHINE.get(), pos, blockState);
+    this(EntityRegistration.COLORABLE_MACHINE.get(), pos, blockState);
   }
 
   public ColorableMachineComponentEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState) {
     super(entityType, pos, blockState);
+    this.shouldAutoOutput = false;
+    this.shouldAutoInput = false;
   }
 
   @Override
@@ -49,6 +59,10 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
   @Override
   protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
     super.loadAdditional(nbt, pRegistries);
+    if (this instanceof IAutoOutputEntity)
+      this.shouldAutoOutput = nbt.getBoolean("shouldAutoOutput");
+    if (this instanceof IAutoInputEntity)
+      this.shouldAutoInput = nbt.getBoolean("shouldAutoInput");
     if (nbt.contains("casingColor")) {
       definedColor = nbt.getInt("casingColor");
       return;
@@ -59,6 +73,10 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
   @Override
   protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
     super.saveAdditional(nbt, pRegistries);
+    if (this instanceof IAutoOutputEntity)
+      nbt.putBoolean("shouldAutoOutput", this.shouldAutoOutput);
+    if (this instanceof IAutoInputEntity)
+      nbt.putBoolean("shouldAutoInput", this.shouldAutoInput);
     nbt.putInt("casingColor", this.definedColor);
   }
 

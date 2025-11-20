@@ -16,7 +16,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public class StructureBreakWidget extends TabWidget {
+public class StructureBreakWidget extends TopTabWidget {
   private final ControllerScreen parentScreen;
 
   private final ResourceLocation machine;

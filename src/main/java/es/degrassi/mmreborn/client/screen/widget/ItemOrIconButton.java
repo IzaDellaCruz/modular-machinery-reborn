@@ -84,8 +84,8 @@ public class ItemOrIconButton extends Button implements TooltipRender {
       Icon icon = this.getIcon();
       Item item = this.getItem();
       if (this.halfSize) {
-        this.width = 8;
-        this.height = 8;
+        this.width = getWidth() / 2;
+        this.height = getHeight() / 2;
       }
 
       int yOffset = this.isHovered() ? 1 : 0;
@@ -126,11 +126,11 @@ public class ItemOrIconButton extends Button implements TooltipRender {
   }
 
   public List<Component> getTooltipMessage() {
-    return tooltips;
+    return getTooltips();
   }
 
   public Rect2i getTooltipArea() {
-    return new Rect2i(this.getX(), this.getY(), this.halfSize ? 8 : 16, this.halfSize ? 8 : 16);
+    return new Rect2i(this.getX(), this.getY(), this.halfSize ? getWidth() / 2 : getWidth(), this.halfSize ? getHeight() / 2 : getHeight());
   }
 
   public boolean isTooltipAreaVisible() {
@@ -150,8 +150,8 @@ public class ItemOrIconButton extends Button implements TooltipRender {
         "halfSize=" + halfSize +
         ", disableClickSound=" + disableClickSound +
         ", disableBackground=" + disableBackground +
-        ", item=" + (item == null ? "null" : item) +
-        ", icon=" + (icon == null ? "null" : icon) +
+        ", item=" + (getItem() == null ? "null" : getItem()) +
+        ", icon=" + (getIcon() == null ? "null" : getIcon()) +
         ", renderTooltip=" + renderTooltip +
         ", x=" + getX() +
         ", y=" + getY() +

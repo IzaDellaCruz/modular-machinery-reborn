@@ -1,7 +1,6 @@
 package es.degrassi.mmreborn.client.screen.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mekanism.client.SpecialColors;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -34,27 +33,15 @@ public interface IFancyFontRenderer {
   }
 
   default int titleTextColor() {
-    return SpecialColors.TEXT_TITLE.argb();
-  }
-
-  default int headingTextColor() {
-    return SpecialColors.TEXT_HEADING.argb();
-  }
-
-  default int subheadingTextColor() {
-    return SpecialColors.TEXT_SUBHEADING.argb();
-  }
-
-  default int screenTextColor() {
-    return SpecialColors.TEXT_SCREEN.argb();
+    return 0xFF404040;
   }
 
   default int activeButtonTextColor() {
-    return SpecialColors.TEXT_ACTIVE_BUTTON.argb();
+    return 0xFFFFFFFF;
   }
 
   default int inactiveButtonTextColor() {
-    return SpecialColors.TEXT_INACTIVE_BUTTON.argb();
+    return 0xFFA0A0A0;
   }
 
   default void drawTitleText(GuiGraphics graphics, Component text, int y) {

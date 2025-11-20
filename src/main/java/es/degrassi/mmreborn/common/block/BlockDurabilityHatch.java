@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BlockDurabilityHatch extends BlockMachineComponent {
+public class BlockDurabilityHatch extends BlockMachineComponent implements BlockTickEntity {
   protected final ItemDurabilityHatchSize size;
   public BlockDurabilityHatch(ItemDurabilityHatchSize size) {
     super(

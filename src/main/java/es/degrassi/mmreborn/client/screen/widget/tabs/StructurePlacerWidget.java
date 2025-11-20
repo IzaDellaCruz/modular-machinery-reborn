@@ -34,7 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
-public class StructurePlacerWidget extends TabWidget {
+public class StructurePlacerWidget extends TopTabWidget {
   private final ControllerScreen parentScreen;
 
   private final ResourceLocation machine;
@@ -51,7 +51,7 @@ public class StructurePlacerWidget extends TabWidget {
   }
 
   @Override
-  protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+  public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
     timer.onDraw();
     super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
   }

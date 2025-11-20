@@ -1,16 +1,20 @@
 package es.degrassi.mmreborn.common.entity;
 
+import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.capability.BasicFuelHandler;
 import es.degrassi.mmreborn.api.capability.IFuelHandler;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.api.network.syncable.LongSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
+import es.degrassi.mmreborn.common.entity.base.IAutoEntity;
+import es.degrassi.mmreborn.common.entity.base.IAutoInputEntity;
 import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.ITickEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
@@ -25,6 +29,7 @@ import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponent
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.ItemSlot;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,34 +45,37 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
 @Setter
 @MethodsReturnNonnullByDefault
 public class FuelTankEntity extends TileInventory implements MachineComponentEntity<FuelComponent>,
-    ControllerAccessible, TextureableMachineEntity, ITickEntity, IServerTickEntity, ISyncableStuff {
+    ControllerAccessible, TextureableMachineEntity, ITickEntity, IServerTickEntity, ISyncableStuff, IAutoInputEntity,
+    IAutoEntity<IItemHandler> {
   @Nullable
   private BlockPos controllerPos;
   private FuelTankSize size;
 
   private ResourceLocation baseTexture;
   private ResourceLocation overlayTexture;
-  @Getter
   private ResourceLocation defaultOverlayTexture;
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
-
-  @Getter
   private final IFuelHandler fuelHandler;
-
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick, lastCheckFuelTick;
+  private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
   private FuelTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FuelTankSize size) {
     super(type, pos, state, 1);
@@ -104,6 +112,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
       if (getController() != null)
         getController().getProcessor().setMachineInventoryChanged();
     });
+    this.shouldAutoInput = true;
   }
 
   public FuelTankEntity(BlockPos pos, BlockState state, FuelTankSize size) {
@@ -115,7 +124,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
 
   @Override
   public void doRestrictedTick() {
-    if (getLevel() == null) return;
+    IServerTickEntity.super.doRestrictedTick();
     long gameTime = getLevel().getGameTime();
     if (FuelTankConfig.get().reduceFuelPerTick.get()) {
       if (Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckFuelTick, tickOffset, 1))
@@ -265,5 +274,33 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
     container.accept(LongSyncable.create(getFuelHandler()::getFuel, getFuelHandler()::setFuel));
     container.accept(LongSyncable.create(getFuelHandler()::getMaxFuel, getFuelHandler()::setMaxFuel));
+    container.accept(BooleanSyncable.create(this::isShouldAutoInput, this::setShouldAutoInput));
+  }
+
+  @Override
+  public void tickAutoInput() {
+    if (!shouldAutoInput) return;
+    for (Direction side : Direction.values()) {
+      var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
+      if (neighbour == null) continue;
+
+      inventory.getInventory()
+          .stream()
+          .filter(ItemSlot::isInput)
+          .forEachOrdered(slot -> moveStacks(neighbour, slot, Integer.MAX_VALUE));
+    }
+  }
+
+  protected void moveStacks(IItemHandler from, IItemHandler to, int maxAmount) {
+    for (int i = 0; i < from.getSlots(); i++) {
+      ItemStack canExtract = from.extractItem(i, maxAmount, true);
+      if (canExtract.isEmpty()) continue;
+      ItemStack canInsert = ItemHandlerHelper.insertItemStacked(to, canExtract, false);
+      if (canInsert.isEmpty()) {
+        from.extractItem(i, maxAmount, false);
+      } else{
+        from.extractItem(i, canExtract.getCount() - canInsert.getCount(), false);
+      }
+    }
   }
 }
