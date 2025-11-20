@@ -366,4 +366,18 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
     container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
     container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
   }
+
+  protected void attemptXPTransfer(IExperienceHandler from, IExperienceHandler to, long maxTransfer) {
+    for (int i = 0; i < from.getTanks(); i++) {
+      if (!from.canExtract(i)) continue;
+      for (int j = 0; j < to.getTanks(); j++) {
+        if (!to.canReceive(i)) continue;
+        long extracted = from.extractExperience(i, maxTransfer, true);
+        if (extracted <= 0) continue;
+        long inserted = to.receiveExperience(j, extracted, false);
+        from.extractExperience(i, inserted, false);
+        maxTransfer -= inserted;
+      }
+    }
+  }
 }
