@@ -7,7 +7,7 @@ import java.util.Locale;
 public enum EffectDispenserSize implements ConfigLoaded, StringRepresentable {
   SMALL(5, false, true),
   MEDIUM(15, false, true),
-  BIG(32, true, false);
+  BIG(32, false, true);
 
   public final int defaultRadius;
   public final boolean defaultDimensional;
