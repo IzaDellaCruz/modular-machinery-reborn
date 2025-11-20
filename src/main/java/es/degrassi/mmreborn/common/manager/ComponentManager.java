@@ -17,7 +17,6 @@ import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
-import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
@@ -31,7 +30,6 @@ import es.degrassi.mmreborn.common.machine.component.FunctionComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.machine.component.ParallelComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
@@ -73,6 +71,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   public final void reset() {
     cachedBlocks.forEach(block -> {
       if (controller.getLevel().getBlockEntity(block) instanceof ColorableMachineComponentEntity entity) {
+        if (entity.isRemoved()) return;
         entity.getControllerPosSet().remove(controller.getBlockPos());
         entity.setMachineColor(Config.machineColor);
         if (entity instanceof TextureableMachineEntity text) text.resetTextures();
