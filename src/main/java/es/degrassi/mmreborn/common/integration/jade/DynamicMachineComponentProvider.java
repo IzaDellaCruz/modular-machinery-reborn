@@ -24,7 +24,7 @@ public class DynamicMachineComponentProvider implements IBlockComponentProvider 
   public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
     IElementHelper helper = IElementHelper.get();
     if (accessor.getBlockEntity() instanceof MachineControllerEntity) {
-      CompoundTag tag = accessor.getServerData().getCompound(ModularMachineryReborn.MODID);
+      CompoundTag tag = accessor.getServerData().getCompound(ModularMachineryReborn.MODID + ".controller");
       if (tag.isEmpty()) return;
       if (tag.contains("paused")) {
         tooltip.add(

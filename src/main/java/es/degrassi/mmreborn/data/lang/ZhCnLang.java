@@ -39,7 +39,9 @@ public final class ZhCnLang extends Lang {
 
   @Override
   protected void addJade() {
-    add("config.jade.plugin_modular_machinery_reborn.machine_component_provider", "模块化机械:重生");
+    // add("config.jade.plugin_modular_machinery_reborn.machine_component_provider", "模块化机械:重生");
+    add("config.jade.plugin_modular_machinery_reborn.machine_component_provider", "Modular Machinery Reborn Controller");
+    add("config.jade.plugin_modular_machinery_reborn.hatch_component_provider", "Modular Machinery Reborn Hatch");
   }
 
   @Override
@@ -443,6 +445,14 @@ public final class ZhCnLang extends Lang {
     add(mmr(gui(tooltip("auto_output"))), "Auto Output");
     add(mmr(gui(tooltip("auto_input.change"))), "Actual Mode: %s, Change to: %s");
     add(mmr(gui(tooltip("auto_input"))), "Auto Input");
+    add(mmr(tooltip("auto_output")), "Auto Output: %s");
+    add(mmr(tooltip("auto_input")), "Auto Input: %s");
+    add(mmr(gui(tooltip("enabled.true"))), "Enabled");
+    add(mmr(gui(tooltip("enabled.false"))), "Disabled");
+    add(mmr(tooltip("effect")), "Giving effect in %s block(s) radius");
+    add(mmr(tooltip("effect.interdimensional")), "Giving effect interdimensionally");
+    add(mmr(tooltip("redstone.emit")), "Emitting %s");
+    add(mmr(tooltip("redstone.receive")), "Receiving %s");
   }
 
   @Override

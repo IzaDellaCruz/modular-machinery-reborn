@@ -11,17 +11,17 @@ import snownee.jade.api.WailaPlugin;
 
 @WailaPlugin
 public class MMRWailaPlugin implements IWailaPlugin {
-  // TODO: Add fuel, and auto output/input status
-
   @Override
   public void registerClient(IWailaClientRegistration registration) {
     registration.registerBlockComponent(DynamicMachineComponentProvider.INSTANCE, Block.class);
     registration.usePickedResult(BlockRegistration.CONTROLLER.get());
     ModularMachineryReborn.MACHINES_BLOCK.values().forEach(registration::usePickedResult);
+    registration.registerBlockComponent(MachineHatchComponentProvider.INSTANCE, Block.class);
   }
 
   @Override
   public void register(IWailaCommonRegistration registration) {
     registration.registerBlockDataProvider(DynamicMachineServerDataProvider.INSTANCE, BlockEntity.class);
+    registration.registerBlockDataProvider(MachineHatchServerDataProvider.INSTANCE, BlockEntity.class);
   }
 }

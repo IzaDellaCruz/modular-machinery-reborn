@@ -49,6 +49,7 @@ public class EffectDispenserEntity extends ColorableMachineComponentEntity imple
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
+  @Getter
   private EffectDispenserSize size;
   @Getter
   private final EffectHandler handler;

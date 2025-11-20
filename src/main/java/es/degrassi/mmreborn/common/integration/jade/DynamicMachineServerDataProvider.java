@@ -30,7 +30,7 @@ public class DynamicMachineServerDataProvider implements IServerDataProvider<Blo
                 .count()
         );
       }
-      nbt.put(ModularMachineryReborn.MODID, tag);
+      nbt.put(ModularMachineryReborn.MODID + ".controller", tag);
     }
   }
 
