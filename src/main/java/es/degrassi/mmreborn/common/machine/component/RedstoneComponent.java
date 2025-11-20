@@ -8,7 +8,6 @@ import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 
 public class RedstoneComponent extends MachineComponent<Integer> {
   private final RedstonePortEntity entity;
@@ -32,7 +31,7 @@ public class RedstoneComponent extends MachineComponent<Integer> {
   }
 
   @Override
-  public @Nullable Integer getContainerProvider() {
+  public Integer getContainerProvider() {
     return RedstoneHelper.getReceivingRedstone(entity);
   }
 
