@@ -129,7 +129,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     if (FuelTankConfig.get().reduceFuelPerTick.get()) {
       if (Utils.shouldRunPeriodicCheck(false, gameTime, lastCheckFuelTick, tickOffset, 1))
         if (getFuelHandler().getFuel() > 0 && (getController() == null || getController().getStatus() != MachineStatus.RUNNING)) {
-          getFuelHandler().removeFuel(-1);
+          getFuelHandler().removeFuel(1);
         }
       lastCheckFuelTick = gameTime;
     }
