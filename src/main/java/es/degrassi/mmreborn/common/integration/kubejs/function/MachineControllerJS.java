@@ -57,6 +57,7 @@ public class MachineControllerJS {
     if (loc != null) {
       TaskDelayer.enqueue(0, () -> {
         this.internal.getProcessor().reset();
+        this.internal.getComponentManager().reset();
         this.internal.setMachine(loc);
       });
     } else {

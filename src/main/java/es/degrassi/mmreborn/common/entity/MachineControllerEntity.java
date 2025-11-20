@@ -11,13 +11,10 @@ import es.degrassi.mmreborn.api.network.syncable.NbtSyncable;
 import es.degrassi.mmreborn.api.network.syncable.StringSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
 import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerData;
-import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.crafting.helper.CraftingStatus;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
-import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.base.BlockEntityRestrictedTick;
-import es.degrassi.mmreborn.common.entity.base.BlockEntitySynchronized;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.IClientTickEntity;
 import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
@@ -177,22 +174,22 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void doRestrictedTick() {
     IServerTickEntity.super.doRestrictedTick();
     tryPause();
+
+    if (!status.isMissingStructure()) {
+      if (isPaused()) return;
+      try {
+        processor.tick();
+      } catch (ComponentNotFoundException e) {
+        ModularMachineryReborn.LOGGER.error(e.getMessage());
+      }
+      return;
+    }
+
     checkStructure(false);
 
     if (status.isMissingStructure()) {
       processor.reset();
       componentManager.reset();
-      return;
-    }
-
-    if (isPaused()) return;
-
-    componentManager.updateComponents(false);
-
-    try {
-      processor.tick();
-    } catch (ComponentNotFoundException e) {
-      ModularMachineryReborn.LOGGER.error(e.getMessage());
     }
   }
 
@@ -200,12 +197,14 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void setRemoved() {
     if (this.level != null && this.level.isClientSide() && this.soundManager != null)
       this.soundManager.stop();
+    componentManager.reset();
+    processor.reset();
     super.setRemoved();
   }
 
   public void setMachine(ResourceLocation machine) {
     this.id = machine;
-    distributeCasingColor(false, getBlockPos());
+    tryColorize(getBlockPos());
     if (getLevel() instanceof ServerLevel l)
       PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SMachineUpdatePacket(id, getBlockPos()));
     setRequestModelUpdate(true);
@@ -214,20 +213,17 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   }
 
   public void checkStructure(boolean immediate) {
-    if (this.getFoundMachine() == DynamicMachine.DUMMY)
-      return;
+    if (this.getFoundMachine() == DynamicMachine.DUMMY || getLevel() == null) return;
     long gameTime = getLevel().getGameTime();
-    if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset,
-        MMRConfig.get().checkStructureTicks.get()))
-      return;
+    if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
     lastCheckTick = gameTime;
-    if (!getFoundMachine().getPattern().match(getLevel(), getBlockPos(),
-        getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))) {
-      distributeCasingColor(true);
+    if (!getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))) {
+      componentManager.reset();
+      processor.reset();
       setStatus(MachineStatus.MISSING_STRUCTURE);
     } else {
-      distributeCasingColor(false);
-      componentManager.updateComponents(immediate);
+      componentManager.updateComponents();
+      distributeCasingColor();
       if (!status.isCrafting()) {
         setStatus(MachineStatus.IDLE);
       } else {
@@ -238,55 +234,32 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     setChanged();
   }
 
-  public void distributeCasingColor(boolean default_, BlockPos... poss) {
-    int color = default_ ? Config.machineColor : getFoundMachine().getMachineColor();
-    for (BlockPos pos : poss) {
-      if (getLevel().getBlockEntity(pos) instanceof MachineControllerEntity entity)
-        tryColorize(pos, entity.getFoundMachine().getMachineColor(), default_);
-      else
-        tryColorize(this.getBlockPos().offset(pos), color, default_);
-    }
-    tryColorize(getBlockPos(), getFoundMachine().getMachineColor(), default_);
+  @Override
+  public int getMachineColor() {
+    return getFoundMachine().getMachineColor();
   }
 
-  public void distributeCasingColor(boolean default_) {
-    if (ModularMachineryReborn.MACHINES.get(id) != DynamicMachine.DUMMY) {
-      distributeCasingColor(default_, getFoundMachine().getPattern().getBlocks(getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING)).keySet().toArray(BlockPos[]::new));
-    } else {
-      if (!getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))) {
-        BlockPos[] blockPos = getFoundMachine().getPattern().getBlocks(getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING)).keySet().toArray(BlockPos[]::new);
-        distributeCasingColor(true, blockPos);
-        for (BlockPos pos : blockPos) {
-          if (getLevel().getBlockEntity(getBlockPos().offset(pos)) instanceof BlockEntitySynchronized entity) {
-            entity.setInStructure(false);
-            entity.setChanged();
-          }
-        }
-      }
-    }
+  public void distributeCasingColor() {
+    getComponentManager().getCachedBlocks().forEach(this::tryColorize);
   }
 
-  private void tryColorize(BlockPos pos, int color, boolean _default) {
+  private void tryColorize(BlockPos pos) {
     BlockEntity te = this.getLevel().getBlockEntity(pos);
     AtomicBoolean shouldColor = new AtomicBoolean(true);
     if (te instanceof TextureableMachineEntity entity) {
       entity.resetTextures();
-      if (!_default) {
-        Optional.ofNullable(getFoundMachine().getFormedTextures().get(entity.getHatchType())).ifPresent(p -> {
-          shouldColor.set(p.getFirst());
-          p.mapSecond(pair -> {
-            pair.getFirst().ifPresent(entity::setMachineBaseTexture);
-            pair.getSecond().ifPresent(entity::setMachineOverlayTexture);
-            return null;
-          });
+      Optional.ofNullable(getFoundMachine().getFormedTextures().get(entity.getHatchType())).ifPresent(p -> {
+        shouldColor.set(p.getFirst());
+        p.mapSecond(pair -> {
+          pair.getFirst().ifPresent(entity::setMachineBaseTexture);
+          pair.getSecond().ifPresent(entity::setMachineOverlayTexture);
+          return null;
         });
-      }
-      te.setChanged();
+      });
     }
 
     if (te instanceof ColorableMachineEntity entity) {
-      entity.setMachineColor(shouldColor.get() ? color : 0xffffffff);
-      te.setChanged();
+      entity.setMachineColor(shouldColor.get() ? getMachineColor() : 0xffffffff);
     }
   }
 

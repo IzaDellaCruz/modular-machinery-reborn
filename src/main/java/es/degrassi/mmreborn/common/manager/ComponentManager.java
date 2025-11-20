@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
@@ -15,9 +16,11 @@ import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
+import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
+import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
@@ -30,6 +33,7 @@ import es.degrassi.mmreborn.common.machine.component.ParallelComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -45,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -57,47 +62,40 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   private final Map<ComponentType, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
   private final Map<BlockPos, List<ModifierReplacement>> foundModifiers = Maps.newHashMap();
 
-  private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
-  private long lastComponentsCheckTick;
-  private long lastModifiersCheckTick;
+  @Getter
+  @Accessors(makeFinal = true)
+  private final Set<BlockPos> cachedBlocks = Sets.newHashSet();
 
   public ComponentManager(MachineControllerEntity entity) {
     this.controller = entity;
   }
 
   public final void reset() {
+    cachedBlocks.forEach(block -> {
+      if (controller.getLevel().getBlockEntity(block) instanceof ColorableMachineComponentEntity entity) {
+        entity.getControllerPosSet().remove(controller.getBlockPos());
+        entity.setMachineColor(Config.machineColor);
+      }
+    });
     foundComponents.clear();
     foundModifiers.clear();
     foundComponentsValues.clear();
   }
 
-  public final void updateModifiers(boolean force) {
-    if (controller.getFoundMachine() == DynamicMachine.DUMMY)
-      return;
+  public final void updateModifiers() {
+    if (controller.getFoundMachine() == DynamicMachine.DUMMY) return;
     Level level = controller.getLevel();
-    if (level == null)
-      return;
-    long gameTime = level.getGameTime();
-    if (!Utils.shouldRunPeriodicCheck(force, gameTime, lastModifiersCheckTick, tickOffset,
-        MMRConfig.get().checkStructureTicks.get()))
-      return;
-    lastModifiersCheckTick = gameTime;
+    if (level == null) return;
     foundModifiers.clear();
     foundModifiers.putAll(gatherModifiers());
     controller.setChanged();
   }
 
-  public final void updateComponents(boolean force) {
+  public final void updateComponents() {
     if (controller.getFoundMachine() == DynamicMachine.DUMMY)
       return;
     Level level = controller.getLevel();
-    if (level == null)
-      return;
-    long gameTime = level.getGameTime();
-    if (!Utils.shouldRunPeriodicCheck(force, gameTime, lastComponentsCheckTick, tickOffset,
-        MMRConfig.get().checkStructureTicks.get()))
-      return;
-    lastComponentsCheckTick = gameTime;
+    if (level == null) return;
     reset();
     foundComponents.putAll(gatherComponents());
 
@@ -117,7 +115,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
       controller.getLevel().setBlockAndUpdate(pos, state);
     });
     foundComponentsValues.putAll(filter());
-    updateModifiers(force);
+    updateModifiers();
     controller.getProcessor().setMachineInventoryChanged();
     controller.setChanged();
   }
@@ -134,14 +132,14 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   }
 
   public final List<MachineComponent<?>> getFoundComponentsList() {
-    if (foundComponents.isEmpty()) updateComponents(true);
+    if (foundComponents.isEmpty()) updateComponents();
     return foundComponents.values()
         .stream()
         .toList();
   }
 
   public List<ModifierReplacement> getFoundModifiersList() {
-    if (foundModifiers.isEmpty()) updateComponents(true);
+    if (foundModifiers.isEmpty()) updateComponents();
     return foundModifiers.values().stream().flatMap(List::stream).toList();
   }
 
@@ -161,7 +159,12 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     if (level == null) return map;
     for (BlockPos potentialPosition : filteredMap.keySet()) {
       BlockPos realPos = controllerPos.offset(potentialPosition);
+      if (!realPos.equals(controllerPos))
+        cachedBlocks.add(realPos);
       BlockEntity te = level.getBlockEntity(realPos);
+      if (te instanceof ColorableMachineComponentEntity entity) {
+        entity.getControllerPosSet().add(controllerPos);
+      }
       if (te instanceof MachineComponentEntity<?> entity) {
         var component = entity.provideComponent();
         if (entity instanceof ControllerAccessible accessible) {
@@ -195,9 +198,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   }
 
   public List<RecipeModifier> getModifiers(RequirementType<?> type) {
-    if (foundModifiers.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) {
-      updateModifiers(false);
-    }
+    if (foundModifiers.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) updateModifiers();
     return foundModifiers.values()
         .stream()
         .flatMap(List::stream)
@@ -209,7 +210,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
 
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<?>> Optional<C> getComponent(IRequirement<C> requirement, ICraftingContext context) {
-    if (foundComponentsValues.isEmpty()) updateComponents(true);
+    if (foundComponentsValues.isEmpty()) updateComponents();
     AtomicReference<C> merged = new AtomicReference<>(null);
     Optional.ofNullable(foundComponentsValues.get(requirement.getComponentType()))
         .map(m -> {
@@ -288,7 +289,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
 
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<?>> Optional<C> getComponent(ComponentType type, IOType mode) {
-    if (foundComponentsValues.isEmpty()) updateComponents(true);
+    if (foundComponentsValues.isEmpty()) updateComponents();
     AtomicReference<C> merged = new AtomicReference<>(null);
     Optional.ofNullable(foundComponentsValues.get(type))
         .map(m -> m.get(mode))
@@ -338,7 +339,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
 
   @Override
   public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-    updateComponents(true);
+    updateComponents();
   }
 
   @Override

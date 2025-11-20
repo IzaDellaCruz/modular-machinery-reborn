@@ -97,7 +97,7 @@ public class ParallelHatchBlock extends BlockMachineComponent {
         if (entity.getController() != null) {
           var controller = entity.getController();
           super.onBlockExploded(state, level, pos, explosion);
-          controller.getComponentManager().updateComponents(true);
+          controller.getComponentManager().updateComponents();
           controller.getProcessor().updateActiveCores(1);
         }
       } else {
@@ -115,7 +115,7 @@ public class ParallelHatchBlock extends BlockMachineComponent {
         if (entity.getController() != null) {
           var controller = entity.getController();
           super.onRemove(state, level, pos, newState, movedByPiston);
-          controller.getComponentManager().updateComponents(true);
+          controller.getComponentManager().updateComponents();
           controller.getProcessor().updateActiveCores(1);
         } else {
           super.onRemove(state, level, pos, newState, movedByPiston);
@@ -135,7 +135,7 @@ public class ParallelHatchBlock extends BlockMachineComponent {
         if (entity.getController() != null) {
           var controller = entity.getController();
           var toReturn = super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-          controller.getComponentManager().updateComponents(true);
+          controller.getComponentManager().updateComponents();
           controller.getProcessor().updateActiveCores(1);
           return toReturn;
         } else {
@@ -156,7 +156,7 @@ public class ParallelHatchBlock extends BlockMachineComponent {
         if (entity.getController() != null) {
           var controller = entity.getController();
           super.onDestroyedByPushReaction(state, level, pos, pushDirection, fluid);
-          controller.getComponentManager().updateComponents(true);
+          controller.getComponentManager().updateComponents();
           controller.getProcessor().updateActiveCores(1);
         } else {
           super.onDestroyedByPushReaction(state, level, pos, pushDirection, fluid);
