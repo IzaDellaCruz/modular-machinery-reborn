@@ -48,8 +48,8 @@ public class AutoOutputTabWidget<T extends IAutoEntity<?> & IAutoOutputEntity> e
             Component.translatable("mmr.gui.tooltip.auto_output").getVisualOrderText(),
             Component.translatable(
                 "mmr.gui.tooltip.auto_output.change",
-                Component.literal(entity.isShouldAutoOutput() + "").withStyle(ChatFormatting.AQUA),
-                Component.literal(!entity.isShouldAutoOutput() + "").withStyle(ChatFormatting.AQUA)
+                Component.translatable("mmr.gui.tooltip.enabled." + entity.isShouldAutoOutput()).withStyle(ChatFormatting.AQUA),
+                Component.translatable("mmr.gui.tooltip.enabled." + !entity.isShouldAutoOutput()).withStyle(ChatFormatting.AQUA)
             ).getVisualOrderText()
         ),
         x,

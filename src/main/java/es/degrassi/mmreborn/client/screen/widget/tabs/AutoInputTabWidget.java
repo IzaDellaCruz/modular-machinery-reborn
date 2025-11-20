@@ -48,8 +48,8 @@ public class AutoInputTabWidget<T extends IAutoEntity<?> & IAutoInputEntity> ext
             Component.translatable("mmr.gui.tooltip.auto_input").getVisualOrderText(),
             Component.translatable(
                 "mmr.gui.tooltip.auto_input.change",
-                Component.literal(entity.isShouldAutoInput() + "").withStyle(ChatFormatting.AQUA),
-                Component.literal(!entity.isShouldAutoInput() + "").withStyle(ChatFormatting.AQUA)
+                Component.translatable("mmr.gui.tooltip.enabled." + entity.isShouldAutoInput()).withStyle(ChatFormatting.AQUA),
+                Component.translatable("mmr.gui.tooltip.enabled." + !entity.isShouldAutoInput()).withStyle(ChatFormatting.AQUA)
             ).getVisualOrderText()
         ),
         x,
