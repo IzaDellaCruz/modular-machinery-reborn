@@ -60,6 +60,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import static es.degrassi.mmreborn.ModularMachineryReborn.CONTROLLERS;
+
 @Getter
 @Setter
 @ParametersAreNonnullByDefault
@@ -84,6 +86,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     super(EntityRegistration.CONTROLLER.get(), pos, state);
     componentManager = new ComponentManager(this);
     processor = new MachineProcessor(this);
+    CONTROLLERS.add(this);
   }
 
   @Override

@@ -2,6 +2,7 @@ package es.degrassi.mmreborn;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
 import es.degrassi.mmreborn.api.crafting.IProcessor;
@@ -30,7 +31,6 @@ import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
-import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -54,7 +54,6 @@ import es.degrassi.mmreborn.common.util.LootTableHelper;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.common.util.MiscUtils;
 import es.degrassi.mmreborn.common.util.TaskDelayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,8 +80,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -93,6 +90,7 @@ public class ModularMachineryReborn {
 
   public static final BiMap<ResourceLocation, DynamicMachine> MACHINES = HashBiMap.create();
   public static final BiMap<ResourceLocation, BlockController> MACHINES_BLOCK = HashBiMap.create();
+  public static final Set<MachineControllerEntity> CONTROLLERS = Sets.newHashSet();
 
   public ModularMachineryReborn(final ModContainer CONTAINER, final IEventBus MOD_BUS) {
     initConfigs(CONTAINER);
@@ -170,16 +168,11 @@ public class ModularMachineryReborn {
   }
 
   private void breakEvent(final BlockEvent.BreakEvent event) {
-    var level = event.getPlayer().level();
-    if (level.getBlockEntity(event.getPos()) instanceof ColorableMachineComponentEntity entity) {
-      Set<BlockPos> oldPos = new HashSet<>(entity.getControllerPosSet());
-      entity.getControllerPosSet().clear();
-      oldPos.forEach(controllerPos -> {
-        if (level.getBlockEntity(controllerPos) instanceof MachineControllerEntity controller) {
-          TaskDelayer.enqueue(0, () -> controller.checkStructure(true));
-        }
-      });
-    }
+    if (event.getPlayer().level().isClientSide) return;
+    CONTROLLERS
+        .stream()
+        .filter(controller -> controller.getComponentManager().getCachedBlocks().contains(event.getPos()))
+        .forEach(controller -> TaskDelayer.enqueue(0, () -> controller.checkStructure(true)));
   }
 
   private void syncDatapacks(final OnDatapackSyncEvent event) {
