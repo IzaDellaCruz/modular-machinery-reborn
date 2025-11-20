@@ -32,7 +32,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
@@ -370,13 +369,13 @@ public abstract class ExperienceHatchEntity extends ColorableMachineComponentEnt
   protected void attemptXPTransfer(IExperienceHandler from, IExperienceHandler to, long maxTransfer) {
     for (int i = 0; i < from.getTanks(); i++) {
       if (!from.canExtract(i)) continue;
+      long extracted = from.extractExperience(i, maxTransfer, true);
+      if (extracted <= 0) continue;
       for (int j = 0; j < to.getTanks(); j++) {
         if (!to.canReceive(i)) continue;
-        long extracted = from.extractExperience(i, maxTransfer, true);
-        if (extracted <= 0) continue;
         long inserted = to.receiveExperience(j, extracted, false);
+        if (inserted < 1) continue;
         from.extractExperience(i, inserted, false);
-        maxTransfer -= inserted;
       }
     }
   }
