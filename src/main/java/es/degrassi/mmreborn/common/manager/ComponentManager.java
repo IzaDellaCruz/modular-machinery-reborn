@@ -75,6 +75,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
       if (controller.getLevel().getBlockEntity(block) instanceof ColorableMachineComponentEntity entity) {
         entity.getControllerPosSet().remove(controller.getBlockPos());
         entity.setMachineColor(Config.machineColor);
+        if (entity instanceof TextureableMachineEntity text) text.resetTextures();
       }
     });
     foundComponents.clear();
