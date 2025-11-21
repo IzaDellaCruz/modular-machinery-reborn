@@ -11,11 +11,11 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.List;
 
-public class EmiEmptyComponent extends EmiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty>> {
+public class EmiEmptyComponent extends EmiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty, Void>> {
   private int width;
   private int height;
   private final EmptyRequirementType type;
-  public EmiEmptyComponent(RecipeRequirement<EmptyComponent, RequirementEmpty> requirement) {
+  public EmiEmptyComponent(RecipeRequirement<EmptyComponent, RequirementEmpty, Void> requirement) {
     super(
         requirement,
         requirement.requirement().getRequirementType().getUOffset(),

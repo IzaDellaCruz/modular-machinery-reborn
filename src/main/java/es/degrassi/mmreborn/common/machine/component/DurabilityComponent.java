@@ -17,7 +17,7 @@ public class DurabilityComponent extends MachineComponent<IOInventory> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IOInventory> getComponentType() {
     return ComponentRegistration.COMPONENT_DURABILITY.get();
   }
 
@@ -35,7 +35,7 @@ public class DurabilityComponent extends MachineComponent<IOInventory> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<IOInventory>> C merge(C c) {
     DurabilityComponent comp = (DurabilityComponent) c;
     return (C) new DurabilityComponent(IOInventory.mergeBuild(handler, comp.handler));
   }

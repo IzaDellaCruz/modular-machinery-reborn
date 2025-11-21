@@ -12,7 +12,7 @@ public class DurationComponent extends MachineComponent<Void> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_DURATION.get();
   }
 
@@ -23,7 +23,7 @@ public class DurationComponent extends MachineComponent<Void> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<Void>> C merge(C c) {
     return (C) this;
   }
 }

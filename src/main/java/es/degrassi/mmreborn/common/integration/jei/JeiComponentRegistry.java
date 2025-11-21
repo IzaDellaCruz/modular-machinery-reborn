@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class JeiComponentRegistry {
   private JeiComponentRegistry() {}
-  private static Map<RequirementType<?>, JeiComponentFactory<?, ?>> components;
+  private static Map<RequirementType<?, ?>, JeiComponentFactory<?, ?>> components;
 
   public static void init() {
     RegisterJeiComponentEvent event = new RegisterJeiComponentEvent();
@@ -20,12 +20,17 @@ public class JeiComponentRegistry {
     components = event.getComponents();
   }
 
-  public static boolean hasJeiComponent(RequirementType<?> requirement) {
+  public static boolean hasJeiComponent(RequirementType<?, ?> requirement) {
     return components.containsKey(requirement);
   }
 
   @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T>, C extends MachineComponent<?>, T extends IRequirement<C>, X> JeiComponentFactory<R, X> getJeiComponent(RequirementType<T> requirement) {
+  public static <
+      R extends RecipeRequirement<C, T, X>,
+      C extends MachineComponent<X>,
+      T extends IRequirement<C, X>,
+      X
+  > JeiComponentFactory<R, X> getJeiComponent(RequirementType<T, X> requirement) {
     return (JeiComponentFactory<R, X>) components.get(requirement);
   }
 }

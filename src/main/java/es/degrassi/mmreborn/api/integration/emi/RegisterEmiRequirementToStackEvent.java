@@ -13,17 +13,16 @@ import net.neoforged.fml.event.IModBusEvent;
 import java.util.Map;
 
 public class RegisterEmiRequirementToStackEvent extends Event implements IModBusEvent {
-  private final Map<RequirementType<?>, EmiStackFactory<?>> stacks = Maps.newHashMap();
+  private final Map<RequirementType<?, ?>, EmiStackFactory<?>> stacks = Maps.newHashMap();
 
-  public <R extends RecipeRequirement<T, C>, C extends IRequirement<T>, T extends MachineComponent<?>,
-      E extends EmiStack> void register(RequirementType<C> requirement, EmiStackFactory<R> factory) {
+  public <R extends RecipeRequirement<T, C, X>, C extends IRequirement<T, X>, T extends MachineComponent<X>, X> void register(RequirementType<C, X> requirement, EmiStackFactory<R> factory) {
     if (stacks.containsKey(requirement)) {
       throw new IllegalArgumentException("Emi stack already registered for requirement: " + requirement.getCodec().name());
     }
     stacks.put(requirement, factory);
   }
 
-  public Map<RequirementType<?>, EmiStackFactory<?>> getStacks() {
+  public Map<RequirementType<?, ?>, EmiStackFactory<?>> getStacks() {
     return ImmutableMap.copyOf(stacks);
   }
 }

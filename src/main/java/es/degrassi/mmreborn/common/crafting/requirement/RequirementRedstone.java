@@ -12,14 +12,13 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.RedstoneComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class RequirementRedstone implements IRequirement<RedstoneComponent> {
+public class RequirementRedstone implements IRequirement<RedstoneComponent, Integer> {
   public static final NamedCodec<RequirementRedstone> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.intRange(0, 15).fieldOf("amount").forGetter(RequirementRedstone::getAmount),
       IOType.CODEC.optionalFieldOf("mode", IOType.INPUT).forGetter(IRequirement::getMode)
@@ -34,7 +33,7 @@ public class RequirementRedstone implements IRequirement<RedstoneComponent> {
   }
 
   @Override
-  public RequirementType<RequirementRedstone> getType() {
+  public RequirementType<RequirementRedstone, Integer> getType() {
     return RequirementTypeRegistration.REDSTONE.get();
   }
 
@@ -89,7 +88,7 @@ public class RequirementRedstone implements IRequirement<RedstoneComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.setItemIcon(Items.REDSTONE);
     info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.redstone." + getMode().getSerializedName(), getAmount()));
   }

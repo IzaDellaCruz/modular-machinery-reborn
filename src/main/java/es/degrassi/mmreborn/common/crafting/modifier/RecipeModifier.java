@@ -38,7 +38,7 @@ public abstract class RecipeModifier implements IRecipeModifier {
       }), "Recipe modifier"
   );
 
-  public static final List<RequirementType<?>> blacklist = Lists.newArrayList();
+  public static final List<RequirementType<?, ?>> blacklist = Lists.newArrayList();
 
   static {
     addToBlacklist(RequirementTypeRegistration.DIMENSION.get());
@@ -49,14 +49,14 @@ public abstract class RecipeModifier implements IRecipeModifier {
     addToBlacklist(RequirementTypeRegistration.FUNCTION.get());
   }
 
-  public static void addToBlacklist(RequirementType<?> requirementType) {
+  public static void addToBlacklist(RequirementType<?, ?> requirementType) {
     if (blacklist.contains(requirementType)) return;
     blacklist.add(requirementType);
   }
 
   public static final RandomSource RAND = RandomSource.create();
 
-  public final RequirementType<?> requirementType;
+  public final RequirementType<?, ?> requirementType;
   public final IOType mode;
   public final float modifier;
   public final float chance;
@@ -64,7 +64,7 @@ public abstract class RecipeModifier implements IRecipeModifier {
   public final float min;
   public final Component tooltip;
 
-  protected RecipeModifier(RequirementType<?> requirementType, IOType mode, float modifier, float chance, float max,
+  protected RecipeModifier(RequirementType<?, ?> requirementType, IOType mode, float modifier, float chance, float max,
                    float min) {
     this.requirementType = requirementType;
     this.mode = mode;
@@ -76,7 +76,7 @@ public abstract class RecipeModifier implements IRecipeModifier {
   }
 
   @Override
-  public boolean shouldApply(RequirementType<?> type, IOType mode) {
+  public boolean shouldApply(RequirementType<?, ?> type, IOType mode) {
     return type == this.requirementType
         && mode == this.mode
         && this.chance > RAND.nextDouble();

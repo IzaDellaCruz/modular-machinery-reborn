@@ -18,7 +18,7 @@ public class BiomeComponent extends MachineComponent<List<ResourceLocation>> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<List<ResourceLocation>> getComponentType() {
     return ComponentRegistration.COMPONENT_BIOME.get();
   }
 
@@ -29,7 +29,7 @@ public class BiomeComponent extends MachineComponent<List<ResourceLocation>> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<List<ResourceLocation>>> C merge(C c) {
     return (C) this;
   }
 }

@@ -57,7 +57,7 @@ public class ModifierBuilderJS {
   }
 
   public static class RecipeModifierBuilderJS {
-    private RequirementType<?> target = RequirementTypeRegistration.SPEED.get();
+    private RequirementType<?, ?> target = RequirementTypeRegistration.SPEED.get();
     private IOType mode = IOType.INPUT;
     private float modifier;
     private OPERATION operation = OPERATION.ADDITION;

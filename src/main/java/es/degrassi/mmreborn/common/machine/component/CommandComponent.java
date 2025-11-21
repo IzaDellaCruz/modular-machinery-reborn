@@ -58,7 +58,7 @@ public class CommandComponent extends MachineComponent<Void> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_COMMAND.get();
   }
 
@@ -68,13 +68,13 @@ public class CommandComponent extends MachineComponent<Void> {
   }
 
   @Override
-  public <C extends MachineComponent<?>> boolean canMerge(C c) {
+  public <C extends MachineComponent<Void>> boolean canMerge(C c) {
     return false;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<Void>> C merge(C c) {
     return (C) this;
   }
 

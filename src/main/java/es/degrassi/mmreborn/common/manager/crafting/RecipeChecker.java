@@ -14,9 +14,9 @@ public class RecipeChecker<T extends MachineRecipe> {
 
   @Getter
   private final RecipeHolder<T> recipe;
-  private final List<RecipeRequirement<?, ?>> inventoryRequirements;
-  private final List<RecipeRequirement<?, ?>> checkedInventoryRequirements;
-  private final List<RecipeRequirement<?, ?>> worldRequirements;
+  private final List<RecipeRequirement<?, ?, ?>> inventoryRequirements;
+  private final List<RecipeRequirement<?, ?, ?>> checkedInventoryRequirements;
+  private final List<RecipeRequirement<?, ?, ?>> worldRequirements;
   @Getter
   private final boolean inventoryRequirementsOnly;
   @Getter
@@ -38,7 +38,7 @@ public class RecipeChecker<T extends MachineRecipe> {
       this.checkedInventoryRequirements.clear();
       this.inventoryRequirementsOk = false;
 
-      for (RecipeRequirement<?, ?> requirement : this.inventoryRequirements) {
+      for (RecipeRequirement<?, ?, ?> requirement : this.inventoryRequirements) {
         if (this.checkedInventoryRequirements.contains(requirement))
           continue;
         this.checkedInventoryRequirements.add(requirement);
@@ -55,7 +55,7 @@ public class RecipeChecker<T extends MachineRecipe> {
       return this.worldRequirements.stream().allMatch(r -> checkRequirement(r, tile, context));
   }
 
-  private boolean checkRequirement(RecipeRequirement<?, ?> requirement, MachineControllerEntity tile, ICraftingContext context) {
+  private boolean checkRequirement(RecipeRequirement<?, ?, ?> requirement, MachineControllerEntity tile, ICraftingContext context) {
     return requirement.test(tile.getComponentManager(), context).isSuccess();
   }
 }

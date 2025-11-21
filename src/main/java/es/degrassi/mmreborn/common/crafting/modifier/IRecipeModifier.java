@@ -9,7 +9,7 @@ import java.util.Locale;
 
 public interface IRecipeModifier {
 
-  boolean shouldApply(RequirementType<?> type, IOType mode);
+  boolean shouldApply(RequirementType<?, ?> type, IOType mode);
 
   float apply(float original);
 

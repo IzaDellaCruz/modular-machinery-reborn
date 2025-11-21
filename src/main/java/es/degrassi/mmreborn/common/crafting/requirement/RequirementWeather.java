@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public class RequirementWeather implements IRequirement<WeatherComponent> {
+public class RequirementWeather implements IRequirement<WeatherComponent, WeatherType> {
   public static final NamedCodec<RequirementWeather> CODEC = NamedCodec.record(instance -> instance.group(
       WeatherType.CODEC.fieldOf("weather").forGetter(RequirementWeather::weather)
   ).apply(instance, RequirementWeather::new), "Weather Requirement");
@@ -42,7 +42,7 @@ public class RequirementWeather implements IRequirement<WeatherComponent> {
   }
 
   @Override
-  public RequirementType<RequirementWeather> getType() {
+  public RequirementType<RequirementWeather, WeatherType> getType() {
     return RequirementTypeRegistration.WEATHER.get();
   }
 
@@ -97,7 +97,7 @@ public class RequirementWeather implements IRequirement<WeatherComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.addTooltip(Component.translatable(
         "modular_machinery_reborn.jei.ingredient.weather",
         weather().name().toLowerCase(Locale.ROOT)

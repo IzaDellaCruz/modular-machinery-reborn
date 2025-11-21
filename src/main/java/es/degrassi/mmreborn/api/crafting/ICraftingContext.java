@@ -63,12 +63,12 @@ public interface ICraftingContext {
    * @param requirement The requirement the value depends, because machine upgrades can target a specific {@link es.degrassi.mmreborn.common.crafting.requirement.RequirementType}.
    * @return The modified value, or the same value if no upgrades could be applied.
    */
-  float getModifiedValue(float value, IRequirement<?> requirement);
+  float getModifiedValue(float value, IRequirement<?, ?> requirement);
 
   /**
    * Same as the method above but round the value to a {@link Long}
    */
-  long getIntegerModifiedValue(float value, IRequirement<?> requirement);
+  long getIntegerModifiedValue(float value, IRequirement<?, ?> requirement);
 
   /**
    * Use this method only for requirements that will be executed every tick of the crafting process.
@@ -76,12 +76,12 @@ public interface ICraftingContext {
    * @param requirement The requirement the value depends, because machine upgrades can target a specific {@link es.degrassi.mmreborn.common.crafting.requirement.RequirementType}.
    * @return The modified value, or the same value if no upgrades could be applied.
    */
-  float getPerTickModifiedValue(float value, IRequirement<?> requirement);
+  float getPerTickModifiedValue(float value, IRequirement<?, ?> requirement);
 
   /**
    * Same as the method above but round the value to a {@link Long}
    */
-  long getPerTickIntegerModifiedValue(float value, IRequirement<?> requirement);
+  long getPerTickIntegerModifiedValue(float value, IRequirement<?, ?> requirement);
 
-  List<RecipeModifier> getModifiers(RequirementType<?> target);
+  List<RecipeModifier> getModifiers(RequirementType<?, ?> target);
 }

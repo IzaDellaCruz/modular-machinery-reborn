@@ -7,6 +7,6 @@ import es.degrassi.mmreborn.common.machine.MachineComponent;
 
 import java.util.List;
 
-public interface EmiStackFactory<R extends RecipeRequirement<? extends MachineComponent<?>, ? extends IRequirement<?>>> {
+public interface EmiStackFactory<R extends RecipeRequirement<? extends MachineComponent<?>, ? extends IRequirement<?, ?>, ?>> {
   List<EmiStack> create(R requirement);
 }

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class RequirementFunction implements IRequirement<FunctionComponent> {
+public class RequirementFunction implements IRequirement<FunctionComponent, Void> {
   public static final NamedCodec<RequirementFunction> CODEC = NamedCodec.record(functionRequirementInstance ->
       functionRequirementInstance.group(
           NamedCodec.enumCodec(Phase.class).fieldOf("phase").forGetter(RequirementFunction::getPhase),
@@ -41,7 +41,7 @@ public class RequirementFunction implements IRequirement<FunctionComponent> {
   }
 
   @Override
-  public RequirementType<? extends IRequirement<FunctionComponent>> getType() {
+  public RequirementType<RequirementFunction, Void> getType() {
     return RequirementTypeRegistration.FUNCTION.get();
   }
 

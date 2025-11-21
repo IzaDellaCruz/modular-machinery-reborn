@@ -5,6 +5,6 @@ import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
 
-public interface EmiIngredientFactory<R extends RecipeRequirement<? extends MachineComponent<?>, ? extends IRequirement<?>>> {
+public interface EmiIngredientFactory<R extends RecipeRequirement<? extends MachineComponent<?>, ? extends IRequirement<?, ?>, ?>> {
   EmiIngredient create(R requirement);
 }

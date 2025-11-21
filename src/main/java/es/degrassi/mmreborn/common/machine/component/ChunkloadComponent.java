@@ -16,7 +16,7 @@ public class ChunkloadComponent extends MachineComponent<Chunkloader> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Chunkloader> getComponentType() {
     return ComponentRegistration.COMPONENT_CHUNKLOAD.get();
   }
 
@@ -27,7 +27,7 @@ public class ChunkloadComponent extends MachineComponent<Chunkloader> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<Chunkloader>> C merge(C c) {
     return (C) this;
   }
 }

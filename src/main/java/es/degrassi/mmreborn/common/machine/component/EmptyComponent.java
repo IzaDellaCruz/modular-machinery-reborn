@@ -13,7 +13,7 @@ public class EmptyComponent extends MachineComponent<Void> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_EMPTY.get();
   }
 
@@ -23,7 +23,7 @@ public class EmptyComponent extends MachineComponent<Void> {
   }
 
   @Override
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<Void>> C merge(C c) {
     return (C) this;
   }
 }

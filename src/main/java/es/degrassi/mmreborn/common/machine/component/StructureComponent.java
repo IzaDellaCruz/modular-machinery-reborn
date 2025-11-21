@@ -22,7 +22,7 @@ public class StructureComponent extends MachineComponent<Structure> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Structure> getComponentType() {
     return ComponentRegistration.COMPONENT_STRUCTURE.get();
   }
 
@@ -32,13 +32,13 @@ public class StructureComponent extends MachineComponent<Structure> {
   }
 
   @Override
-  public <C extends MachineComponent<?>> boolean canMerge(C c) {
+  public <C extends MachineComponent<Structure>> boolean canMerge(C c) {
     return false;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<Structure>> C merge(C c) {
     return (C) this;
   }
 

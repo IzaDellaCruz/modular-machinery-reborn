@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class RequirementEmpty implements IRequirement<EmptyComponent> {
+public class RequirementEmpty implements IRequirement<EmptyComponent, Void> {
   public static final NamedCodec<RequirementEmpty> CODEC = NamedCodec.record(instance -> instance.group(
           RegistrarCodec.EMPTY_REQUIREMENT_TYPE.fieldOf("empty_type").forGetter(RequirementEmpty::getRequirementType),
           PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
@@ -32,7 +32,7 @@ public class RequirementEmpty implements IRequirement<EmptyComponent> {
   }
 
   @Override
-  public RequirementType<RequirementEmpty> getType() {
+  public RequirementType<RequirementEmpty, Void> getType() {
     return RequirementTypeRegistration.EMPTY.get();
   }
 

@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class EmiComponentRegistry {
   private EmiComponentRegistry() {}
-  private static Map<RequirementType<?>, EmiComponentFactory<?, ?>> components;
+  private static Map<RequirementType<?, ?>, EmiComponentFactory<?, ?, ?, ?, ?>> components;
 
   public static void init() {
     RegisterEmiComponentEvent event = new RegisterEmiComponentEvent();
@@ -20,12 +20,18 @@ public class EmiComponentRegistry {
     components = event.getComponents();
   }
 
-  public static boolean hasEmiComponent(RequirementType<?> type) {
+  public static boolean hasEmiComponent(RequirementType<?, ?> type) {
     return components.containsKey(type);
   }
 
   @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T>, C extends MachineComponent<?>, T extends IRequirement<C>, X> EmiComponentFactory<R, X> getEmiComponent(RequirementType<T> type) {
-    return (EmiComponentFactory<R, X>) components.get(type);
+  public static <
+      R extends RecipeRequirement<C, T, X>,
+      C extends MachineComponent<X>,
+      T extends IRequirement<C, X>,
+      X,
+      Y
+    > EmiComponentFactory<R, T, C, X, Y> getEmiComponent(RequirementType<T, X> type) {
+    return (EmiComponentFactory<R, T, C, X, Y>) components.get(type);
   }
 }

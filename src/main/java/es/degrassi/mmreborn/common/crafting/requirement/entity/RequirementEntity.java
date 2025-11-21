@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.crafting.requirement.entity;
 
+import es.degrassi.mmreborn.api.capability.EntityHandler;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IDisplayInfo;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 
 @Getter
-public abstract class RequirementEntity implements IRequirement<EntityComponent> {
+public abstract class RequirementEntity implements IRequirement<EntityComponent, EntityHandler> {
   private final IOType mode;
   private final Action action;
   private final int amount;
@@ -57,7 +58,7 @@ public abstract class RequirementEntity implements IRequirement<EntityComponent>
 
   @Override
   @MustBeInvokedByOverriders
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity." + this.action.toString().toLowerCase(Locale.ENGLISH) + ".info", this.amount, this.radius));
   }
 

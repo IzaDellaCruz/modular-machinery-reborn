@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.crafting.requirement.emi;
 
 import dev.emi.emi.api.widget.AnimatedTextureWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
+import es.degrassi.mmreborn.api.capability.IFuelHandler;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.helper.Direction;
 import es.degrassi.mmreborn.common.crafting.helper.FuelData;
@@ -21,11 +22,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-public class EmiFuelComponent extends EmiComponent<Long, RecipeRequirement<FuelComponent, RequirementFuel>> {
+public class EmiFuelComponent extends EmiComponent<Long, RecipeRequirement<FuelComponent, RequirementFuel, IFuelHandler>> {
   private final FuelData fuelData;
   private final AnimatedTextureWidget fuel;
 
-  public EmiFuelComponent(RecipeRequirement<FuelComponent, RequirementFuel> requirement) {
+  public EmiFuelComponent(RecipeRequirement<FuelComponent, RequirementFuel, IFuelHandler> requirement) {
     super(requirement, 0, 0, false);
     this.fuelData = requirement.requirement().displayData();
     this.fuel = createProgress();

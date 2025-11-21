@@ -17,7 +17,7 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class RequirementEnergyPerTick implements IRequirement<EnergyComponent> {
+public class RequirementEnergyPerTick implements IRequirement<EnergyComponent, IEnergyHandler> {
   public static final NamedMapCodec<RequirementEnergyPerTick> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.longRange(0, Long.MAX_VALUE).fieldOf("amount").forGetter(req -> req.requirementPerTick),
       NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
@@ -40,7 +40,7 @@ public class RequirementEnergyPerTick implements IRequirement<EnergyComponent> {
   }
 
   @Override
-  public RequirementType<RequirementEnergyPerTick> getType() {
+  public RequirementType<RequirementEnergyPerTick, IEnergyHandler> getType() {
     return RequirementTypeRegistration.ENERGY_PER_TICK.get();
   }
 

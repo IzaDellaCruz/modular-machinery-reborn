@@ -14,7 +14,7 @@ public class TimeComponent extends MachineComponent<IntRange> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IntRange> getComponentType() {
     return ComponentRegistration.COMPONENT_TIME.get();
   }
 
@@ -25,7 +25,7 @@ public class TimeComponent extends MachineComponent<IntRange> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<IntRange>> C merge(C c) {
     return (C) this;
   }
 }

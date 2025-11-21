@@ -18,17 +18,16 @@ import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
-import es.degrassi.mmreborn.common.entity.ParallelHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
-import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.machine.component.FunctionComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.machine.component.ParallelComponent;
+import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -48,7 +47,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
@@ -57,7 +55,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   private final MachineControllerEntity controller;
 
   private final Map<BlockPos, MachineComponent<?>> foundComponents = Maps.newHashMap();
-  private final Map<ComponentType, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
+  private final Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
   private final Map<BlockPos, List<ModifierReplacement>> foundModifiers = Maps.newHashMap();
 
   @Getter
@@ -120,8 +118,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     controller.setChanged();
   }
 
-  private Map<ComponentType, Map<IOType, List<MachineComponent<?>>>> filter() {
-    Map<ComponentType, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
+  private Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> filter() {
+    Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
     for (MachineComponent<?> comp : foundComponents.values()) {
       foundComponentsValues
           .computeIfAbsent(comp.getComponentType(), t -> Maps.newHashMap())
@@ -197,7 +195,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     return map;
   }
 
-  public List<RecipeModifier> getModifiers(RequirementType<?> type) {
+  public List<RecipeModifier> getModifiers(RequirementType<?, ?> type) {
     if (foundModifiers.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) updateModifiers();
     return foundModifiers.values()
         .stream()
@@ -209,10 +207,10 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   }
 
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> Optional<C> getComponent(IRequirement<C> requirement, ICraftingContext context) {
+  public <C extends MachineComponent<T>, T> Optional<C> getComponent(IRequirement<C, T> requirement, ICraftingContext context) {
     if (foundComponentsValues.isEmpty()) updateComponents();
-    AtomicReference<C> merged = new AtomicReference<>(null);
-    Optional.ofNullable(foundComponentsValues.get(requirement.getComponentType()))
+    // AtomicReference<C> merged = new AtomicReference<>(null);
+    return Optional.ofNullable(foundComponentsValues.get(requirement.getComponentType()))
         .map(m -> {
           if (requirement.getType().equals(RequirementTypeRegistration.DURABILITY.get()))
             return m.get(IOType.INPUT);
@@ -224,17 +222,27 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         .filter(Objects::nonNull)
         .filter(m -> requirement.test(m, context) || requirement.isComponentValid(m, context))
         .sorted()
-        .forEach(c -> {
+        .reduce((c1, c2) -> {
+          if (c1.canMerge(c2)) return c1.merge(c2);
+          return c1;
+        });
+        /*.forEach(c -> {
           if (merged.get() == null)
             merged.set(c);
           if (merged.get().canMerge(c))
             merged.set(merged.get().merge(c));
-        });
-    return Optional.ofNullable(merged.get());
+        });*/
+    //return Optional.ofNullable(merged.get());
   }
 
   public Optional<ParallelComponent> getParallel() {
-    Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine()
+    return Optional.ofNullable(foundComponentsValues.get(ComponentRegistration.COMPONENT_PARALLEL.get()))
+        .map(map -> map.get(IOType.INPUT))
+        .stream()
+        .flatMap(List::stream)
+        .map(c -> (ParallelComponent) c)
+        .findFirst();
+    /*Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine()
         .getPattern()
         .getBlocksFiltered(controller.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
     BlockPos controllerPos = controller.getBlockPos();
@@ -248,11 +256,20 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         }
       } catch (Exception ignored) {}
     }
-    return Optional.empty();
+    return Optional.empty();*/
   }
 
   public Optional<ItemComponent> getItemComponent(IOType mode) {
-    Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine()
+    return Optional.ofNullable(foundComponentsValues.get(ComponentRegistration.COMPONENT_ITEM.get()))
+        .map(map -> map.get(mode))
+        .stream()
+        .flatMap(List::stream)
+        .map(c -> (ItemComponent) c)
+        .reduce((c1, c2) -> {
+          if (c1.canMerge(c2)) return c1.merge(c2);
+          return c1;
+        });
+    /*Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine()
         .getPattern()
         .getBlocksFiltered(controller.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
     BlockPos controllerPos = controller.getBlockPos();
@@ -284,27 +301,31 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
             }
           });
       return Optional.ofNullable(merged.get());
-    }
+    }*/
   }
 
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> Optional<C> getComponent(ComponentType type, IOType mode) {
+  public <C extends MachineComponent<T>, T> Optional<C> getComponent(ComponentType<T> type, IOType mode) {
     if (foundComponentsValues.isEmpty()) updateComponents();
-    AtomicReference<C> merged = new AtomicReference<>(null);
-    Optional.ofNullable(foundComponentsValues.get(type))
+    // AtomicReference<C> merged = new AtomicReference<>(null);
+    return Optional.ofNullable(foundComponentsValues.get(type))
         .map(m -> m.get(mode))
         .stream()
         .flatMap(List::stream)
         .map(m -> (C) m)
         .filter(Objects::nonNull)
         .sorted()
-        .forEach(c -> {
+        .reduce((c1, c2) -> {
+          if (c1.canMerge(c2)) return c1.merge(c2);
+          return c1;
+        });
+        /*.forEach(c -> {
           if (merged.get() == null)
             merged.set(c);
           else if (merged.get().canMerge(c))
             merged.set(merged.get().merge(c));
-        });
-    return Optional.ofNullable(merged.get());
+        });*/
+    // return Optional.ofNullable(merged.get());
   }
 
   @Override

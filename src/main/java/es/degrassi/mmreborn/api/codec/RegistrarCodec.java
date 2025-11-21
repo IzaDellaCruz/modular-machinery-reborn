@@ -34,8 +34,8 @@ public class RegistrarCodec<V> implements NamedCodec<V> {
   /**
    * MMR registries
    **/
-  public static final NamedCodec<RequirementType<? extends IRequirement<?>>> REQUIREMENT_NEW = of(ModularMachineryReborn.getRequirementRegistrar(), true);
-  public static final NamedCodec<ComponentType> COMPONENT = of(ModularMachineryReborn.getComponentRegistrar(), true);
+  public static final NamedCodec<RequirementType<? extends IRequirement<?, ?>, ?>> REQUIREMENT_NEW = of(ModularMachineryReborn.getRequirementRegistrar(), true);
+  public static final NamedCodec<ComponentType<?>> COMPONENT = of(ModularMachineryReborn.getComponentRegistrar(), true);
   public static final NamedCodec<EmptyRequirementType> EMPTY_REQUIREMENT_TYPE = of(ModularMachineryReborn.getEmptyRequirementTypeRegistrar(), true);
   public static final NamedCodec<MachineHatchType> HATCH_TYPE = of(ModularMachineryReborn.getMachineHatchTypeRegistrar(), true);
   public static final NamedCodec<DataType<? extends IData<?>, ?>> DATA = of(ModularMachineryReborn.dataRegistrar(), true);

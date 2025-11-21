@@ -301,11 +301,11 @@ public class ModularMachineryReborn {
     return ProcessorTypeRegistration.PROCESSOR_REGISTRY;
   }
 
-  public static Registry<RequirementType<? extends IRequirement<?>>> getRequirementRegistrar() {
+  public static Registry<RequirementType<? extends IRequirement<?, ?>, ?>> getRequirementRegistrar() {
     return RequirementTypeRegistration.REQUIREMENTS_REGISTRY;
   }
 
-  public static Registry<ComponentType> getComponentRegistrar() {
+  public static Registry<ComponentType<?>> getComponentRegistrar() {
     return ComponentRegistration.COMPONENTS_REGISTRY;
   }
 

@@ -11,5 +11,5 @@ import mezz.jei.api.recipe.IFocusGroup;
 
 @FunctionalInterface
 public interface JeiConsumer {
-  void execute(JeiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty>> component, MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses);
+  void execute(JeiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty, Void>> component, MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses);
 }

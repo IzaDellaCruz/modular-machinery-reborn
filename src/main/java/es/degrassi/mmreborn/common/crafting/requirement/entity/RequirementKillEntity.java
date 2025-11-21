@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.crafting.requirement.entity;
 
+import es.degrassi.mmreborn.api.capability.EntityHandler;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.codec.RegistrarCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
@@ -35,7 +36,7 @@ public class RequirementKillEntity extends RequirementEntity {
   }
 
   @Override
-  public RequirementType<RequirementKillEntity> getType() {
+  public RequirementType<RequirementKillEntity, EntityHandler> getType() {
     return RequirementTypeRegistration.KILL_ENTITY.get();
   }
 
@@ -64,7 +65,7 @@ public class RequirementKillEntity extends RequirementEntity {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     super.getDefaultDisplayInfo(info, requirement);
     if (!this.entityTypes.isEmpty()) {
       info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity.whitelist"));

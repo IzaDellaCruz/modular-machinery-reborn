@@ -16,7 +16,7 @@ public class SpeedRecipeModifier extends RecipeModifier {
   }
 
   @Override
-  public boolean shouldApply(RequirementType<?> type, IOType mode) {
+  public boolean shouldApply(RequirementType<?, ?> type, IOType mode) {
     return type == this.requirementType
         && this.chance > RAND.nextDouble();
   }

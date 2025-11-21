@@ -20,7 +20,7 @@ public class FluidComponent extends MachineComponent<HybridTank> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<HybridTank> getComponentType() {
     return ComponentRegistration.COMPONENT_FLUID.get();
   }
 
@@ -30,7 +30,7 @@ public class FluidComponent extends MachineComponent<HybridTank> {
   }
 
   @Override
-  public <C extends MachineComponent<?>> boolean canMerge(C c) {
+  public <C extends MachineComponent<HybridTank>> boolean canMerge(C c) {
     FluidComponent comp = (FluidComponent) c;
     if (getIOType().isInput())
       return handler.getFluid().is(comp.handler.getFluid().getFluid());
@@ -40,7 +40,7 @@ public class FluidComponent extends MachineComponent<HybridTank> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<HybridTank>> C merge(C c) {
     FluidComponent comp = (FluidComponent) c;
     return (C) new FluidComponent(
         new HybridTank(handler.getCapacity() + comp.handler.getCapacity()) {

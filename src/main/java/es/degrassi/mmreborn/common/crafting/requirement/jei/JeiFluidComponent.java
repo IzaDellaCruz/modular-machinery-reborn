@@ -10,6 +10,7 @@ import es.degrassi.mmreborn.common.integration.jei.MMRJeiPlugin;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.category.drawable.DrawableWrappedText;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
+import es.degrassi.mmreborn.common.util.HybridTank;
 import es.degrassi.mmreborn.common.util.Utils;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -25,8 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class JeiFluidComponent extends JeiComponent<FluidStack, RecipeRequirement<FluidComponent, RequirementFluid>> {
-  public JeiFluidComponent(RecipeRequirement<FluidComponent, RequirementFluid> requirement) {
+public class JeiFluidComponent extends JeiComponent<FluidStack, RecipeRequirement<FluidComponent, RequirementFluid,
+    HybridTank>> {
+  public JeiFluidComponent(RecipeRequirement<FluidComponent, RequirementFluid, HybridTank> requirement) {
     super(requirement, 0, 0);
   }
 

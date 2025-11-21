@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-public abstract class EmiComponent<X, R extends RecipeRequirement<?, ?>> extends DrawableWidget implements IEmiRequirement<R> {
+public abstract class EmiComponent<X, R extends RecipeRequirement<?, ?, ?>> extends DrawableWidget implements IEmiRequirement<R> {
   protected static final ResourceLocation LOCATION_ICONS = ResourceLocation.fromNamespaceAndPath(ModularMachineryReborn.MODID, "textures/gui/jeirecipeicons.png");
   protected R requirement;
   protected final int uOffset, vOffset;

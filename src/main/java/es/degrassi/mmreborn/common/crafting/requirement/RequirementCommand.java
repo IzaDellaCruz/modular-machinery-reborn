@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Getter
 @AllArgsConstructor
-public class RequirementCommand implements IRequirement<CommandComponent> {
+public class RequirementCommand implements IRequirement<CommandComponent, Void> {
   public static final NamedCodec<RequirementCommand> CODEC = NamedCodec.record(instance -> instance.group(
       Phase.CODEC.optionalFieldOf("phase", Phase.END).forGetter(RequirementCommand::getPhase),
       NamedCodec.STRING.fieldOf("command").forGetter(RequirementCommand::getCommand),
@@ -35,7 +35,7 @@ public class RequirementCommand implements IRequirement<CommandComponent> {
   private final boolean log;
 
   @Override
-  public RequirementType<RequirementCommand> getType() {
+  public RequirementType<RequirementCommand, Void> getType() {
     return RequirementTypeRegistration.COMMAND.get();
   }
 
@@ -84,7 +84,7 @@ public class RequirementCommand implements IRequirement<CommandComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.setItemIcon(Items.COMMAND_BLOCK);
     info.addTooltip(Component.translatable(
         "modular_machinery_reborn.jei.ingredient.command.info",

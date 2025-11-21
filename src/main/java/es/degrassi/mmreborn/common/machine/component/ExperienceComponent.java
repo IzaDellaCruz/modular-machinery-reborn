@@ -18,7 +18,7 @@ public class ExperienceComponent extends MachineComponent<IExperienceHandler> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IExperienceHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_EXPERIENCE.get();
   }
 
@@ -29,7 +29,7 @@ public class ExperienceComponent extends MachineComponent<IExperienceHandler> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<IExperienceHandler>> C merge(C c) {
     ExperienceComponent comp = (ExperienceComponent) c;
     return (C) new ExperienceComponent(
         new IExperienceHandler() {

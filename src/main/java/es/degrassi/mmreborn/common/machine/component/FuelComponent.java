@@ -16,7 +16,7 @@ public class FuelComponent extends MachineComponent<IFuelHandler> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IFuelHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_FUEL.get();
   }
 
@@ -26,7 +26,7 @@ public class FuelComponent extends MachineComponent<IFuelHandler> {
   }
 
   @Override
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<IFuelHandler>> C merge(C c) {
     FuelComponent comp = (FuelComponent) c;
 
     return (C) new FuelComponent(new BasicFuelHandler(null) {

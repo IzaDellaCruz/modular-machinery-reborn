@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class RecipeRequirement<C extends MachineComponent<?>, R extends IRequirement<C>> {
-  public static final NamedCodec<RecipeRequirement<?, ?>> CODEC = NamedCodec.record(recipeRequirementInstance ->
+public class RecipeRequirement<C extends MachineComponent<T>, R extends IRequirement<C, T>, T> {
+  public static final NamedCodec<RecipeRequirement<?, ?, ?>> CODEC = NamedCodec.record(recipeRequirementInstance ->
       recipeRequirementInstance.group(
           IRequirement.CODEC.forGetter(RecipeRequirement::requirement),
           NamedCodec.floatRange(0.0f, 1.0f).optionalFieldOf("chance", 1.0f).forGetter(requirement -> requirement.chance),
@@ -45,13 +45,13 @@ public class RecipeRequirement<C extends MachineComponent<?>, R extends IRequire
   }
 
   @SuppressWarnings("unchecked")
-  public RecipeRequirement<C, R> castRequirement(RecipeRequirement<?, ?> requirement) {
-    return (RecipeRequirement<C, R>) requirement;
+  public RecipeRequirement<C, R, T> castRequirement(RecipeRequirement<?, ?, ?> requirement) {
+    return (RecipeRequirement<C, R, T>) requirement;
   }
 
   @SuppressWarnings("unchecked")
-  public RequirementType<R> getType() {
-    return (RequirementType<R>) this.requirement.getType();
+  public RequirementType<R, T> getType() {
+    return (RequirementType<R, T>) this.requirement.getType();
   }
 
   public R requirement() {

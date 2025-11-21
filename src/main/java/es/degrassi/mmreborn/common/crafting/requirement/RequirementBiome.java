@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class RequirementBiome implements IRequirement<BiomeComponent> {
+public class RequirementBiome implements IRequirement<BiomeComponent, List<ResourceLocation>> {
   public static final NamedCodec<RequirementBiome> CODEC = NamedCodec.record(instance -> instance.group(
       DefaultCodecs.RESOURCE_LOCATION.listOf().fieldOf("filter").forGetter(RequirementBiome::filter),
       NamedCodec.BOOL.optionalFieldOf("blacklist", false).forGetter(RequirementBiome::blacklist)
@@ -33,8 +33,6 @@ public class RequirementBiome implements IRequirement<BiomeComponent> {
 
   @Getter
   private final IOType actionType;
-  @Getter
-  private final RequirementType<RequirementBiome> requirementType;
   @Getter
   private final PositionedRequirement position;
   private final List<ResourceLocation> filter;
@@ -44,8 +42,11 @@ public class RequirementBiome implements IRequirement<BiomeComponent> {
     this.filter = filter;
     this.blacklist = blacklist;
     this.position = new PositionedRequirement(0, 0);
-    this.requirementType = RequirementTypeRegistration.BIOME.get();
     this.actionType = IOType.INPUT;
+  }
+
+  public RequirementType<RequirementBiome, List<ResourceLocation>> getType() {
+    return RequirementTypeRegistration.BIOME.get();
   }
 
   public List<ResourceLocation> filter() {
@@ -54,11 +55,6 @@ public class RequirementBiome implements IRequirement<BiomeComponent> {
 
   public boolean blacklist() {
     return blacklist;
-  }
-
-  @Override
-  public RequirementType<RequirementBiome> getType() {
-    return RequirementTypeRegistration.BIOME.get();
   }
 
   @Override
@@ -103,7 +99,7 @@ public class RequirementBiome implements IRequirement<BiomeComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     StringBuilder biomes = new StringBuilder();
     filter.forEach(biome -> biomes.append(biome.toString()).append(","));
     int index = biomes.lastIndexOf(",");

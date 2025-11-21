@@ -9,5 +9,5 @@ import es.degrassi.mmreborn.common.machine.component.EmptyComponent;
 
 @FunctionalInterface
 public interface EmiConsumer {
-  void execute(EmiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty>> component, WidgetHolder widgets, MMREmiRecipe recipe);
+  void execute(EmiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty, Void>> component, WidgetHolder widgets, MMREmiRecipe recipe);
 }

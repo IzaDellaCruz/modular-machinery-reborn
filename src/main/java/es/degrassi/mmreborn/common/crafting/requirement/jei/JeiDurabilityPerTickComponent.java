@@ -11,6 +11,7 @@ import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.category.drawable.DrawableWrappedText;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.Utils;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -26,9 +27,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class JeiDurabilityPerTickComponent extends JeiComponent<ItemStack, RecipeRequirement<DurabilityComponent,
-    RequirementDurabilityPerTick>> {
+    RequirementDurabilityPerTick, IOInventory>> {
   private final List<ItemStack> items;
-  public JeiDurabilityPerTickComponent(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick> requirement) {
+  public JeiDurabilityPerTickComponent(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, IOInventory> requirement) {
     super(requirement, 36, 0);
     items = Arrays.stream(requirement.requirement().getIngredient().getItems())
         .map(stack -> generateWithDurability(stack, requirement.requirement().getAmount()))

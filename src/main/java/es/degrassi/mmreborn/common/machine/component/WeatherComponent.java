@@ -14,7 +14,7 @@ public class WeatherComponent extends MachineComponent<WeatherType> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<WeatherType> getComponentType() {
     return ComponentRegistration.COMPONENT_WEATHER.get();
   }
 
@@ -25,7 +25,7 @@ public class WeatherComponent extends MachineComponent<WeatherType> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<WeatherType>> C merge(C c) {
     return (C) this;
   }
 }

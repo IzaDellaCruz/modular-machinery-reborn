@@ -115,7 +115,7 @@ public class MachineRecipeBuilderJS extends KubeRecipe implements RecipeJSBuilde
   @Override
   @HideFromJS
   @SuppressWarnings("unchecked, rawtypes")
-  public MachineRecipeBuilderJS addRequirement(RecipeRequirement<?, ?> requirement) {
+  public MachineRecipeBuilderJS addRequirement(RecipeRequirement<?, ?, ?> requirement) {
     for(RecipeComponentValue<?> value : this.getRecipeComponentValues()) {
       if(value.key.name.equals("requirements") && !this.jei)
         setValue((RecipeKey)value.key, addToList("requirements", requirement));

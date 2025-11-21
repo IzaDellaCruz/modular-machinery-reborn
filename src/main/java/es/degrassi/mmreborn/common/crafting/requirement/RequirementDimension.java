@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class RequirementDimension implements IRequirement<DimensionComponent> {
+public class RequirementDimension implements IRequirement<DimensionComponent, ResourceLocation> {
   public static final NamedCodec<RequirementDimension> CODEC = NamedCodec.record(instance -> instance.group(
       DefaultCodecs.RESOURCE_LOCATION.listOf().fieldOf("filter").forGetter(RequirementDimension::filter),
       NamedCodec.BOOL.optionalFieldOf("blacklist", false).forGetter(RequirementDimension::blacklist)
@@ -49,7 +49,7 @@ public class RequirementDimension implements IRequirement<DimensionComponent> {
   }
 
   @Override
-  public RequirementType<RequirementDimension> getType() {
+  public RequirementType<RequirementDimension, ResourceLocation> getType() {
     return RequirementTypeRegistration.DIMENSION.get();
   }
 
@@ -94,7 +94,7 @@ public class RequirementDimension implements IRequirement<DimensionComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     StringBuilder dimensions = new StringBuilder();
     filter.forEach(dimension -> dimensions.append(dimension.toString()).append(","));
     int index = dimensions.lastIndexOf(",");

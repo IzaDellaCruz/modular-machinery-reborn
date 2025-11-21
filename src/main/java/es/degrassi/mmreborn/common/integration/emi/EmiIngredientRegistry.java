@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class EmiIngredientRegistry {
   private EmiIngredientRegistry() {}
-  private static Map<RequirementType<?>, EmiIngredientFactory<?>> stacks;
+  private static Map<RequirementType<?, ?>, EmiIngredientFactory<?>> stacks;
 
   public static void init() {
     RegisterEmiRequirementToIngredientEvent event = new RegisterEmiRequirementToIngredientEvent();
@@ -20,12 +20,12 @@ public class EmiIngredientRegistry {
     stacks = event.getStacks();
   }
 
-  public static boolean hasEmiIngredient(RequirementType<?> type) {
+  public static boolean hasEmiIngredient(RequirementType<?, ?> type) {
     return stacks.containsKey(type);
   }
 
   @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T>, T extends IRequirement<C>, C extends MachineComponent<?>> EmiIngredientFactory<R> getIngredient(RequirementType<T> type) {
+  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>, X> EmiIngredientFactory<R> getIngredient(RequirementType<T, X> type) {
     return (EmiIngredientFactory<R>) stacks.get(type);
   }
 }

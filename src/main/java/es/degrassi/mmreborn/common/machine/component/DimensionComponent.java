@@ -16,7 +16,7 @@ public class DimensionComponent extends MachineComponent<ResourceLocation> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<ResourceLocation> getComponentType() {
     return ComponentRegistration.COMPONENT_DIMENSION.get();
   }
 
@@ -27,7 +27,7 @@ public class DimensionComponent extends MachineComponent<ResourceLocation> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<ResourceLocation>> C merge(C c) {
     return (C) this;
   }
 }

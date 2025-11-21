@@ -5,7 +5,7 @@ import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.PositionedRequirement;
 import es.degrassi.mmreborn.common.integration.emi.recipe.MMREmiRecipe;
 
-public interface IEmiRequirement<R extends RecipeRequirement<?, ?>> {
+public interface IEmiRequirement<R extends RecipeRequirement<?, ?, ?>> {
   R getRequirement();
 
   void addWidgets(WidgetHolder widgets, MMREmiRecipe recipe);

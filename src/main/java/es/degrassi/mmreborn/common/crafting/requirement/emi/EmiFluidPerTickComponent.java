@@ -10,6 +10,7 @@ import es.degrassi.mmreborn.client.requirement.FluidRendering;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluidPerTick;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
+import es.degrassi.mmreborn.common.util.HybridTank;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -21,14 +22,14 @@ import java.util.List;
 
 @Getter
 public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeRequirement<FluidComponent,
-    RequirementFluidPerTick>> implements SlotTooltip,
+    RequirementFluidPerTick, HybridTank>> implements SlotTooltip,
     FluidRendering, ChanceRendering {
   private EmiRecipe recipe;
   private int width = 16;
   private int height = 16;
   private int fluid;
 
-  public EmiFluidPerTickComponent(RecipeRequirement<FluidComponent, RequirementFluidPerTick> requirement) {
+  public EmiFluidPerTickComponent(RecipeRequirement<FluidComponent, RequirementFluidPerTick, HybridTank> requirement) {
     super(requirement, 0, 0);
   }
 

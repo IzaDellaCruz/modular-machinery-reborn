@@ -14,6 +14,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementItem;
 import es.degrassi.mmreborn.common.integration.emi.EmiIngredientRegistry;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -22,14 +23,14 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EmiItemComponent extends EmiComponent<ItemStack, RecipeRequirement<ItemComponent, RequirementItem>> implements SlotTooltip, ItemRendering, ChanceRendering, IngredientHolder {
+public class EmiItemComponent extends EmiComponent<ItemStack, RecipeRequirement<ItemComponent, RequirementItem, IOInventory>> implements SlotTooltip, ItemRendering, ChanceRendering, IngredientHolder {
   private int item;
   @Getter
   private int width = 16, height = 16;
   @Getter
   @Nullable
   private EmiRecipe recipe;
-  public EmiItemComponent(RecipeRequirement<ItemComponent, RequirementItem> requirement) {
+  public EmiItemComponent(RecipeRequirement<ItemComponent, RequirementItem, IOInventory> requirement) {
     super(requirement, 36, 0);
   }
 

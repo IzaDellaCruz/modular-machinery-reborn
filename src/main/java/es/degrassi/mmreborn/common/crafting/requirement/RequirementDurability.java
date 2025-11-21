@@ -14,6 +14,7 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +27,7 @@ import java.util.function.Function;
 
 @Getter
 @SuppressWarnings("UnstableApiUsage")
-public class RequirementDurability implements IRequirement<DurabilityComponent> {
+public class RequirementDurability implements IRequirement<DurabilityComponent, IOInventory> {
   public static final NamedCodec<RequirementDurability> CODEC = NamedCodec.record(instance -> instance.group(
           NamedCodec.of(CraftingHelper.makeIngredientCodec(true)).fieldOf("ingredient").aliases("item").forGetter(req -> req.ingredient),
           NamedCodec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("amount", 1).forGetter(RequirementDurability::getAmount),
@@ -48,7 +49,7 @@ public class RequirementDurability implements IRequirement<DurabilityComponent> 
   }
 
   @Override
-  public RequirementType<RequirementDurability> getType() {
+  public RequirementType<RequirementDurability, IOInventory> getType() {
     return RequirementTypeRegistration.DURABILITY.get();
   }
 

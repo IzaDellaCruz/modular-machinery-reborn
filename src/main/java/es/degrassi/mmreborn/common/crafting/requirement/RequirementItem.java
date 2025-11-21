@@ -16,6 +16,7 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.Mods;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 @Getter
-public class RequirementItem implements IRequirement<ItemComponent> {
+public class RequirementItem implements IRequirement<ItemComponent, IOInventory> {
   public static final NamedCodec<RequirementItem> CODEC = NamedCodec.record(instance -> instance.group(
           DefaultCodecs.SIZED_INGREDIENT_WITH_NBT.fieldOf("sizedIngredient").forGetter(req -> req.ingredient),
           NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
@@ -101,7 +102,7 @@ public class RequirementItem implements IRequirement<ItemComponent> {
   }
 
   @Override
-  public RequirementType<RequirementItem> getType() {
+  public RequirementType<RequirementItem, IOInventory> getType() {
     return RequirementTypeRegistration.ITEM.get();
   }
 

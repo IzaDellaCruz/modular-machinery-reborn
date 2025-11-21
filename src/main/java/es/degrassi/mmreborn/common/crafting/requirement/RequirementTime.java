@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
-public class RequirementTime implements IRequirement<TimeComponent> {
+public class RequirementTime implements IRequirement<TimeComponent, IntRange> {
   public static final NamedCodec<RequirementTime> CODEC = NamedCodec.record(instance -> instance.group(
       IntRange.CODEC.fieldOf("range").forGetter(RequirementTime::time)
   ).apply(instance, RequirementTime::new), "Time Requirement");
@@ -37,7 +37,7 @@ public class RequirementTime implements IRequirement<TimeComponent> {
   }
 
   @Override
-  public RequirementType<RequirementTime> getType() {
+  public RequirementType<RequirementTime, IntRange> getType() {
     return RequirementTypeRegistration.TIME.get();
   }
 
@@ -88,7 +88,7 @@ public class RequirementTime implements IRequirement<TimeComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.addTooltip(Component.translatable(
         "modular_machinery_reborn.jei.ingredient.time",
         time().toFormattedString()

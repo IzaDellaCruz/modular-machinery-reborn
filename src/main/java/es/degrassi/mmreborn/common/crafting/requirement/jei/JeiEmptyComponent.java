@@ -15,12 +15,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class JeiEmptyComponent extends JeiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty>> {
+public class JeiEmptyComponent extends JeiComponent<Void, RecipeRequirement<EmptyComponent, RequirementEmpty, Void>> {
   private final EmptyRequirementType type;
   private int width;
   private int height;
 
-  public JeiEmptyComponent(RecipeRequirement<EmptyComponent, RequirementEmpty> requirement) {
+  public JeiEmptyComponent(RecipeRequirement<EmptyComponent, RequirementEmpty, Void> requirement) {
     super(
         requirement,
         requirement.requirement().getRequirementType().getUOffset(),

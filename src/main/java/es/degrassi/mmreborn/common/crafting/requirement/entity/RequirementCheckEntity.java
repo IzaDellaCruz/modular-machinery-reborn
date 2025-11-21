@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.crafting.requirement.entity;
 
+import es.degrassi.mmreborn.api.capability.EntityHandler;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.codec.RegistrarCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
@@ -46,7 +47,7 @@ public class RequirementCheckEntity extends RequirementEntity {
   }
 
   @Override
-  public RequirementType<RequirementCheckEntity> getType() {
+  public RequirementType<RequirementCheckEntity, EntityHandler> getType() {
     return RequirementTypeRegistration.CHECK_ENTITY.get();
   }
 
@@ -79,7 +80,7 @@ public class RequirementCheckEntity extends RequirementEntity {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     super.getDefaultDisplayInfo(info, requirement);
     if (!this.entityTypes.isEmpty()) {
       info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.entity." + (whitelist ? "whitelist" : "blacklist")));

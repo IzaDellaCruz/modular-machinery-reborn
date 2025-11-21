@@ -21,7 +21,7 @@ public class ItemComponent extends MachineComponent<IOInventory> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IOInventory> getComponentType() {
     return ComponentRegistration.COMPONENT_ITEM.get();
   }
 
@@ -67,7 +67,7 @@ public class ItemComponent extends MachineComponent<IOInventory> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<IOInventory>> C merge(C c) {
     ItemComponent comp = (ItemComponent) c;
     return (C) new ItemComponent(
         IOInventory.mergeBuild(handler, comp.handler),

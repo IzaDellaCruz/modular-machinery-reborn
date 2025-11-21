@@ -1,6 +1,7 @@
 package es.degrassi.mmreborn.common.crafting.requirement.jei;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.IFuelHandler;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.crafting.helper.Direction;
@@ -27,12 +28,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
-public class JeiFuelComponent extends JeiComponent<Long, RecipeRequirement<FuelComponent, RequirementFuel>> implements IDirectionalRequirement {
+public class JeiFuelComponent extends JeiComponent<Long, RecipeRequirement<FuelComponent, RequirementFuel, IFuelHandler>> implements IDirectionalRequirement {
   private final FuelDrawable progress;
   @Getter
   private final FuelData progressData;
 
-  public JeiFuelComponent(RecipeRequirement<FuelComponent, RequirementFuel> requirement) {
+  public JeiFuelComponent(RecipeRequirement<FuelComponent, RequirementFuel, IFuelHandler> requirement) {
     super(requirement, 0, 0);
     this.progressData = requirement.requirement().displayData();
 

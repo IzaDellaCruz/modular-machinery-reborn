@@ -53,7 +53,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   public final int initialX = 8, gap = 8;
   @Getter
   protected int width = 256, height = 256;
-  protected final LoadingCache<RecipeRequirement<?, ?>, RequirementDisplayInfo> infoCache;
+  protected final LoadingCache<RecipeRequirement<?, ?, ?>, RequirementDisplayInfo> infoCache;
   protected boolean hasInfoRow;
   protected int rowY;
   protected int maxIconPerRow;
@@ -67,7 +67,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
     this.icon = MMRJeiPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, stack);
     this.infoCache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
       @Override
-      public RequirementDisplayInfo load(RecipeRequirement<?, ?> requirement) {
+      public RequirementDisplayInfo load(RecipeRequirement<?, ?, ?> requirement) {
         RequirementDisplayInfo info = new RequirementDisplayInfo();
         requirement.getDisplayInfo(info);
         DisplayInfoTemplate template = requirement.info;

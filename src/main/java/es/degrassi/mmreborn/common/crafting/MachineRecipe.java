@@ -51,8 +51,8 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
   private final ResourceLocation owningMachine;
   @Getter(AccessLevel.NONE)
   private final int tickTime;
-  private final List<RecipeRequirement<?, ?>> recipeRequirements = Lists.newArrayList();
-  private final List<RecipeRequirement<?, ?>> jeiRequirements = Lists.newArrayList();
+  private final List<RecipeRequirement<?, ?, ?>> recipeRequirements = Lists.newArrayList();
+  private final List<RecipeRequirement<?, ?, ?>> jeiRequirements = Lists.newArrayList();
   private final int configuredPriority;
   private final boolean voidPerTickFailure;
   private final ProgressData progressData;
@@ -86,13 +86,13 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     return owningMachine;
   }
 
-  public List<RecipeRequirement<?, ?>> getRequirements() {
+  public List<RecipeRequirement<?, ?, ?>> getRequirements() {
     return recipeRequirements;
   }
 
-  public void addRequirement(RecipeRequirement<?, ?> requirement) {
+  public void addRequirement(RecipeRequirement<?, ?, ?> requirement) {
     if (requirement.requirement() instanceof RequirementEnergyPerTick) {
-      for (RecipeRequirement<?, ?> req : this.getRequirements()) {
+      for (RecipeRequirement<?, ?, ?> req : this.getRequirements()) {
         if (req.requirement() instanceof RequirementEnergyPerTick && req.requirement().getMode() == requirement.requirement().getMode()) {
           throw new IllegalStateException("Tried to add multiple energy requirements for the same ioType! Please only add one for each ioType!");
         }
@@ -102,9 +102,9 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     this.recipeRequirements.add(requirement);
   }
 
-  public void addJeiRequirement(RecipeRequirement<?, ?> requirement) {
+  public void addJeiRequirement(RecipeRequirement<?, ?, ?> requirement) {
     if (requirement.requirement() instanceof RequirementEnergyPerTick) {
-      for (RecipeRequirement<?, ?> req : this.getJeiRequirements()) {
+      for (RecipeRequirement<?, ?, ?> req : this.getJeiRequirements()) {
         if (req.requirement() instanceof RequirementEnergyPerTick && req.requirement().getMode() == requirement.requirement().getMode()) {
           throw new IllegalStateException("Tried to add multiple energy requirements for the same ioType! Please only add one for each ioType!");
         }
@@ -190,7 +190,7 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     return RecipeRegistration.RECIPE_TYPE.get();
   }
 
-  public List<RecipeRequirement<?, ?>> getDisplayInfoRequirements() {
+  public List<RecipeRequirement<?, ?, ?>> getDisplayInfoRequirements() {
     if(this.getJeiRequirements().isEmpty())
       return this.getRequirements();
     return this.getJeiRequirements();
@@ -204,8 +204,8 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
     private final int width, height;
     private int prio;
     private boolean shouldRenderProgress;
-    private final List<RecipeRequirement<?, ?>> requirements;
-    private final List<RecipeRequirement<?, ?>> jeiRequirements;
+    private final List<RecipeRequirement<?, ?, ?>> requirements;
+    private final List<RecipeRequirement<?, ?, ?>> jeiRequirements;
     private boolean voidF;
     private boolean modified;
     private boolean hidden;
@@ -240,13 +240,13 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
       this.hidden = true;
     }
 
-    public void addRequirement(RecipeRequirement<?, ?> requirement) {
+    public void addRequirement(RecipeRequirement<?, ?, ?> requirement) {
       requirements.add(requirement);
       if (requirement.isModified())
         modified(true);
     }
 
-    public MachineRecipeBuilder(ResourceLocation machine, int time, List<RecipeRequirement<?, ?>> requirements,
+    public MachineRecipeBuilder(ResourceLocation machine, int time, List<RecipeRequirement<?, ?, ?>> requirements,
                                 int prio, boolean hidden, boolean voidF, int width, int height,
                                 boolean shouldRenderProgress, ProgressData progressData) {
       this.machine = machine;
@@ -262,8 +262,8 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
       this.hidden = hidden;
     }
 
-    public MachineRecipeBuilder(ResourceLocation machine, int time, List<RecipeRequirement<?, ?>> requirements,
-                                List<RecipeRequirement<?, ?>> jeiRequirements,
+    public MachineRecipeBuilder(ResourceLocation machine, int time, List<RecipeRequirement<?, ?, ?>> requirements,
+                                List<RecipeRequirement<?, ?, ?>> jeiRequirements,
                                 int prio, boolean hidden, boolean voidF, int width, int height,
                                 boolean shouldRenderProgress, ProgressData progressData) {
       this.machine = machine;
@@ -304,7 +304,7 @@ public class MachineRecipe implements Comparable<MachineRecipe>, Recipe<RecipeIn
       return null;
     }
 
-    public void addJeiRequirements(List<RecipeRequirement<?,?>> requirements) {
+    public void addJeiRequirements(List<RecipeRequirement<?,?, ?>> requirements) {
       this.jeiRequirements.addAll(requirements);
     }
   }

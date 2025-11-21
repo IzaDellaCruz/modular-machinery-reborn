@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.common.crafting.helper.ProgressData;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementDuration;
 import es.degrassi.mmreborn.common.integration.emi.recipe.MMREmiRecipe;
 import es.degrassi.mmreborn.common.machine.component.DurationComponent;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -17,14 +18,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class EmiDurationComponent extends EmiComponent<Integer, RecipeRequirement<DurationComponent, RequirementDuration>>
+public class EmiDurationComponent extends EmiComponent<Integer, RecipeRequirement<DurationComponent,
+    RequirementDuration, Void>>
     implements IDirectionalRequirement {
   private int duration;
   private final ProgressData progressData;
   private final int ticks;
   private final AnimatedTextureWidget progress;
   private final boolean inverted;
-  public EmiDurationComponent(RecipeRequirement<DurationComponent, RequirementDuration> requirement, int msPerCycle,
+  public EmiDurationComponent(RecipeRequirement<DurationComponent, RequirementDuration, Void> requirement,
+                              int msPerCycle,
                               ProgressData progressData, boolean inverted) {
     super(requirement, 0, 0, false);
     this.progressData = progressData;

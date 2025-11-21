@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.crafting.requirement;
 
+import es.degrassi.mmreborn.api.capability.EffectHandler;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.codec.RegistrarCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequirementEffect implements IRequirement<EffectComponent> {
+public class RequirementEffect implements IRequirement<EffectComponent, EffectHandler> {
   public static final NamedCodec<RequirementEffect> CODEC = NamedCodec.record(instance -> instance.group(
       RegistrarCodec.EFFECT.fieldOf("effect").forGetter(req -> req.effect.value()),
       NamedCodec.INT.fieldOf("time").forGetter(req -> req.time),
@@ -56,7 +57,7 @@ public class RequirementEffect implements IRequirement<EffectComponent> {
   }
 
   @Override
-  public RequirementType<RequirementEffect> getType() {
+  public RequirementType<RequirementEffect, EffectHandler> getType() {
     return RequirementTypeRegistration.EFFECT.get();
   }
 
@@ -102,7 +103,7 @@ public class RequirementEffect implements IRequirement<EffectComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     Component effect = Component.literal(this.effect.value().getDisplayName().getString()).withStyle(ChatFormatting.AQUA);
     Component level = this.level <= 0 ? Component.empty() : Component.literal(RomanNumber.toRoman(this.level)).withStyle(ChatFormatting.GOLD);
     info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.effect.info.tick", effect, level, this.time));

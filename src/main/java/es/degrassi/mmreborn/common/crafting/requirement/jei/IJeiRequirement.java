@@ -7,7 +7,7 @@ import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 
-public interface IJeiRequirement<R extends RecipeRequirement<?, ?>> {
+public interface IJeiRequirement<R extends RecipeRequirement<?, ?, ?>> {
   void setRecipe(MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses);
 
   R getRequirement();

@@ -8,7 +8,7 @@ import net.minecraft.util.Mth;
 
 public class AdditionRecipeModifier extends RecipeModifier{
 
-  public AdditionRecipeModifier(RequirementType<?> requirementType, IOType mode, float modifier,
+  public AdditionRecipeModifier(RequirementType<?, ?> requirementType, IOType mode, float modifier,
                                 float chance, float max, float min) {
     super(requirementType, mode, modifier, chance, max, min);
   }

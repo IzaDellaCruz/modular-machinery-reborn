@@ -14,6 +14,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurability;
 import es.degrassi.mmreborn.common.integration.emi.EmiIngredientRegistry;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,8 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public class EmiDurabilityComponent extends EmiComponent<ItemStack, RecipeRequirement<DurabilityComponent, RequirementDurability>> implements SlotTooltip, ItemRendering, IngredientHolder {
+public class EmiDurabilityComponent extends EmiComponent<ItemStack, RecipeRequirement<DurabilityComponent,
+    RequirementDurability, IOInventory>> implements SlotTooltip, ItemRendering, IngredientHolder {
   private int item;
   @Getter
   private int width = 16, height = 16;
@@ -35,7 +37,7 @@ public class EmiDurabilityComponent extends EmiComponent<ItemStack, RecipeRequir
   private EmiRecipe recipe;
   private final EmiIngredient ingredient;
   private final List<ItemStack> items;
-  public EmiDurabilityComponent(RecipeRequirement<DurabilityComponent, RequirementDurability> requirement) {
+  public EmiDurabilityComponent(RecipeRequirement<DurabilityComponent, RequirementDurability, IOInventory> requirement) {
     super(requirement, 36, 0);
     this.ingredient = EmiIngredientRegistry.getIngredient(requirement.getType()).create(requirement);
     this.items = generateWithDurability(requirement.requirement().ingredient);

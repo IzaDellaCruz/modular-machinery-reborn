@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.crafting.requirement;
 
 import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.IFuelHandler;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.codec.NamedMapCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
@@ -22,7 +23,7 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class RequirementFuel implements IRequirement<FuelComponent> {
+public class RequirementFuel implements IRequirement<FuelComponent, IFuelHandler> {
   public static final NamedMapCodec<RequirementFuel> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.longRange(0, Long.MAX_VALUE).fieldOf("amount").forGetter(req -> req.required),
       FuelData.CODEC.optionalFieldOf("fuel_data", FuelData.DEFAULT_FUEL).forGetter(RequirementFuel::displayData)
@@ -50,7 +51,7 @@ public class RequirementFuel implements IRequirement<FuelComponent> {
   }
 
   @Override
-  public RequirementType<RequirementFuel> getType() {
+  public RequirementType<RequirementFuel, IFuelHandler> getType() {
     return RequirementTypeRegistration.FUEL.get();
   }
 

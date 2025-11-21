@@ -14,6 +14,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementDurabilityPer
 import es.degrassi.mmreborn.common.integration.emi.EmiIngredientRegistry;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
+import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -27,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EmiDurabilityPerTickComponent extends EmiComponent<ItemStack, RecipeRequirement<DurabilityComponent,
-    RequirementDurabilityPerTick>> implements SlotTooltip, ItemRendering, IngredientHolder {
+    RequirementDurabilityPerTick, IOInventory>> implements SlotTooltip, ItemRendering, IngredientHolder {
   private int item;
   @Getter
   private int width = 16, height = 16;
@@ -36,7 +37,7 @@ public class EmiDurabilityPerTickComponent extends EmiComponent<ItemStack, Recip
   private EmiRecipe recipe;
   private final EmiIngredient ingredient;
   private final List<ItemStack> items;
-  public EmiDurabilityPerTickComponent(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick> requirement) {
+  public EmiDurabilityPerTickComponent(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, IOInventory> requirement) {
     super(requirement, 36, 0);
     this.ingredient = EmiIngredientRegistry.getIngredient(requirement.getType()).create(requirement);
     this.items = generateWithDurability(requirement.requirement().ingredient);

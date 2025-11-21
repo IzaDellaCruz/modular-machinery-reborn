@@ -29,7 +29,7 @@ public interface ModularMachineryRebornRecipeComponents {
     }
   });
 
-  RecipeComponentType<RecipeRequirement<?, ?>> REQUIREMENT_COMPONENT =
+  RecipeComponentType<RecipeRequirement<?, ?, ?>> REQUIREMENT_COMPONENT =
       RecipeComponentType.unit(ModularMachineryReborn.rl("requirements"), new RecipeComponent<>() {
         @Override
         public RecipeComponentType<?> type() {
@@ -37,7 +37,7 @@ public interface ModularMachineryRebornRecipeComponents {
         }
 
         @Override
-    public Codec<RecipeRequirement<?, ?>> codec() {
+    public Codec<RecipeRequirement<?, ?, ?>> codec() {
       return RecipeRequirement.CODEC.codec();
     }
 

@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergyPerTick;
 import es.degrassi.mmreborn.common.integration.emi.recipe.MMREmiRecipe;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
+import es.degrassi.mmreborn.common.util.IEnergyHandler;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,12 +16,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-public class EmiEnergyPerTickComponent extends EmiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergyPerTick>> {
+public class EmiEnergyPerTickComponent extends EmiComponent<Long, RecipeRequirement<EnergyComponent,
+    RequirementEnergyPerTick, IEnergyHandler>> {
   private int width = 16;
   private int height = 52;
   private int recipeTime;
 
-  public EmiEnergyPerTickComponent(RecipeRequirement<EnergyComponent, RequirementEnergyPerTick> requirement) {
+  public EmiEnergyPerTickComponent(RecipeRequirement<EnergyComponent, RequirementEnergyPerTick, IEnergyHandler> requirement) {
     super(requirement, 18, 0);
   }
 

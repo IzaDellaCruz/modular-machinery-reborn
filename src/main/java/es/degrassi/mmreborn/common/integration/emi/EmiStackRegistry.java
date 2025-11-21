@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class EmiStackRegistry {
   private EmiStackRegistry() {}
-  private static Map<RequirementType<?>, EmiStackFactory<?>> stacks;
+  private static Map<RequirementType<?, ?>, EmiStackFactory<?>> stacks;
 
   public static void init() {
     RegisterEmiRequirementToStackEvent event = new RegisterEmiRequirementToStackEvent();
@@ -20,12 +20,12 @@ public class EmiStackRegistry {
     stacks = event.getStacks();
   }
 
-  public static boolean hasEmiStack(RequirementType<?> type) {
+  public static boolean hasEmiStack(RequirementType<?, ?> type) {
     return stacks.containsKey(type);
   }
 
   @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T>, T extends IRequirement<C>, C extends MachineComponent<?>> EmiStackFactory<R> getStack(RequirementType<T> type) {
+  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>, X> EmiStackFactory<R> getStack(RequirementType<T, X> type) {
     return (EmiStackFactory<R>) stacks.get(type);
   }
 }

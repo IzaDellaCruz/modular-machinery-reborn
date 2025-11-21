@@ -6,6 +6,7 @@ import es.degrassi.mmreborn.common.crafting.requirement.RequirementEnergy;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
+import es.degrassi.mmreborn.common.util.IEnergyHandler;
 import es.degrassi.mmreborn.common.util.Utils;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -18,12 +19,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
-public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergy>> {
+public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergy, IEnergyHandler>> {
   private int width = 16;
   private int height = 52;
   private int recipeTime;
 
-  public JeiEnergyComponent(RecipeRequirement<EnergyComponent, RequirementEnergy> requirement) {
+  public JeiEnergyComponent(RecipeRequirement<EnergyComponent, RequirementEnergy, IEnergyHandler> requirement) {
     super(requirement, 18, 0);
   }
 

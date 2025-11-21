@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class RequirementDuration implements IRequirement<DurationComponent> {
+public class RequirementDuration implements IRequirement<DurationComponent, Void> {
   public static final NamedMapCodec<RequirementDuration> CODEC = NamedCodec.record(instance -> instance.group(
           NamedCodec.intRange(1, Integer.MAX_VALUE).fieldOf("time").forGetter(RequirementDuration::getTime),
           PositionedRequirement.POSITION_CODEC.optionalFieldOf("position", new PositionedRequirement(0, 0)).forGetter(IRequirement::getPosition)
@@ -32,7 +32,7 @@ public class RequirementDuration implements IRequirement<DurationComponent> {
   }
 
   @Override
-  public RequirementType<RequirementDuration> getType() {
+  public RequirementType<RequirementDuration, Void> getType() {
     return RequirementTypeRegistration.SPEED.get();
   }
 

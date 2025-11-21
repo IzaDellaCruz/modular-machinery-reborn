@@ -14,12 +14,13 @@ import es.degrassi.mmreborn.common.machine.component.ChunkloadComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
+import es.degrassi.mmreborn.common.util.Chunkloader;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class RequirementChunkload implements IRequirement<ChunkloadComponent> {
+public class RequirementChunkload implements IRequirement<ChunkloadComponent, Chunkloader> {
   public static final NamedCodec<RequirementChunkload> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.intRange(1, 32).optionalFieldOf("radius", 1).forGetter(RequirementChunkload::radius)
   ).apply(instance, RequirementChunkload::new), "ChunkloadComponent Requirement");
@@ -27,15 +28,12 @@ public class RequirementChunkload implements IRequirement<ChunkloadComponent> {
   @Getter
   private final IOType actionType;
   @Getter
-  private final RequirementType<RequirementChunkload> requirementType;
-  @Getter
   private final PositionedRequirement position;
   private final Integer radius;
 
   public RequirementChunkload(Integer radius) {
     this.radius = radius;
     this.actionType = IOType.OUTPUT;
-    this.requirementType = RequirementTypeRegistration.CHUNKLOAD.get();
     this.position = new PositionedRequirement(0, 0);
   }
 
@@ -44,8 +42,8 @@ public class RequirementChunkload implements IRequirement<ChunkloadComponent> {
   }
 
   @Override
-  public RequirementType<RequirementChunkload> getType() {
-    return getRequirementType();
+  public RequirementType<RequirementChunkload, Chunkloader> getType() {
+    return RequirementTypeRegistration.CHUNKLOAD.get();
   }
 
   @Override
@@ -89,7 +87,7 @@ public class RequirementChunkload implements IRequirement<ChunkloadComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.addTooltip(Component.translatable(
         "modular_machinery_reborn.jei.ingredient.chunkload",
         radius()

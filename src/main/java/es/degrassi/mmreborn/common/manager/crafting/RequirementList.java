@@ -28,7 +28,7 @@ public class RequirementList<C extends MachineComponent<?>> implements IRequirem
   private final List<RequirementWithFunction> inventoryConditions = Lists.newArrayList();
 
   @Setter
-  private RecipeRequirement<? extends MachineComponent<?>, ?> currentRequirement;
+  private RecipeRequirement<? extends MachineComponent<?>, ?, ?> currentRequirement;
 
   @Override
   public void processOnStart(RequirementFunction<C> function) {
@@ -65,7 +65,7 @@ public class RequirementList<C extends MachineComponent<?>> implements IRequirem
     this.processDelayed(mode.isInput() ? 0.0D : 1.0D, function);
   }
 
-  public record RequirementWithFunction(RecipeRequirement<?, ?> requirement, RequirementFunction<?> function) {
+  public record RequirementWithFunction(RecipeRequirement<?, ?, ?> requirement, RequirementFunction<?> function) {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public CraftingResult process(ComponentManager manager, ICraftingContext context) {
       MachineComponent<?> component = requirement.findComponent(manager, context);

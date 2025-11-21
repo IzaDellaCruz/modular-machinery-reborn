@@ -1,11 +1,24 @@
 package es.degrassi.mmreborn.common.registration;
 
+import es.degrassi.experiencelib.api.capability.IExperienceHandler;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.Structure;
+import es.degrassi.mmreborn.api.capability.EffectHandler;
+import es.degrassi.mmreborn.api.capability.EntityHandler;
+import es.degrassi.mmreborn.api.capability.IFuelHandler;
+import es.degrassi.mmreborn.api.crafting.requirement.WeatherType;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.util.Chunkloader;
+import es.degrassi.mmreborn.common.util.HybridTank;
+import es.degrassi.mmreborn.common.util.IEnergyHandler;
+import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.util.IntRange;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
@@ -13,52 +26,52 @@ import static es.degrassi.mmreborn.ModularMachineryReborn.rootLC;
 public class ComponentRegistration {
   private ComponentRegistration() {}
 
-  public static final DeferredRegister<ComponentType> MACHINE_COMPONENTS =
+  public static final DeferredRegister<ComponentType<?>> MACHINE_COMPONENTS =
       DeferredRegister.create(ComponentType.REGISTRY_KEY, ModularMachineryReborn.MODID);
-  public static final Registry<ComponentType> COMPONENTS_REGISTRY = MACHINE_COMPONENTS.makeRegistry(builder -> {});
+  public static final Registry<ComponentType<?>> COMPONENTS_REGISTRY = MACHINE_COMPONENTS.makeRegistry(builder -> {});
 
-  public static final Supplier<ComponentType> COMPONENT_ITEM = MACHINE_COMPONENTS.register(rootLC("item"),
+  public static final Supplier<ComponentType<IOInventory>> COMPONENT_ITEM = MACHINE_COMPONENTS.register(rootLC("item"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_DURABILITY= MACHINE_COMPONENTS.register(rootLC("durability"),
+  public static final Supplier<ComponentType<IOInventory>> COMPONENT_DURABILITY= MACHINE_COMPONENTS.register(rootLC("durability"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_DURATION = MACHINE_COMPONENTS.register(rootLC("duration"),
+  public static final Supplier<ComponentType<Void>> COMPONENT_DURATION = MACHINE_COMPONENTS.register(rootLC("duration"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_FLUID = MACHINE_COMPONENTS.register(rootLC("fluid"),
+  public static final Supplier<ComponentType<HybridTank>> COMPONENT_FLUID = MACHINE_COMPONENTS.register(rootLC("fluid"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_ENERGY = MACHINE_COMPONENTS.register(rootLC("energy"),
+  public static final Supplier<ComponentType<IEnergyHandler>> COMPONENT_ENERGY = MACHINE_COMPONENTS.register(rootLC("energy"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_DIMENSION = MACHINE_COMPONENTS.register(rootLC("dimension"),
+  public static final Supplier<ComponentType<ResourceLocation>> COMPONENT_DIMENSION = MACHINE_COMPONENTS.register(rootLC("dimension"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_BIOME = MACHINE_COMPONENTS.register(rootLC("biome"),
+  public static final Supplier<ComponentType<List<ResourceLocation>>> COMPONENT_BIOME = MACHINE_COMPONENTS.register(rootLC("biome"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_WEATHER = MACHINE_COMPONENTS.register(rootLC("weather"),
+  public static final Supplier<ComponentType<WeatherType>> COMPONENT_WEATHER = MACHINE_COMPONENTS.register(rootLC("weather"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_TIME = MACHINE_COMPONENTS.register(rootLC("time"),
+  public static final Supplier<ComponentType<IntRange>> COMPONENT_TIME = MACHINE_COMPONENTS.register(rootLC("time"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_HEIGHT = MACHINE_COMPONENTS.register(rootLC("height"),
+  public static final Supplier<ComponentType<IntRange>> COMPONENT_HEIGHT = MACHINE_COMPONENTS.register(rootLC("height"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_CHUNKLOAD = MACHINE_COMPONENTS.register(rootLC("chunkload"),
+  public static final Supplier<ComponentType<Chunkloader>> COMPONENT_CHUNKLOAD = MACHINE_COMPONENTS.register(rootLC("chunkload"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_EXPERIENCE = MACHINE_COMPONENTS.register(rootLC("experience"),
+  public static final Supplier<ComponentType<IExperienceHandler>> COMPONENT_EXPERIENCE = MACHINE_COMPONENTS.register(rootLC("experience"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_PARALLEL = MACHINE_COMPONENTS.register(rootLC("parallel"),
+  public static final Supplier<ComponentType<Integer>> COMPONENT_PARALLEL = MACHINE_COMPONENTS.register(rootLC("parallel"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_FUNCTION = MACHINE_COMPONENTS.register(rootLC("function"),
+  public static final Supplier<ComponentType<Void>> COMPONENT_FUNCTION = MACHINE_COMPONENTS.register(rootLC("function"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_FUEL = MACHINE_COMPONENTS.register(rootLC("fuel"),
+  public static final Supplier<ComponentType<IFuelHandler>> COMPONENT_FUEL = MACHINE_COMPONENTS.register(rootLC("fuel"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_EFFECT = MACHINE_COMPONENTS.register(rootLC("effect"),
+  public static final Supplier<ComponentType<EffectHandler>> COMPONENT_EFFECT = MACHINE_COMPONENTS.register(rootLC("effect"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_ENTITY = MACHINE_COMPONENTS.register(rootLC("entity"),
+  public static final Supplier<ComponentType<EntityHandler>> COMPONENT_ENTITY = MACHINE_COMPONENTS.register(rootLC("entity"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_STRUCTURE = MACHINE_COMPONENTS.register(rootLC("structure"),
+  public static final Supplier<ComponentType<Structure>> COMPONENT_STRUCTURE = MACHINE_COMPONENTS.register(rootLC("structure"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_REDSTONE = MACHINE_COMPONENTS.register(rootLC("redstone"),
+  public static final Supplier<ComponentType<Integer>> COMPONENT_REDSTONE = MACHINE_COMPONENTS.register(rootLC("redstone"),
       ComponentType::create);
-  public static final Supplier<ComponentType> COMPONENT_COMMAND = MACHINE_COMPONENTS.register(rootLC("command"),
+  public static final Supplier<ComponentType<Void>> COMPONENT_COMMAND = MACHINE_COMPONENTS.register(rootLC("command"),
       ComponentType::create);
 
-  public static final Supplier<ComponentType> COMPONENT_EMPTY = MACHINE_COMPONENTS.register(rootLC("empty"),
+  public static final Supplier<ComponentType<Void>> COMPONENT_EMPTY = MACHINE_COMPONENTS.register(rootLC("empty"),
       ComponentType::create);
 
   public static void register(final IEventBus bus) {

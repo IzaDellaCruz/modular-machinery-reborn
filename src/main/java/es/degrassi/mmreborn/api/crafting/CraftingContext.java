@@ -76,33 +76,33 @@ public class CraftingContext implements ICraftingContext {
   }
 
   @Override
-  public long getIntegerModifiedValue(float value, IRequirement<?> requirement) {
+  public long getIntegerModifiedValue(float value, IRequirement<?, ?> requirement) {
     return Math.round(getModifiedValue(value, requirement));
   }
 
   @Override
-  public long getPerTickIntegerModifiedValue(float value, IRequirement<?> requirement) {
+  public long getPerTickIntegerModifiedValue(float value, IRequirement<?, ?> requirement) {
     return Math.round(getPerTickModifiedValue(value, requirement));
   }
 
   @Override
-  public List<RecipeModifier> getModifiers(RequirementType<?> target) {
+  public List<RecipeModifier> getModifiers(RequirementType<?, ?> target) {
     return tile.getComponentManager().getModifiers(target);
   }
 
   @Override
-  public float getModifiedValue(float value, IRequirement<?> requirement) {
+  public float getModifiedValue(float value, IRequirement<?, ?> requirement) {
     return getModifiedValue(value, requirement.getType(), requirement.getMode());
   }
 
   @Override
-  public float getPerTickModifiedValue(float value, IRequirement<?> requirement) {
+  public float getPerTickModifiedValue(float value, IRequirement<?, ?> requirement) {
     if(this.getRemainingTime() > 0)
       return getModifiedValue(value, requirement) * Math.min(this.getModifiedSpeed(), this.getRemainingTime());
     return getModifiedValue(value, requirement) * this.getModifiedSpeed();
   }
 
-  private float getModifiedValue(float value, RequirementType<?> type, IOType mode) {
+  private float getModifiedValue(float value, RequirementType<?, ?> type, IOType mode) {
     float modified = value;
     var modifiers = tile.getComponentManager().getModifiers(type);
     for (var modifier : modifiers) {

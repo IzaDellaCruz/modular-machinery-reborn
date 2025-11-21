@@ -47,7 +47,7 @@ public class MMREmiRecipe extends BasicEmiRecipe {
   protected int width = 256, height = 256;
 
   public final List<FormattedText> textsToRender = Lists.newArrayList();
-  protected final LoadingCache<RecipeRequirement<?, ?>, RequirementDisplayInfo> infoCache;
+  protected final LoadingCache<RecipeRequirement<?, ?, ?>, RequirementDisplayInfo> infoCache;
   protected boolean hasInfoRow;
   protected int rowY;
   protected int maxIconPerRow;
@@ -81,7 +81,7 @@ public class MMREmiRecipe extends BasicEmiRecipe {
         .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     this.infoCache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
       @Override
-      public RequirementDisplayInfo load(RecipeRequirement<?, ?> requirement) {
+      public RequirementDisplayInfo load(RecipeRequirement<?, ?, ?> requirement) {
         RequirementDisplayInfo info = new RequirementDisplayInfo();
         requirement.getDisplayInfo(info);
         DisplayInfoTemplate template = requirement.info;

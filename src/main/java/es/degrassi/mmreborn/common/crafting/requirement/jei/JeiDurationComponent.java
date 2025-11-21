@@ -23,13 +23,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class JeiDurationComponent extends JeiComponent<Integer, RecipeRequirement<DurationComponent, RequirementDuration>>
+public class JeiDurationComponent extends JeiComponent<Integer, RecipeRequirement<DurationComponent,
+    RequirementDuration, Void>>
 implements IDirectionalRequirement {
   private final ProgressDrawable progress;
   @Getter
   private final ProgressData progressData;
   private int duration;
-  public JeiDurationComponent(RecipeRequirement<DurationComponent, RequirementDuration> requirement,
+  public JeiDurationComponent(RecipeRequirement<DurationComponent, RequirementDuration, Void> requirement,
                               int ticksPerCycle, ProgressData data) {
     super(requirement, 0, 0);
     this.progressData = data;

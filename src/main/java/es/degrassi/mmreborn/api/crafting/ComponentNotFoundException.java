@@ -8,9 +8,9 @@ public class ComponentNotFoundException extends RuntimeException {
 
   private final ResourceLocation recipeId;
   private final DynamicMachine machine;
-  private final IRequirement<?> requirement;
+  private final IRequirement<?, ?> requirement;
 
-  public ComponentNotFoundException(ResourceLocation recipeId, DynamicMachine machine, IRequirement<?> requirement) {
+  public ComponentNotFoundException(ResourceLocation recipeId, DynamicMachine machine, IRequirement<?, ?> requirement) {
     this.recipeId = recipeId;
     this.machine = machine;
     this.requirement = requirement;

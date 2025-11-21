@@ -22,7 +22,7 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class RequirementExperiencePerTick implements IRequirement<ExperienceComponent> {
+public class RequirementExperiencePerTick implements IRequirement<ExperienceComponent, IExperienceHandler> {
   public static final NamedMapCodec<RequirementExperiencePerTick> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.longRange(0, Long.MAX_VALUE).fieldOf("amount").forGetter(req -> req.required),
       NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode)
@@ -39,7 +39,7 @@ public class RequirementExperiencePerTick implements IRequirement<ExperienceComp
   }
 
   @Override
-  public RequirementType<RequirementExperiencePerTick> getType() {
+  public RequirementType<RequirementExperiencePerTick, IExperienceHandler> getType() {
     return RequirementTypeRegistration.EXPERIENCE_PER_TICK.get();
   }
 
@@ -122,7 +122,7 @@ public class RequirementExperiencePerTick implements IRequirement<ExperienceComp
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     String literal = String.format("%s XP/t", ExperienceUtils.format(getRequired()));
     String level =  ExperienceUtils.format(ExperienceUtils.getLevelFromXp(getRequired()));
     info.addTooltip(

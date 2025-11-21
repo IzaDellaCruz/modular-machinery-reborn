@@ -4,10 +4,9 @@ import dev.latvian.mods.kubejs.level.CachedLevelBlock;
 import dev.latvian.mods.rhino.Wrapper;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
-import es.degrassi.mmreborn.common.machine.component.ChunkloadComponent;
+import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
-import es.degrassi.mmreborn.common.machine.component.FuelComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.util.Chunkloader;
@@ -334,7 +333,6 @@ public class MachineControllerJS {
     return internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
         .stream()
-        .map(comp -> (FuelComponent) comp)
         .mapToLong(comp -> comp.getContainerProvider().getFuel())
         .sum();
   }
@@ -343,7 +341,6 @@ public class MachineControllerJS {
     return internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
         .stream()
-        .map(comp -> (FuelComponent) comp)
         .mapToLong(comp -> comp.getContainerProvider().getMaxFuel())
         .sum();
   }
@@ -352,10 +349,8 @@ public class MachineControllerJS {
     AtomicLong amt = new AtomicLong(amount);
     internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
-        .stream()
-        .map(comp -> (FuelComponent) comp)
-        .map(FuelComponent::getContainerProvider)
-        .forEach(comp -> {
+        .map(MachineComponent::getContainerProvider)
+        .ifPresent(comp -> {
           if (amt.get() <= 0) return;
           long toInsert = Math.min(comp.getMaxFuel() - comp.getFuel(), amt.get());
           amt.addAndGet(-toInsert);
@@ -367,10 +362,8 @@ public class MachineControllerJS {
     AtomicLong amt = new AtomicLong(amount);
     internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
-        .stream()
-        .map(comp -> (FuelComponent) comp)
-        .map(FuelComponent::getContainerProvider)
-        .forEach(comp -> {
+        .map(MachineComponent::getContainerProvider)
+        .ifPresent(comp -> {
           if (amt.get() <= 0) return;
           long toRemove = Math.min(comp.getFuel(), amt.get());
           amt.addAndGet(-toRemove);
@@ -383,24 +376,21 @@ public class MachineControllerJS {
   public void enableChunkload(int radius) {
     this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
-        .map(c -> (ChunkloadComponent) c)
-        .map(ChunkloadComponent::getContainerProvider)
+        .map(MachineComponent::getContainerProvider)
         .ifPresent(component -> component.setActive((ServerLevel) this.internal.getLevel(), radius));
   }
 
   public void disableChunkload() {
     this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
-        .map(c -> (ChunkloadComponent) c)
-        .map(ChunkloadComponent::getContainerProvider)
+        .map(MachineComponent::getContainerProvider)
         .ifPresent(component -> component.setInactive((ServerLevel) this.internal.getLevel()));
   }
 
   public boolean isChunkloadEnabled() {
     return this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
-        .map(c -> (ChunkloadComponent) c)
-        .map(ChunkloadComponent::getContainerProvider)
+        .map(MachineComponent::getContainerProvider)
         .map(Chunkloader::isActive)
         .orElse(false);
   }
@@ -408,8 +398,7 @@ public class MachineControllerJS {
   public int getChunkloadRadius() {
     return this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
-        .map(c -> (ChunkloadComponent) c)
-        .map(ChunkloadComponent::getContainerProvider)
+        .map(MachineComponent::getContainerProvider)
         .map(Chunkloader::getRadius)
         .orElse(0);
   }

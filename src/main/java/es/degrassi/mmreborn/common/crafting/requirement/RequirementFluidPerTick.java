@@ -20,7 +20,7 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class RequirementFluidPerTick implements IRequirement<FluidComponent> {
+public class RequirementFluidPerTick implements IRequirement<FluidComponent, HybridTank> {
   public static final NamedMapCodec<RequirementFluidPerTick> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.of(SizedFluidIngredient.FLAT_CODEC).fieldOf("fluid").forGetter(req -> req.ingredient),
       NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
@@ -38,7 +38,7 @@ public class RequirementFluidPerTick implements IRequirement<FluidComponent> {
   }
 
   @Override
-  public RequirementType<RequirementFluidPerTick> getType() {
+  public RequirementType<RequirementFluidPerTick, HybridTank> getType() {
     return RequirementTypeRegistration.FLUID_PER_TICK.get();
   }
 

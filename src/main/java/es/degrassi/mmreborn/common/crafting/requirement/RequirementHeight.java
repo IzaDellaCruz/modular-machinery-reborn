@@ -18,7 +18,7 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class RequirementHeight implements IRequirement<HeightComponent> {
+public class RequirementHeight implements IRequirement<HeightComponent, IntRange> {
   public static final NamedCodec<RequirementHeight> CODEC = NamedCodec.record(instance -> instance.group(
       IntRange.CODEC.fieldOf("range").forGetter(RequirementHeight::height)
   ).apply(instance, RequirementHeight::new), "Height Requirement");
@@ -37,7 +37,7 @@ public class RequirementHeight implements IRequirement<HeightComponent> {
   }
 
   @Override
-  public RequirementType<RequirementHeight> getType() {
+  public RequirementType<RequirementHeight, IntRange> getType() {
     return RequirementTypeRegistration.HEIGHT.get();
   }
 
@@ -83,7 +83,7 @@ public class RequirementHeight implements IRequirement<HeightComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.addTooltip(Component.translatable(
         "modular_machinery_reborn.jei.ingredient.height",
         height().toFormattedString()

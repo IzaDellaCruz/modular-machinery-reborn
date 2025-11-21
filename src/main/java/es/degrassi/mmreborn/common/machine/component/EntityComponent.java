@@ -19,7 +19,7 @@ public class EntityComponent extends MachineComponent<EntityHandler> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<EntityHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_ENTITY.get();
   }
 
@@ -33,13 +33,13 @@ public class EntityComponent extends MachineComponent<EntityHandler> {
   }
 
   @Override
-  public <C extends MachineComponent<?>> boolean canMerge(C c) {
+  public <C extends MachineComponent<EntityHandler>> boolean canMerge(C c) {
     return false;
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<EntityHandler>> C merge(C c) {
     return (C) this;
   }
 }

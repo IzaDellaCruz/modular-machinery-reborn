@@ -20,7 +20,7 @@ public abstract class MachineComponent<T> implements Comparable<MachineComponent
     return ioType;
   }
 
-  public abstract ComponentType getComponentType();
+  public abstract ComponentType<T> getComponentType();
 
   @Nullable
   public abstract T getContainerProvider();
@@ -47,9 +47,9 @@ public abstract class MachineComponent<T> implements Comparable<MachineComponent
     return asJson().toString();
   }
 
-  public abstract <C extends MachineComponent<?>> C merge(C c);
+  public abstract <C extends MachineComponent<T>> C merge(C c);
 
-  public <C extends MachineComponent<?>> boolean canMerge(C c) {
+  public <C extends MachineComponent<T>> boolean canMerge(C c) {
     return c.getIOType().equals(getIOType());
   }
 

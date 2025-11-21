@@ -15,7 +15,7 @@ public class EnergyComponent extends MachineComponent<IEnergyHandler> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IEnergyHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_ENERGY.get();
   }
 
@@ -26,7 +26,7 @@ public class EnergyComponent extends MachineComponent<IEnergyHandler> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<?>> C merge(C c) {
+  public <C extends MachineComponent<IEnergyHandler>> C merge(C c) {
     EnergyComponent comp = (EnergyComponent) c;
     return (C) new EnergyComponent(
         new IEnergyHandler() {

@@ -16,7 +16,6 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.StructureComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -31,7 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Getter
-public class RequirementStructure implements IRequirement<StructureComponent> {
+public class RequirementStructure implements IRequirement<StructureComponent, Structure> {
   public static final NamedCodec<RequirementStructure> CODEC = NamedCodec.record(instance -> instance.group(
       Structure.CODEC.fieldOf("structure").forGetter(RequirementStructure::getStructure),
       NamedCodec.enumCodec(Action.class).optionalFieldOf("action", Action.CHECK).forGetter(RequirementStructure::getAction)
@@ -45,7 +44,7 @@ public class RequirementStructure implements IRequirement<StructureComponent> {
   }
 
   @Override
-  public RequirementType<RequirementStructure> getType() {
+  public RequirementType<RequirementStructure, Structure> getType() {
     return RequirementTypeRegistration.STRUCTURE.get();
   }
 
@@ -108,7 +107,7 @@ public class RequirementStructure implements IRequirement<StructureComponent> {
   }
 
   @Override
-  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?> requirement) {
+  public void getDefaultDisplayInfo(IDisplayInfo info, RecipeRequirement<?, ?, ?> requirement) {
     info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.info"));
     info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.click"));
     this.structure.getPattern().asList().stream().flatMap(List::stream).flatMap(s -> s.chars().mapToObj(c -> (char)c)).collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).forEach((key, amount) -> {
