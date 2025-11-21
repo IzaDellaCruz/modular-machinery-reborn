@@ -40,7 +40,7 @@ public class RequirementCommand implements IRequirement<CommandComponent, Void> 
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_COMMAND.get();
   }
 

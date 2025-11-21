@@ -42,7 +42,7 @@ public class RequirementTime implements IRequirement<TimeComponent, IntRange> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IntRange> getComponentType() {
     return ComponentRegistration.COMPONENT_TIME.get();
   }
 

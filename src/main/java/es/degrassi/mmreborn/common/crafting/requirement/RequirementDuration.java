@@ -37,7 +37,7 @@ public class RequirementDuration implements IRequirement<DurationComponent, Void
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_DURATION.get();
   }
 

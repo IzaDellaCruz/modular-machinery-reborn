@@ -41,7 +41,7 @@ public class RequirementFuel implements IRequirement<FuelComponent, IFuelHandler
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IFuelHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_FUEL.get();
   }
 

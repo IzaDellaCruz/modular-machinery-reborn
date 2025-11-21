@@ -44,7 +44,7 @@ public class RequirementExperience implements IRequirement<ExperienceComponent, 
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IExperienceHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_EXPERIENCE.get();
   }
 

@@ -62,7 +62,7 @@ public class RequirementEffect implements IRequirement<EffectComponent, EffectHa
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<EffectHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_EFFECT.get();
   }
 

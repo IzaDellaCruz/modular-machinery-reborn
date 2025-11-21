@@ -54,7 +54,7 @@ public class RequirementDurability implements IRequirement<DurabilityComponent, 
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IOInventory> getComponentType() {
     return ComponentRegistration.COMPONENT_DURABILITY.get();
   }
 

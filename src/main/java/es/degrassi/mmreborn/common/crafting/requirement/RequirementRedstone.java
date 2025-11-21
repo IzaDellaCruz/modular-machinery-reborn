@@ -38,7 +38,7 @@ public class RequirementRedstone implements IRequirement<RedstoneComponent, Inte
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Integer> getComponentType() {
     return ComponentRegistration.COMPONENT_REDSTONE.get();
   }
 

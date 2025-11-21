@@ -101,7 +101,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
       this.status = status;
       this.errorMessage = message;
       setCraftingStatus(craftingByMachine(status));
-      setRequestModelUpdate(true);
       setChanged();
       if (this.getLevel() instanceof ServerLevel sl) {
         BlockPos pos = this.getBlockPos();
@@ -189,11 +188,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     }
 
     checkStructure(false);
-
-    if (status.isMissingStructure()) {
-      processor.reset();
-      componentManager.reset();
-    }
   }
 
   @Override
@@ -218,6 +212,8 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void checkStructure(boolean immediate) {
     if (this.getFoundMachine() == DynamicMachine.DUMMY || getLevel() == null) return;
     long gameTime = getLevel().getGameTime();
+    componentManager.reset();
+    processor.reset();
     if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
     lastCheckTick = gameTime;
     if (!getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))) {

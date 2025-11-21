@@ -47,7 +47,7 @@ public class RequirementWeather implements IRequirement<WeatherComponent, Weathe
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<WeatherType> getComponentType() {
     return ComponentRegistration.COMPONENT_WEATHER.get();
   }
 

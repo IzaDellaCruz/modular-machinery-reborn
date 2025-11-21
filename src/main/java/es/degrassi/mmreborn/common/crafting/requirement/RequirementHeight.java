@@ -42,7 +42,7 @@ public class RequirementHeight implements IRequirement<HeightComponent, IntRange
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<IntRange> getComponentType() {
     return ComponentRegistration.COMPONENT_HEIGHT.get();
   }
 

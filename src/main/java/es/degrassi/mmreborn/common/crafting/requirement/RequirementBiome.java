@@ -58,7 +58,7 @@ public class RequirementBiome implements IRequirement<BiomeComponent, List<Resou
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<List<ResourceLocation>> getComponentType() {
     return ComponentRegistration.COMPONENT_BIOME.get();
   }
 

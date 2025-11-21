@@ -69,10 +69,10 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   public final void reset() {
     cachedBlocks.forEach(block -> {
       if (controller.getLevel().getBlockEntity(block) instanceof ColorableMachineComponentEntity entity) {
-        if (entity.isRemoved()) return;
         entity.getControllerPosSet().remove(controller.getBlockPos());
         entity.setMachineColor(Config.machineColor);
-        if (entity instanceof TextureableMachineEntity text) text.resetTextures();
+        if (entity instanceof TextureableMachineEntity e) e.resetTextures();
+        entity.setChanged();
       }
     });
     foundComponents.clear();
@@ -206,33 +206,12 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         .toList();
   }
 
-  @SuppressWarnings("unchecked")
   public <C extends MachineComponent<T>, T> Optional<C> getComponent(IRequirement<C, T> requirement, ICraftingContext context) {
     if (foundComponentsValues.isEmpty()) updateComponents();
-    // AtomicReference<C> merged = new AtomicReference<>(null);
-    return Optional.ofNullable(foundComponentsValues.get(requirement.getComponentType()))
-        .map(m -> {
-          if (requirement.getType().equals(RequirementTypeRegistration.DURABILITY.get()))
-            return m.get(IOType.INPUT);
-          return m.get(requirement.getMode());
-        })
-        .stream()
-        .flatMap(List::stream)
-        .map(m -> (C) m)
-        .filter(Objects::nonNull)
-        .filter(m -> requirement.test(m, context) || requirement.isComponentValid(m, context))
-        .sorted()
-        .reduce((c1, c2) -> {
-          if (c1.canMerge(c2)) return c1.merge(c2);
-          return c1;
-        });
-        /*.forEach(c -> {
-          if (merged.get() == null)
-            merged.set(c);
-          if (merged.get().canMerge(c))
-            merged.set(merged.get().merge(c));
-        });*/
-    //return Optional.ofNullable(merged.get());
+    if (requirement.getType().equals(RequirementTypeRegistration.DURABILITY.get())) {
+      return getComponent(requirement.getComponentType(), IOType.INPUT);
+    }
+    return getComponent(requirement.getComponentType(), requirement.getMode());
   }
 
   public Optional<ParallelComponent> getParallel() {
@@ -242,21 +221,6 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         .flatMap(List::stream)
         .map(c -> (ParallelComponent) c)
         .findFirst();
-    /*Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine()
-        .getPattern()
-        .getBlocksFiltered(controller.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
-    BlockPos controllerPos = controller.getBlockPos();
-    Level level = controller.getLevel();
-    if (level == null) return Optional.empty();
-    for (BlockPos potentialPosition : filteredMap.keySet()) {
-      BlockPos realPos = controllerPos.offset(potentialPosition);
-      try {
-        if (level.getBlockEntity(realPos) instanceof ParallelHatchEntity entity) {
-          return Optional.of(entity.provideComponent());
-        }
-      } catch (Exception ignored) {}
-    }
-    return Optional.empty();*/
   }
 
   public Optional<ItemComponent> getItemComponent(IOType mode) {
@@ -269,39 +233,6 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           if (c1.canMerge(c2)) return c1.merge(c2);
           return c1;
         });
-    /*Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine()
-        .getPattern()
-        .getBlocksFiltered(controller.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
-    BlockPos controllerPos = controller.getBlockPos();
-    Level level = controller.getLevel();
-    if (level == null) return Optional.empty();
-    List<ItemComponent> components = Lists.newArrayList();
-    for (BlockPos potentialPosition : filteredMap.keySet()) {
-      BlockPos realPos = controllerPos.offset(potentialPosition);
-      try {
-        if (level.getBlockEntity(realPos) instanceof TileItemBus entity) {
-          if (!entity.getIoType().equals(mode)) continue;
-          if (entity.provideComponent() == null) continue;
-          components.add(entity.provideComponent());
-        }
-      } catch (Exception ignored) {}
-    }
-    if (components.isEmpty())
-      return Optional.empty();
-    else {
-      AtomicReference<ItemComponent> merged = new AtomicReference<>(null);
-      components.stream()
-          .filter(Objects::nonNull)
-          .sorted()
-          .forEach(c -> {
-            if (merged.get() == null)
-              merged.set(c);
-            else if (merged.get().canMerge(c)) {
-              merged.set(merged.get().merge(c));
-            }
-          });
-      return Optional.ofNullable(merged.get());
-    }*/
   }
 
   @SuppressWarnings("unchecked")
@@ -319,13 +250,6 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           if (c1.canMerge(c2)) return c1.merge(c2);
           return c1;
         });
-        /*.forEach(c -> {
-          if (merged.get() == null)
-            merged.set(c);
-          else if (merged.get().canMerge(c))
-            merged.set(merged.get().merge(c));
-        });*/
-    // return Optional.ofNullable(merged.get());
   }
 
   @Override

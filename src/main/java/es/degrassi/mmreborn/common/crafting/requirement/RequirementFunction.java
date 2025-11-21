@@ -46,7 +46,7 @@ public class RequirementFunction implements IRequirement<FunctionComponent, Void
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_FUNCTION.get();
   }
 

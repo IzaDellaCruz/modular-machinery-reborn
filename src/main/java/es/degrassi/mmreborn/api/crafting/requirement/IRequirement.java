@@ -38,7 +38,7 @@ public interface IRequirement<C extends MachineComponent<T>, T> {
    * This MUST return the same instance of the {@link ComponentType} as the one registered in the forge registry.
    * @return The type of component used by this requirement.
    */
-  ComponentType getComponentType();
+  ComponentType<T> getComponentType();
 
   /**
    * Currently only used by machine upgrades to find whether they apply to this requirement.

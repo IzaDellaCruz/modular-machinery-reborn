@@ -31,6 +31,7 @@ import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
+import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -172,7 +173,9 @@ public class ModularMachineryReborn {
     CONTROLLERS
         .stream()
         .filter(controller -> controller.getComponentManager().getCachedBlocks().contains(event.getPos()))
-        .forEach(controller -> TaskDelayer.enqueue(0, () -> controller.checkStructure(true)));
+        .forEach(controller -> {
+          controller.setStatus(MachineStatus.MISSING_STRUCTURE);
+        });
   }
 
   private void syncDatapacks(final OnDatapackSyncEvent event) {

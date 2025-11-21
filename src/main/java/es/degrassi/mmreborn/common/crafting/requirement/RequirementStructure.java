@@ -49,7 +49,7 @@ public class RequirementStructure implements IRequirement<StructureComponent, St
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Structure> getComponentType() {
     return ComponentRegistration.COMPONENT_STRUCTURE.get();
   }
 

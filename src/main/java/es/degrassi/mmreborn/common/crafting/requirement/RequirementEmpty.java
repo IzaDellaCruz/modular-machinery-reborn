@@ -37,7 +37,7 @@ public class RequirementEmpty implements IRequirement<EmptyComponent, Void> {
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<Void> getComponentType() {
     return ComponentRegistration.COMPONENT_EMPTY.get();
   }
 

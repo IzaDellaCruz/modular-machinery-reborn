@@ -43,7 +43,7 @@ public class RequirementFluidPerTick implements IRequirement<FluidComponent, Hyb
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<HybridTank> getComponentType() {
     return ComponentRegistration.COMPONENT_FLUID.get();
   }
 

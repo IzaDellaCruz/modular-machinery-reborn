@@ -9,9 +9,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -70,11 +67,6 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
       this.shouldAutoOutput = nbt.getBoolean("shouldAutoOutput");
     if (this instanceof IAutoInputEntity)
       this.shouldAutoInput = nbt.getBoolean("shouldAutoInput");
-    ListTag controllerPosTag = nbt.getList("controllerPosList", Tag.TAG_LONG);
-    controllerPosSet.clear();
-    for (Tag tag : controllerPosTag) {
-      controllerPosSet.add(BlockPos.of(((LongTag) tag).getAsLong()));
-    }
     if (nbt.contains("casingColor")) {
       definedColor = nbt.getInt("casingColor");
       return;
@@ -90,11 +82,6 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
     if (this instanceof IAutoInputEntity)
       nbt.putBoolean("shouldAutoInput", this.shouldAutoInput);
     nbt.putInt("casingColor", this.definedColor);
-    ListTag controllerPosTag = new ListTag();
-    for (var pos : controllerPosSet) {
-      controllerPosTag.add(new LongTag(pos.asLong()));
-    }
-    nbt.put("controllerPosList", controllerPosTag);
   }
 
   @Override

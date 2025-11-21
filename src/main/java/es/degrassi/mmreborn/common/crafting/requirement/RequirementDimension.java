@@ -54,7 +54,7 @@ public class RequirementDimension implements IRequirement<DimensionComponent, Re
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<ResourceLocation> getComponentType() {
     return ComponentRegistration.COMPONENT_DIMENSION.get();
   }
 
