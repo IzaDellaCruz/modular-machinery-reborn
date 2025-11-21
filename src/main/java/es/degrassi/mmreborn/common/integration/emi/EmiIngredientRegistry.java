@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.integration.emi;
 
+import dev.emi.emi.api.stack.EmiIngredient;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.api.integration.emi.EmiIngredientFactory;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class EmiIngredientRegistry {
   private EmiIngredientRegistry() {}
-  private static Map<RequirementType<?, ?>, EmiIngredientFactory<?>> stacks;
+  private static Map<RequirementType<?, ?, ?>, EmiIngredientFactory<?, ?, ?, ?>> stacks;
 
   public static void init() {
     RegisterEmiRequirementToIngredientEvent event = new RegisterEmiRequirementToIngredientEvent();
@@ -20,12 +21,19 @@ public class EmiIngredientRegistry {
     stacks = event.getStacks();
   }
 
-  public static boolean hasEmiIngredient(RequirementType<?, ?> type) {
+  public static boolean hasEmiIngredient(RequirementType<?, ?, ?> type) {
     return stacks.containsKey(type);
   }
 
   @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>, X> EmiIngredientFactory<R> getIngredient(RequirementType<T, X> type) {
-    return (EmiIngredientFactory<R>) stacks.get(type);
+  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>,
+      X> EmiIngredientFactory<R, T, C, X> getIngredient(RequirementType<T, C, X> type) {
+    return (EmiIngredientFactory<R, T, C, X>) stacks.get(type);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>,
+      X> EmiIngredient create(R type) {
+    return ((EmiIngredientFactory<R, T, C, X>) stacks.get(type.getType())).create(type);
   }
 }

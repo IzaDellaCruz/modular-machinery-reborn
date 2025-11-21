@@ -50,8 +50,8 @@ public class RecipeRequirement<C extends MachineComponent<T>, R extends IRequire
   }
 
   @SuppressWarnings("unchecked")
-  public RequirementType<R, T> getType() {
-    return (RequirementType<R, T>) this.requirement.getType();
+  public RequirementType<R, C, T> getType() {
+    return (RequirementType<R, C, T>) this.requirement.getType();
   }
 
   public R requirement() {

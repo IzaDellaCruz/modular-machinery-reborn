@@ -45,7 +45,7 @@ public class EmiItemComponent extends EmiComponent<ItemStack, RecipeRequirement<
 
   @Override
   public EmiIngredient getIngredient() {
-    return EmiIngredientRegistry.getIngredient(requirement.getType()).create(requirement);
+    return EmiIngredientRegistry.create(requirement);
   }
 
   @Override

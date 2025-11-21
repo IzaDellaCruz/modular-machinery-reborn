@@ -42,7 +42,7 @@ public class RequirementChunkload implements IRequirement<ChunkloadComponent, Ch
   }
 
   @Override
-  public RequirementType<RequirementChunkload, Chunkloader> getType() {
+  public RequirementType<RequirementChunkload, ChunkloadComponent, Chunkloader> getType() {
     return RequirementTypeRegistration.CHUNKLOAD.get();
   }
 

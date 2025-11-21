@@ -39,7 +39,7 @@ public class RequirementExperiencePerTick implements IRequirement<ExperienceComp
   }
 
   @Override
-  public RequirementType<RequirementExperiencePerTick, IExperienceHandler> getType() {
+  public RequirementType<RequirementExperiencePerTick, ExperienceComponent, IExperienceHandler> getType() {
     return RequirementTypeRegistration.EXPERIENCE_PER_TICK.get();
   }
 

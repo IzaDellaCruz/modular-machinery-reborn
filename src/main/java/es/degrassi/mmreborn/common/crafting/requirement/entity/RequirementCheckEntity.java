@@ -47,7 +47,7 @@ public class RequirementCheckEntity extends RequirementEntity {
   }
 
   @Override
-  public RequirementType<RequirementCheckEntity, EntityHandler> getType() {
+  public RequirementType<RequirementCheckEntity, EntityComponent, EntityHandler> getType() {
     return RequirementTypeRegistration.CHECK_ENTITY.get();
   }
 

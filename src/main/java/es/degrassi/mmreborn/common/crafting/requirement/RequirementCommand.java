@@ -35,7 +35,7 @@ public class RequirementCommand implements IRequirement<CommandComponent, Void> 
   private final boolean log;
 
   @Override
-  public RequirementType<RequirementCommand, Void> getType() {
+  public RequirementType<RequirementCommand, CommandComponent, Void> getType() {
     return RequirementTypeRegistration.COMMAND.get();
   }
 

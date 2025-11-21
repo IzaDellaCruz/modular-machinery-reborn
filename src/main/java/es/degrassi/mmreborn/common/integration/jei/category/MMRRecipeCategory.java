@@ -150,8 +150,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
     (recipe.getJeiRequirements().isEmpty() ? recipe.getRequirements() : recipe.getJeiRequirements())
         .stream()
         .filter(component -> JeiComponentRegistry.hasJeiComponent(component.getType()))
-        .map(requirement -> requirement.castRequirement(requirement))
-        .map(component -> JeiComponentRegistry.getJeiComponent(component.getType()).create(component))
+        .map(JeiComponentRegistry::create)
         .forEach(requirement -> requirement.setRecipe(this, builder, recipe, focuses));
   }
 

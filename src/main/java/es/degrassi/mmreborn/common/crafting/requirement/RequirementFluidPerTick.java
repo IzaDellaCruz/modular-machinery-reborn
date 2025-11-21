@@ -38,7 +38,7 @@ public class RequirementFluidPerTick implements IRequirement<FluidComponent, Hyb
   }
 
   @Override
-  public RequirementType<RequirementFluidPerTick, HybridTank> getType() {
+  public RequirementType<RequirementFluidPerTick, FluidComponent, HybridTank> getType() {
     return RequirementTypeRegistration.FLUID_PER_TICK.get();
   }
 

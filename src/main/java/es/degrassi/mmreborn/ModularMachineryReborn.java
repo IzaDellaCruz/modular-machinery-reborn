@@ -304,7 +304,7 @@ public class ModularMachineryReborn {
     return ProcessorTypeRegistration.PROCESSOR_REGISTRY;
   }
 
-  public static Registry<RequirementType<? extends IRequirement<?, ?>, ?>> getRequirementRegistrar() {
+  public static Registry<RequirementType<? extends IRequirement<?, ?>, ?, ?>> getRequirementRegistrar() {
     return RequirementTypeRegistration.REQUIREMENTS_REGISTRY;
   }
 

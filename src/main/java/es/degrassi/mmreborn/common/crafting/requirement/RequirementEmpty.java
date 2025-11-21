@@ -32,7 +32,7 @@ public class RequirementEmpty implements IRequirement<EmptyComponent, Void> {
   }
 
   @Override
-  public RequirementType<RequirementEmpty, Void> getType() {
+  public RequirementType<RequirementEmpty, EmptyComponent, Void> getType() {
     return RequirementTypeRegistration.EMPTY.get();
   }
 

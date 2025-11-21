@@ -57,6 +57,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   private final Map<BlockPos, MachineComponent<?>> foundComponents = Maps.newHashMap();
   private final Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
   private final Map<BlockPos, List<ModifierReplacement>> foundModifiers = Maps.newHashMap();
+  private final Map<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> foundModifiersValues = Maps.newHashMap();
 
   @Getter
   @Accessors(makeFinal = true)
@@ -78,6 +79,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     foundComponents.clear();
     foundModifiers.clear();
     foundComponentsValues.clear();
+    foundModifiersValues.clear();
   }
 
   public final void updateModifiers() {
@@ -86,6 +88,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     if (level == null) return;
     foundModifiers.clear();
     foundModifiers.putAll(gatherModifiers());
+    foundModifiersValues.clear();
+    foundModifiersValues.putAll(filterModifiers());
     controller.setChanged();
   }
 
@@ -127,6 +131,20 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           .add(comp);
     }
     return foundComponentsValues;
+  }
+
+  private Map<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> filterModifiers() {
+    Map<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> foundModifiersValues = Maps.newHashMap();
+    for (var modifierList : foundModifiers.values()) {
+      modifierList.stream()
+          .map(ModifierReplacement::getModifiers)
+          .flatMap(List::stream)
+          .forEach(modifier -> {
+            foundModifiersValues.computeIfAbsent(modifier.getRequirementType(), t -> Lists.newArrayList())
+                .add(modifier);
+          });
+    }
+    return foundModifiersValues;
   }
 
   public final List<MachineComponent<?>> getFoundComponentsList() {
@@ -195,14 +213,13 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     return map;
   }
 
-  public List<RecipeModifier> getModifiers(RequirementType<?, ?> type) {
-    if (foundModifiers.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) updateModifiers();
-    return foundModifiers.values()
+  @SuppressWarnings("unchecked")
+  public <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> List<RecipeModifier<R, C, T>> getModifiers(RequirementType<R, C, T> type) {
+    if (foundModifiersValues.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) updateModifiers();
+    return Optional.ofNullable(foundModifiersValues.get(type))
+        .orElse(List.of())
         .stream()
-        .flatMap(List::stream)
-        .map(ModifierReplacement::getModifiers)
-        .flatMap(List::stream)
-        .filter(mod -> mod.getRequirementType().equals(type))
+        .map(r -> (RecipeModifier<R, C, T>) r)
         .toList();
   }
 
@@ -215,30 +232,16 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   }
 
   public Optional<ParallelComponent> getParallel() {
-    return Optional.ofNullable(foundComponentsValues.get(ComponentRegistration.COMPONENT_PARALLEL.get()))
-        .map(map -> map.get(IOType.INPUT))
-        .stream()
-        .flatMap(List::stream)
-        .map(c -> (ParallelComponent) c)
-        .findFirst();
+    return getComponent(ComponentRegistration.COMPONENT_PARALLEL.get(), IOType.INPUT);
   }
 
   public Optional<ItemComponent> getItemComponent(IOType mode) {
-    return Optional.ofNullable(foundComponentsValues.get(ComponentRegistration.COMPONENT_ITEM.get()))
-        .map(map -> map.get(mode))
-        .stream()
-        .flatMap(List::stream)
-        .map(c -> (ItemComponent) c)
-        .reduce((c1, c2) -> {
-          if (c1.canMerge(c2)) return c1.merge(c2);
-          return c1;
-        });
+    return getComponent(ComponentRegistration.COMPONENT_ITEM.get(), mode);
   }
 
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<T>, T> Optional<C> getComponent(ComponentType<T> type, IOType mode) {
     if (foundComponentsValues.isEmpty()) updateComponents();
-    // AtomicReference<C> merged = new AtomicReference<>(null);
     return Optional.ofNullable(foundComponentsValues.get(type))
         .map(m -> m.get(mode))
         .stream()

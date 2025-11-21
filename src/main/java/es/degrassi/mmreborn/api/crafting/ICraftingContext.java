@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
+import es.degrassi.mmreborn.common.machine.MachineComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -63,12 +64,12 @@ public interface ICraftingContext {
    * @param requirement The requirement the value depends, because machine upgrades can target a specific {@link es.degrassi.mmreborn.common.crafting.requirement.RequirementType}.
    * @return The modified value, or the same value if no upgrades could be applied.
    */
-  float getModifiedValue(float value, IRequirement<?, ?> requirement);
+  <C extends MachineComponent<T>, T> float getModifiedValue(float value, IRequirement<C, T> requirement);
 
   /**
    * Same as the method above but round the value to a {@link Long}
    */
-  long getIntegerModifiedValue(float value, IRequirement<?, ?> requirement);
+  <C extends MachineComponent<T>, T> long getIntegerModifiedValue(float value, IRequirement<C, T> requirement);
 
   /**
    * Use this method only for requirements that will be executed every tick of the crafting process.
@@ -76,12 +77,12 @@ public interface ICraftingContext {
    * @param requirement The requirement the value depends, because machine upgrades can target a specific {@link es.degrassi.mmreborn.common.crafting.requirement.RequirementType}.
    * @return The modified value, or the same value if no upgrades could be applied.
    */
-  float getPerTickModifiedValue(float value, IRequirement<?, ?> requirement);
+  <C extends MachineComponent<T>, T> float getPerTickModifiedValue(float value, IRequirement<C, T> requirement);
 
   /**
    * Same as the method above but round the value to a {@link Long}
    */
-  long getPerTickIntegerModifiedValue(float value, IRequirement<?, ?> requirement);
+  <C extends MachineComponent<T>, T> long getPerTickIntegerModifiedValue(float value, IRequirement<C, T> requirement);
 
-  List<RecipeModifier> getModifiers(RequirementType<?, ?> target);
+  <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> List<RecipeModifier<R, C, T>> getModifiers(RequirementType<R, C, T> target);
 }

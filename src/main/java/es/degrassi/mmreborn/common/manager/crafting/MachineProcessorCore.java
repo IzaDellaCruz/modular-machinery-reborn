@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.common.manager.crafting;
 import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.api.crafting.CraftingContext;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
@@ -55,8 +56,8 @@ public class MachineProcessorCore implements ISyncableStuff {
   @Getter
   private boolean hasActiveRecipe;
 
-  private RequirementList<MachineComponent<?>> requirementList;
-  private final List<RequirementWithFunction> currentProcessRequirements = Lists.newArrayList();
+  private RequirementList<? extends IRequirement<?, ?>, ? extends MachineComponent<?>, ?> requirementList;
+  private final List<RequirementWithFunction<?, ?, ?>> currentProcessRequirements = Lists.newArrayList();
   private int core;
 
   public MachineProcessorCore(MachineProcessor processor, MachineControllerEntity tile, int core) {
@@ -88,7 +89,7 @@ public class MachineProcessorCore implements ISyncableStuff {
             this.requirementList.getProcessRequirements().entrySet().removeIf(entry -> entry.getKey() < this.recipeProgressTime / this.recipeTotalTime);
           });
       this.futureRecipeID = null;
-      this.tile.getComponentManager().updateComponents();
+      this.tile.checkStructure(true);
     }
     this.recipeFinder.init();
   }
@@ -129,7 +130,7 @@ public class MachineProcessorCore implements ISyncableStuff {
   private void checkConditions() {
     if (this.componentChanged) {
       this.componentChanged = false;
-      for (RequirementWithFunction requirement : this.requirementList.getInventoryConditions()) {
+      for (RequirementWithFunction<?, ?, ?> requirement : this.requirementList.getInventoryConditions()) {
         CraftingResult result = requirement.process(this.tile.getComponentManager(), this.context);
         if (!result.isSuccess()) {
           if (this.currentRecipe != null && this.currentRecipe.value().isVoidPerTickFailure()) this.reset();
@@ -139,7 +140,7 @@ public class MachineProcessorCore implements ISyncableStuff {
       }
     }
 
-    for (RequirementWithFunction requirement : this.requirementList.getWorldConditions()) {
+    for (RequirementWithFunction<?, ?, ?> requirement : this.requirementList.getWorldConditions()) {
       CraftingResult result = requirement.process(this.tile.getComponentManager(), this.context);
       if (!result.isSuccess()) {
         if (this.currentRecipe != null && this.currentRecipe.value().isVoidPerTickFailure()) this.reset();
@@ -165,8 +166,8 @@ public class MachineProcessorCore implements ISyncableStuff {
       });
     }
 
-    for (Iterator<RequirementWithFunction> iterator = this.currentProcessRequirements.iterator(); iterator.hasNext(); ) {
-      RequirementWithFunction requirement = iterator.next();
+    for (Iterator<RequirementWithFunction<?, ?, ?>> iterator = this.currentProcessRequirements.iterator(); iterator.hasNext(); ) {
+      RequirementWithFunction<?, ?, ?> requirement = iterator.next();
       if (!requirement.requirement().shouldSkip(this.rand, this.context)) {
         CraftingResult result = requirement.process(this.tile.getComponentManager(), this.context);
         if (!result.isSuccess()) {
@@ -188,8 +189,8 @@ public class MachineProcessorCore implements ISyncableStuff {
     if (this.currentProcessRequirements.isEmpty())
       this.currentProcessRequirements.addAll(this.requirementList.getTickableRequirements());
 
-    for (Iterator<RequirementWithFunction> iterator = this.currentProcessRequirements.iterator(); iterator.hasNext(); ) {
-      RequirementWithFunction requirement = iterator.next();
+    for (Iterator<RequirementWithFunction<?, ?, ?>> iterator = this.currentProcessRequirements.iterator(); iterator.hasNext(); ) {
+      RequirementWithFunction<?, ?, ?> requirement = iterator.next();
       if (!requirement.requirement().shouldSkip(this.rand, this.context)) {
         CraftingResult result = requirement.process(this.tile.getComponentManager(), this.context);
         if (!result.isSuccess()) {

@@ -6,6 +6,7 @@ import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
+import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -16,12 +17,12 @@ import java.util.function.Supplier;
 public class CraftingContext implements ICraftingContext {
 
   private final MachineControllerEntity tile;
-  private final RecipeHolder<? extends MachineRecipe> recipe;
+  private final RecipeHolder<MachineRecipe> recipe;
   private final Supplier<Float> progressTimeGetter;
   private final int core;
   private float baseSpeed = 1.0f;
 
-  public CraftingContext(MachineControllerEntity tile, RecipeHolder<? extends MachineRecipe> recipe, Supplier<Float> progressTimeGetter, int core) {
+  public CraftingContext(MachineControllerEntity tile, RecipeHolder<MachineRecipe> recipe, Supplier<Float> progressTimeGetter, int core) {
     this.tile = tile;
     this.recipe = recipe;
     this.progressTimeGetter = progressTimeGetter;
@@ -76,35 +77,35 @@ public class CraftingContext implements ICraftingContext {
   }
 
   @Override
-  public long getIntegerModifiedValue(float value, IRequirement<?, ?> requirement) {
+  public <C extends MachineComponent<T>, T> long getIntegerModifiedValue(float value, IRequirement<C, T> requirement) {
     return Math.round(getModifiedValue(value, requirement));
   }
 
   @Override
-  public long getPerTickIntegerModifiedValue(float value, IRequirement<?, ?> requirement) {
+  public <C extends MachineComponent<T>, T> long getPerTickIntegerModifiedValue(float value, IRequirement<C, T> requirement) {
     return Math.round(getPerTickModifiedValue(value, requirement));
   }
 
   @Override
-  public List<RecipeModifier> getModifiers(RequirementType<?, ?> target) {
+  public <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> List<RecipeModifier<R, C, T>> getModifiers(RequirementType<R, C, T> target) {
     return tile.getComponentManager().getModifiers(target);
   }
 
   @Override
-  public float getModifiedValue(float value, IRequirement<?, ?> requirement) {
+  public <C extends MachineComponent<T>, T> float getModifiedValue(float value, IRequirement<C, T> requirement) {
     return getModifiedValue(value, requirement.getType(), requirement.getMode());
   }
 
   @Override
-  public float getPerTickModifiedValue(float value, IRequirement<?, ?> requirement) {
+  public <C extends MachineComponent<T>, T> float getPerTickModifiedValue(float value, IRequirement<C, T> requirement) {
     if(this.getRemainingTime() > 0)
       return getModifiedValue(value, requirement) * Math.min(this.getModifiedSpeed(), this.getRemainingTime());
     return getModifiedValue(value, requirement) * this.getModifiedSpeed();
   }
 
-  private float getModifiedValue(float value, RequirementType<?, ?> type, IOType mode) {
+  private <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> float getModifiedValue(float value, RequirementType<R, C, T> type, IOType mode) {
     float modified = value;
-    var modifiers = tile.getComponentManager().getModifiers(type);
+    List<RecipeModifier<R, C, T>> modifiers = tile.getComponentManager().getModifiers(type);
     for (var modifier : modifiers) {
       if (modifier.shouldApply(type, mode)) {
         modified = modifier.apply(modified);

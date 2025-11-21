@@ -49,7 +49,7 @@ public class RequirementDimension implements IRequirement<DimensionComponent, Re
   }
 
   @Override
-  public RequirementType<RequirementDimension, ResourceLocation> getType() {
+  public RequirementType<RequirementDimension, DimensionComponent, ResourceLocation> getType() {
     return RequirementTypeRegistration.DIMENSION.get();
   }
 

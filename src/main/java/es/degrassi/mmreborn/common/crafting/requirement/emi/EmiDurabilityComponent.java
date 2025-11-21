@@ -39,7 +39,7 @@ public class EmiDurabilityComponent extends EmiComponent<ItemStack, RecipeRequir
   private final List<ItemStack> items;
   public EmiDurabilityComponent(RecipeRequirement<DurabilityComponent, RequirementDurability, IOInventory> requirement) {
     super(requirement, 36, 0);
-    this.ingredient = EmiIngredientRegistry.getIngredient(requirement.getType()).create(requirement);
+    this.ingredient = EmiIngredientRegistry.create(requirement);
     this.items = generateWithDurability(requirement.requirement().ingredient);
   }
 

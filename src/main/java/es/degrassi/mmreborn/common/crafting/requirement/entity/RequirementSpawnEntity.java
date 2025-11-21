@@ -32,7 +32,7 @@ public class RequirementSpawnEntity extends RequirementEntity {
   }
 
   @Override
-  public RequirementType<RequirementSpawnEntity, EntityHandler> getType() {
+  public RequirementType<RequirementSpawnEntity, EntityComponent, EntityHandler> getType() {
     return RequirementTypeRegistration.SPAWN_ENTITY.get();
   }
 

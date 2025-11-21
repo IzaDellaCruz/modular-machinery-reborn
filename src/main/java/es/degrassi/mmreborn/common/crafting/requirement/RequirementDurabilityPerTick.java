@@ -49,7 +49,7 @@ public class RequirementDurabilityPerTick implements IRequirement<DurabilityComp
   }
 
   @Override
-  public RequirementType<RequirementDurabilityPerTick, IOInventory> getType() {
+  public RequirementType<RequirementDurabilityPerTick, DurabilityComponent, IOInventory> getType() {
     return RequirementTypeRegistration.DURABILITY_PER_TICK.get();
   }
 

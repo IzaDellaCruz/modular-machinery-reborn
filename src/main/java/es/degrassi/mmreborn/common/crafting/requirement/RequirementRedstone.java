@@ -33,7 +33,7 @@ public class RequirementRedstone implements IRequirement<RedstoneComponent, Inte
   }
 
   @Override
-  public RequirementType<RequirementRedstone, Integer> getType() {
+  public RequirementType<RequirementRedstone, RedstoneComponent, Integer> getType() {
     return RequirementTypeRegistration.REDSTONE.get();
   }
 

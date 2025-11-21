@@ -12,16 +12,16 @@ import net.neoforged.fml.event.IModBusEvent;
 import java.util.Map;
 
 public class RegisterEmiRequirementToIngredientEvent extends Event implements IModBusEvent {
-  private final Map<RequirementType<?, ?>, EmiIngredientFactory<?>> stacks = Maps.newHashMap();
+  private final Map<RequirementType<?, ?, ?>, EmiIngredientFactory<?, ?, ?, ?>> stacks = Maps.newHashMap();
 
-  public <R extends RecipeRequirement<T, C, X>, C extends IRequirement<T, X>, T extends MachineComponent<X>, X> void register(RequirementType<C, X> requirement, EmiIngredientFactory<R> factory) {
+  public <R extends RecipeRequirement<T, C, X>, C extends IRequirement<T, X>, T extends MachineComponent<X>, X> void register(RequirementType<C, T, X> requirement, EmiIngredientFactory<R, C, T, X> factory) {
     if (stacks.containsKey(requirement)) {
       throw new IllegalArgumentException("Emi ingredient already registered for requirement: " + requirement.getCodec().name());
     }
     stacks.put(requirement, factory);
   }
 
-  public Map<RequirementType<?, ?>, EmiIngredientFactory<?>> getStacks() {
+  public Map<RequirementType<?, ?, ?>, EmiIngredientFactory<?, ?, ?, ?>> getStacks() {
     return ImmutableMap.copyOf(stacks);
   }
 }

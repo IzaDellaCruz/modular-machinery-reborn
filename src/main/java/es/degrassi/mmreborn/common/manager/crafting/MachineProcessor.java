@@ -102,11 +102,15 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
 
   @Override
   public void setMachineInventoryChanged() {
+    if (!this.tile.getStatus().isCrafting())
+      this.tile.setStatus(MachineStatus.IDLE);
     this.cores.forEach(MachineProcessorCore::setComponentChanged);
   }
 
   @Override
   public void setSearchImmediately() {
+    if (!this.tile.getStatus().isCrafting())
+      this.tile.setStatus(MachineStatus.IDLE);
     this.cores.forEach(MachineProcessorCore::setSearchImmediately);
   }
 

@@ -12,7 +12,7 @@ import net.neoforged.fml.event.IModBusEvent;
 import java.util.Map;
 
 public class RegisterEmiComponentEvent extends Event implements IModBusEvent {
-  private final Map<RequirementType<?, ?>, EmiComponentFactory<?, ?, ?, ?, ?>> components = Maps.newHashMap();
+  private final Map<RequirementType<?, ?, ?>, EmiComponentFactory<?, ?, ?, ?, ?>> components = Maps.newHashMap();
 
   public <
       R extends RecipeRequirement<C, T, X>,
@@ -20,13 +20,13 @@ public class RegisterEmiComponentEvent extends Event implements IModBusEvent {
       C extends MachineComponent<X>,
       X,
       Y
-  > void register(RequirementType<T, X> requirement, EmiComponentFactory<R, T, C, X, Y> component) {
+  > void register(RequirementType<T, C, X> requirement, EmiComponentFactory<R, T, C, X, Y> component) {
     if (components.containsKey(requirement))
       throw new IllegalArgumentException("Emi component already registered for requirement: " + requirement.getCodec().name());
     components.put(requirement, component);
   }
 
-  public Map<RequirementType<?, ?>, EmiComponentFactory<?, ?, ?, ?, ?>> getComponents() {
+  public Map<RequirementType<?, ?, ?>, EmiComponentFactory<?, ?, ?, ?, ?>> getComponents() {
     return ImmutableMap.copyOf(components);
   }
 }

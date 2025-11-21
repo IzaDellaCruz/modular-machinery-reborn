@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.api.integration.jei.JeiComponentFactory;
 import es.degrassi.mmreborn.api.integration.jei.RegisterJeiComponentEvent;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
+import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiComponent;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
 import net.neoforged.fml.ModLoader;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class JeiComponentRegistry {
   private JeiComponentRegistry() {}
-  private static Map<RequirementType<?, ?>, JeiComponentFactory<?, ?>> components;
+  private static Map<RequirementType<?, ?, ?>, JeiComponentFactory<?, ?>> components;
 
   public static void init() {
     RegisterJeiComponentEvent event = new RegisterJeiComponentEvent();
@@ -20,7 +21,7 @@ public class JeiComponentRegistry {
     components = event.getComponents();
   }
 
-  public static boolean hasJeiComponent(RequirementType<?, ?> requirement) {
+  public static boolean hasJeiComponent(RequirementType<?, ?, ?> requirement) {
     return components.containsKey(requirement);
   }
 
@@ -30,7 +31,17 @@ public class JeiComponentRegistry {
       C extends MachineComponent<X>,
       T extends IRequirement<C, X>,
       X
-  > JeiComponentFactory<R, X> getJeiComponent(RequirementType<T, X> requirement) {
+  > JeiComponentFactory<R, X> getJeiComponent(RequirementType<T, C, X> requirement) {
     return (JeiComponentFactory<R, X>) components.get(requirement);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <
+      R extends RecipeRequirement<C, T, X>,
+      C extends MachineComponent<X>,
+      T extends IRequirement<C, X>,
+      X
+      > JeiComponent<X, R> create(R requirement) {
+    return ((JeiComponentFactory<R, X>) components.get(requirement.getType())).create(requirement);
   }
 }

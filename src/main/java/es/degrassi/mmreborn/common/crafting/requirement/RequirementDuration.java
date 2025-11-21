@@ -32,7 +32,7 @@ public class RequirementDuration implements IRequirement<DurationComponent, Void
   }
 
   @Override
-  public RequirementType<RequirementDuration, Void> getType() {
+  public RequirementType<RequirementDuration, DurationComponent, Void> getType() {
     return RequirementTypeRegistration.SPEED.get();
   }
 

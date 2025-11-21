@@ -45,7 +45,7 @@ public class RequirementBiome implements IRequirement<BiomeComponent, List<Resou
     this.actionType = IOType.INPUT;
   }
 
-  public RequirementType<RequirementBiome, List<ResourceLocation>> getType() {
+  public RequirementType<RequirementBiome, BiomeComponent, List<ResourceLocation>> getType() {
     return RequirementTypeRegistration.BIOME.get();
   }
 

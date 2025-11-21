@@ -40,7 +40,7 @@ public class RequirementEnergyPerTick implements IRequirement<EnergyComponent, I
   }
 
   @Override
-  public RequirementType<RequirementEnergyPerTick, IEnergyHandler> getType() {
+  public RequirementType<RequirementEnergyPerTick, EnergyComponent, IEnergyHandler> getType() {
     return RequirementTypeRegistration.ENERGY_PER_TICK.get();
   }
 

@@ -39,7 +39,7 @@ public class RequirementFluid implements IRequirement<FluidComponent, HybridTank
   }
 
   @Override
-  public RequirementType<RequirementFluid, HybridTank> getType() {
+  public RequirementType<RequirementFluid, FluidComponent, HybridTank> getType() {
     return RequirementTypeRegistration.FLUID.get();
   }
 

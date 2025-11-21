@@ -44,7 +44,7 @@ public class RequirementStructure implements IRequirement<StructureComponent, St
   }
 
   @Override
-  public RequirementType<RequirementStructure, Structure> getType() {
+  public RequirementType<RequirementStructure, StructureComponent, Structure> getType() {
     return RequirementTypeRegistration.STRUCTURE.get();
   }
 

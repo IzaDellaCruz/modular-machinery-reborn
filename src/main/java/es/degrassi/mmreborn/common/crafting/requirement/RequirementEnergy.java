@@ -40,7 +40,7 @@ public class RequirementEnergy implements IRequirement<EnergyComponent, IEnergyH
   }
 
   @Override
-  public RequirementType<RequirementEnergy, IEnergyHandler> getType() {
+  public RequirementType<RequirementEnergy, EnergyComponent, IEnergyHandler> getType() {
     return RequirementTypeRegistration.ENERGY.get();
   }
 

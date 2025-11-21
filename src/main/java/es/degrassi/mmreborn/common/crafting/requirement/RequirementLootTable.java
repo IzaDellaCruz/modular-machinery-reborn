@@ -58,7 +58,7 @@ public class RequirementLootTable implements IRequirement<ItemComponent, IOInven
   }
 
   @Override
-  public RequirementType<RequirementLootTable, IOInventory> getType() {
+  public RequirementType<RequirementLootTable, ItemComponent, IOInventory> getType() {
     return RequirementTypeRegistration.LOOT_TABLE.get();
   }
 

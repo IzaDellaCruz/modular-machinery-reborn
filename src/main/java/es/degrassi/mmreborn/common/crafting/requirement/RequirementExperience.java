@@ -39,7 +39,7 @@ public class RequirementExperience implements IRequirement<ExperienceComponent, 
   }
 
   @Override
-  public RequirementType<RequirementExperience, IExperienceHandler> getType() {
+  public RequirementType<RequirementExperience, ExperienceComponent, IExperienceHandler> getType() {
     return RequirementTypeRegistration.EXPERIENCE.get();
   }
 

@@ -25,12 +25,12 @@ public class ModifierReplacement {
   ).apply(instance, ModifierReplacement::new), "Modifier Replacement");
 
   private final BlockIngredient info;
-  private final List<RecipeModifier> modifier;
+  private final List<RecipeModifier<?, ?, ?>> modifier;
   private final List<Component> description;
   @Getter
   private final BlockPos position;
 
-  public ModifierReplacement(BlockIngredient info, List<RecipeModifier> modifier, BlockPos pos) {
+  public ModifierReplacement(BlockIngredient info, List<RecipeModifier<?, ?, ?>> modifier, BlockPos pos) {
     this.info = info;
     this.modifier = modifier;
     this.position = pos;
@@ -43,7 +43,7 @@ public class ModifierReplacement {
     return info;
   }
 
-  public List<RecipeModifier> getModifiers() {
+  public List<RecipeModifier<?, ?, ?>> getModifiers() {
     return Collections.unmodifiableList(modifier);
   }
 

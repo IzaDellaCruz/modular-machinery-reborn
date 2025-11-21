@@ -39,7 +39,7 @@ public class EmiDurabilityPerTickComponent extends EmiComponent<ItemStack, Recip
   private final List<ItemStack> items;
   public EmiDurabilityPerTickComponent(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, IOInventory> requirement) {
     super(requirement, 36, 0);
-    this.ingredient = EmiIngredientRegistry.getIngredient(requirement.getType()).create(requirement);
+    this.ingredient = EmiIngredientRegistry.create(requirement);
     this.items = generateWithDurability(requirement.requirement().ingredient);
   }
 

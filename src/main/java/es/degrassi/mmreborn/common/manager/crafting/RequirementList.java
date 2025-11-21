@@ -4,60 +4,63 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
 import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.manager.ComponentManager;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RequirementList<C extends MachineComponent<?>> implements IRequirementList<C> {
+public class RequirementList<R extends IRequirement<C, T>, C extends MachineComponent<T>, T> implements IRequirementList<C> {
 
   @Getter
-  private final Map<Double, List<RequirementWithFunction>> processRequirements = Maps.newHashMap();
+  private final Map<Double, List<RequirementWithFunction<R, C, T>>> processRequirements = Maps.newHashMap();
   @Getter
-  private final List<RequirementWithFunction> tickableRequirements = Lists.newArrayList();
+  private final List<RequirementWithFunction<R, C, T>> tickableRequirements = Lists.newArrayList();
   @Getter
-  private final List<RequirementWithFunction> worldConditions = Lists.newArrayList();
+  private final List<RequirementWithFunction<R, C, T>> worldConditions = Lists.newArrayList();
   @Getter
-  private final List<RequirementWithFunction> inventoryConditions = Lists.newArrayList();
+  private final List<RequirementWithFunction<R, C, T>> inventoryConditions = Lists.newArrayList();
+  private RecipeRequirement<C, R, T> currentRequirement;
 
-  @Setter
-  private RecipeRequirement<? extends MachineComponent<?>, ?, ?> currentRequirement;
+  @SuppressWarnings("unchecked")
+  public void setCurrentRequirement(RecipeRequirement<?, ?, ?> requirement) {
+    this.currentRequirement = (RecipeRequirement<C, R, T>) requirement;
+  }
 
   @Override
   public void processOnStart(RequirementFunction<C> function) {
-    this.processRequirements.computeIfAbsent(0.0D, delay -> new ArrayList<>()).add(new RequirementWithFunction(this.currentRequirement, function));
+    this.processRequirements.computeIfAbsent(0.0D, delay -> new ArrayList<>()).add(new RequirementWithFunction<>(this.currentRequirement, function));
   }
 
   @Override
   public void processOnEnd(RequirementFunction<C> function) {
-    this.processRequirements.computeIfAbsent(1.0D, delay -> new ArrayList<>()).add(new RequirementWithFunction(this.currentRequirement, function));
+    this.processRequirements.computeIfAbsent(1.0D, delay -> new ArrayList<>()).add(new RequirementWithFunction<>(this.currentRequirement, function));
   }
 
   @Override
   public void processEachTick(RequirementFunction<C> function) {
-    this.tickableRequirements.add(new RequirementWithFunction(this.currentRequirement, function));
+    this.tickableRequirements.add(new RequirementWithFunction<>(this.currentRequirement, function));
   }
 
   @Override
   public void worldCondition(RequirementFunction<C> function) {
-    this.worldConditions.add(new RequirementWithFunction(this.currentRequirement, function));
+    this.worldConditions.add(new RequirementWithFunction<>(this.currentRequirement, function));
   }
 
   @Override
   public void inventoryCondition(RequirementFunction<C> function) {
-    this.inventoryConditions.add(new RequirementWithFunction(this.currentRequirement, function));
+    this.inventoryConditions.add(new RequirementWithFunction<>(this.currentRequirement, function));
   }
 
   @Override
   public void processDelayed(double baseDelay, RequirementFunction<C> function) {
-    this.processRequirements.computeIfAbsent(baseDelay, delay -> new ArrayList<>()).add(new RequirementWithFunction(this.currentRequirement, function));
+    this.processRequirements.computeIfAbsent(baseDelay, delay -> new ArrayList<>()).add(new RequirementWithFunction<>(this.currentRequirement, function));
   }
 
   @Override
@@ -65,13 +68,16 @@ public class RequirementList<C extends MachineComponent<?>> implements IRequirem
     this.processDelayed(mode.isInput() ? 0.0D : 1.0D, function);
   }
 
-  public record RequirementWithFunction(RecipeRequirement<?, ?, ?> requirement, RequirementFunction<?> function) {
-    @SuppressWarnings({"rawtypes", "unchecked"})
+  public record RequirementWithFunction<
+      R extends IRequirement<C, T>,
+      C extends MachineComponent<T>,
+      T
+      >(RecipeRequirement<C, R, T> requirement, RequirementFunction<C> function) {
     public CraftingResult process(ComponentManager manager, ICraftingContext context) {
-      MachineComponent<?> component = requirement.findComponent(manager, context);
+      C component = requirement.findComponent(manager, context);
       if (component == null)
         return CraftingResult.error(requirement.requirement().getMissingComponentErrorMessage(requirement.requirement().getMode()));
-      return ((RequirementFunction)this.function).process(component, context);
+      return this.function.process(component, context);
     }
   }
 }

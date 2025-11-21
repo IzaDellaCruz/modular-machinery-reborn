@@ -1,12 +1,14 @@
 package es.degrassi.mmreborn.common.crafting.modifier;
 
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementDuration;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.IOType;
+import es.degrassi.mmreborn.common.machine.component.DurationComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
-public class SpeedRecipeModifier extends RecipeModifier {
+public class SpeedRecipeModifier extends RecipeModifier<RequirementDuration, DurationComponent, Void> {
 
   private final OPERATION operation;
 
@@ -16,7 +18,7 @@ public class SpeedRecipeModifier extends RecipeModifier {
   }
 
   @Override
-  public boolean shouldApply(RequirementType<?, ?> type, IOType mode) {
+  public boolean shouldApply(RequirementType<RequirementDuration, DurationComponent, Void> type, IOType mode) {
     return type == this.requirementType
         && this.chance > RAND.nextDouble();
   }
@@ -32,10 +34,7 @@ public class SpeedRecipeModifier extends RecipeModifier {
 
   @Override
   public Component getDefaultTooltip() {
-    if (requirementType == RequirementTypeRegistration.SPEED.get()
-        || requirementType == RequirementTypeRegistration.LOOT_TABLE.get()
-        || requirementType == RequirementTypeRegistration.DURABILITY.get()
-    )
+    if (requirementType == RequirementTypeRegistration.SPEED.get())
       return Component.translatable("mmr.recipe.modifier." +  getTargetValue() + "." + operation, modifier);
     return Component.translatable("mmr.recipe.modifier." + getTargetValue() + "." + operation, modifier,
         getMode().getSerializedName(), chance);

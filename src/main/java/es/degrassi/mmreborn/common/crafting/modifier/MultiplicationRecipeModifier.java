@@ -1,14 +1,20 @@
 package es.degrassi.mmreborn.common.crafting.modifier;
 
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.IOType;
+import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
-public class MultiplicationRecipeModifier extends RecipeModifier {
+public class MultiplicationRecipeModifier<
+    R extends IRequirement<C, T>,
+    C extends MachineComponent<T>,
+    T
+    > extends RecipeModifier<R, C, T> {
 
-  public MultiplicationRecipeModifier(RequirementType<?, ?> requirementType, IOType mode, float modifier,
+  public MultiplicationRecipeModifier(RequirementType<R, C, T> requirementType, IOType mode, float modifier,
                                       float chance, float max, float min) {
     super(requirementType, mode, modifier, chance, max, min);
   }

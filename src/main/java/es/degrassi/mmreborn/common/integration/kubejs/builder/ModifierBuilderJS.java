@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ModifierBuilderJS {
   private BlockIngredient ingredient;
-  private final List<RecipeModifier> modifiers = Lists.newArrayList();
+  private final List<RecipeModifier<?, ?, ?>> modifiers = Lists.newArrayList();
   private BlockPos position;
 
   @HideFromJS
@@ -57,7 +57,7 @@ public class ModifierBuilderJS {
   }
 
   public static class RecipeModifierBuilderJS {
-    private RequirementType<?, ?> target = RequirementTypeRegistration.SPEED.get();
+    private RequirementType<?, ?, ?> target = RequirementTypeRegistration.SPEED.get();
     private IOType mode = IOType.INPUT;
     private float modifier;
     private OPERATION operation = OPERATION.ADDITION;
@@ -120,12 +120,12 @@ public class ModifierBuilderJS {
       return this;
     }
 
-    public RecipeModifier build() {
+    public RecipeModifier<?, ?, ?> build() {
       if (target == RequirementTypeRegistration.SPEED.get())
         return new SpeedRecipeModifier(operation, modifier, chance, max, min);
       return switch (operation) {
-        case ADDITION -> new AdditionRecipeModifier(target, mode, modifier, chance, max, min);
-        case MULTIPLICATION -> new MultiplicationRecipeModifier(target, mode, modifier, chance, max, min);
+        case ADDITION -> new AdditionRecipeModifier<>(target, mode, modifier, chance, max, min);
+        case MULTIPLICATION -> new MultiplicationRecipeModifier<>(target, mode, modifier, chance, max, min);
       };
     }
   }

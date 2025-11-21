@@ -42,7 +42,7 @@ public class RequirementHealthEntity extends RequirementEntity {
   }
 
   @Override
-  public RequirementType<RequirementHealthEntity, EntityHandler> getType() {
+  public RequirementType<RequirementHealthEntity, EntityComponent, EntityHandler> getType() {
     return RequirementTypeRegistration.HEATH_ENTITY.get();
   }
 

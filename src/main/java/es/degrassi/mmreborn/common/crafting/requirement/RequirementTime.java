@@ -37,7 +37,7 @@ public class RequirementTime implements IRequirement<TimeComponent, IntRange> {
   }
 
   @Override
-  public RequirementType<RequirementTime, IntRange> getType() {
+  public RequirementType<RequirementTime, TimeComponent, IntRange> getType() {
     return RequirementTypeRegistration.TIME.get();
   }
 

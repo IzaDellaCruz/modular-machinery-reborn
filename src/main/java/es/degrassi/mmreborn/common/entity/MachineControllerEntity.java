@@ -178,7 +178,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     tryPause();
 
     if (!status.isMissingStructure()) {
-      if (isPaused()) return;
+      if (isPaused() || status.isErrored()) return;
       try {
         processor.tick();
       } catch (ComponentNotFoundException e) {
@@ -217,17 +217,11 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
     lastCheckTick = gameTime;
     if (!getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))) {
-      componentManager.reset();
-      processor.reset();
       setStatus(MachineStatus.MISSING_STRUCTURE);
     } else {
       componentManager.updateComponents();
       distributeCasingColor();
-      if (!status.isCrafting()) {
-        setStatus(MachineStatus.IDLE);
-      } else {
-        setStatus(status);
-      }
+      setStatus(MachineStatus.IDLE);
     }
     setRequestModelUpdate(true);
     setChanged();

@@ -60,24 +60,21 @@ public class MMREmiRecipe extends BasicEmiRecipe {
         .stream()
         .filter(requirement -> requirement.requirement().getMode().isInput())
         .filter(requirement -> EmiIngredientRegistry.hasEmiIngredient(requirement.getType()))
-        .map(requirement -> requirement.castRequirement(requirement))
-        .map(requirement -> EmiIngredientRegistry.getIngredient(requirement.getType()).create(requirement))
+        .map(EmiIngredientRegistry::create)
         .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     this.outputs = this.recipe
         .getRequirements()
         .stream()
         .filter(requirement -> !requirement.requirement().getMode().isInput())
         .filter(requirement -> EmiStackRegistry.hasEmiStack(requirement.getType()))
-        .map(requirement -> requirement.castRequirement(requirement))
-        .map(requirement -> EmiStackRegistry.getStack(requirement.getType()).create(requirement))
+        .map(EmiStackRegistry::create)
         .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     this.catalysts = this.recipe
         .getRequirements()
         .stream()
         .filter(requirement -> requirement.requirement().getMode().isInput())
         .filter(requirement -> EmiStackRegistry.hasEmiStack(requirement.getType()))
-        .map(requirement -> requirement.castRequirement(requirement))
-        .map(requirement -> EmiStackRegistry.getStack(requirement.getType()).create(requirement))
+        .map(EmiStackRegistry::create)
         .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     this.infoCache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
       @Override
@@ -140,8 +137,7 @@ public class MMREmiRecipe extends BasicEmiRecipe {
     (recipe.getJeiRequirements().isEmpty() ? recipe.getRequirements() : recipe.getJeiRequirements())
         .stream()
         .filter(component -> EmiComponentRegistry.hasEmiComponent(component.getType()))
-        .map(requirement -> requirement.castRequirement(requirement))
-        .map(component -> EmiComponentRegistry.getEmiComponent(component.getType()).create(component))
+        .map(EmiComponentRegistry::create)
         .forEach(requirement -> requirement.addWidgets(widgets, this));
 
     Language language = Language.getInstance();
@@ -188,6 +184,7 @@ public class MMREmiRecipe extends BasicEmiRecipe {
       draw.fill(-3, rowY, width + 3, rowY + 1, 0x30000000);
     }
   }
+
   private static class DisplayInfoWidget extends DrawableWidget {
     private final ScreenPosition pos;
     private final ScreenRectangle area;

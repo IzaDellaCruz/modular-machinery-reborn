@@ -37,7 +37,7 @@ public abstract class RequirementEntity implements IRequirement<EntityComponent,
   }
 
   @Override
-  public ComponentType getComponentType() {
+  public ComponentType<EntityHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_ENTITY.get();
   }
 

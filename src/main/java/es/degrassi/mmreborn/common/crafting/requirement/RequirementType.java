@@ -13,16 +13,20 @@ import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nullable;
 
 @Getter
-public class RequirementType<T extends IRequirement<? extends MachineComponent<X>, X>, X> {
+public class RequirementType<
+    T extends IRequirement<C, X>,
+    C extends MachineComponent<X>,
+    X
+    > {
 
-  public static final ResourceKey<Registry<RequirementType<? extends IRequirement<? extends MachineComponent<?>, ?>, ?>>> REGISTRY_KEY =
+  public static final ResourceKey<Registry<RequirementType<? extends IRequirement<? extends MachineComponent<?>, ?>, ? extends MachineComponent<?>, ?>>> REGISTRY_KEY =
       ResourceKey.createRegistryKey(ModularMachineryReborn.rl("requirement_type"));
 
   public static <
       T extends IRequirement<C, X>,
       C extends MachineComponent<X>,
       X
-      > RequirementType<T, X> world(NamedCodec<T> codec) {
+      > RequirementType<T, C, X> world(NamedCodec<T> codec) {
     return new RequirementType<>(codec, true);
   }
 
@@ -30,7 +34,7 @@ public class RequirementType<T extends IRequirement<? extends MachineComponent<X
       T extends IRequirement<C, X>,
       C extends MachineComponent<X>,
       X
-    > RequirementType<T, X> inventory(NamedCodec<T> codec) {
+    > RequirementType<T, C, X> inventory(NamedCodec<T> codec) {
     return new RequirementType<>(codec, false);
   }
 

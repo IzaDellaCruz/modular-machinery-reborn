@@ -36,7 +36,7 @@ public class RequirementKillEntity extends RequirementEntity {
   }
 
   @Override
-  public RequirementType<RequirementKillEntity, EntityHandler> getType() {
+  public RequirementType<RequirementKillEntity, EntityComponent, EntityHandler> getType() {
     return RequirementTypeRegistration.KILL_ENTITY.get();
   }
 

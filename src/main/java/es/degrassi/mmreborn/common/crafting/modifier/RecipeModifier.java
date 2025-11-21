@@ -5,8 +5,10 @@ import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.codec.RegistrarCodec;
+import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.IOType;
+import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
@@ -17,9 +19,13 @@ import net.minecraft.util.RandomSource;
 import java.util.List;
 
 @Getter
-public abstract class RecipeModifier implements IRecipeModifier {
+public abstract class RecipeModifier<
+      R extends IRequirement<C, T>,
+      C extends MachineComponent<T>,
+      T
+    > implements IRecipeModifier<R, C, T> {
 
-  public static final NamedCodec<RecipeModifier> CODEC = NamedCodec.record(energyModifierInstance ->
+  public static final NamedCodec<RecipeModifier<?, ?, ?>> CODEC = NamedCodec.record(energyModifierInstance ->
       energyModifierInstance.group(
           RegistrarCodec.REQUIREMENT_NEW.fieldOf("requirement").forGetter(modifier -> modifier.requirementType),
           IOType.CODEC.fieldOf("mode").forGetter(modifier -> modifier.mode),
@@ -32,13 +38,13 @@ public abstract class RecipeModifier implements IRecipeModifier {
         if(requirement == RequirementTypeRegistration.SPEED.get())
           return new SpeedRecipeModifier(operation, modifier, chance, max, min);
         return switch (operation) {
-          case ADDITION -> new AdditionRecipeModifier(requirement, mode, modifier, chance, max, min);
-          case MULTIPLICATION -> new MultiplicationRecipeModifier(requirement, mode, modifier, chance, max, min);
+          case ADDITION -> new AdditionRecipeModifier<>(requirement, mode, modifier, chance, max, min);
+          case MULTIPLICATION -> new MultiplicationRecipeModifier<>(requirement, mode, modifier, chance, max, min);
         };
       }), "Recipe modifier"
   );
 
-  public static final List<RequirementType<?, ?>> blacklist = Lists.newArrayList();
+  public static final List<RequirementType<?, ?, ?>> blacklist = Lists.newArrayList();
 
   static {
     addToBlacklist(RequirementTypeRegistration.DIMENSION.get());
@@ -47,16 +53,20 @@ public abstract class RecipeModifier implements IRecipeModifier {
     addToBlacklist(RequirementTypeRegistration.TIME.get());
     addToBlacklist(RequirementTypeRegistration.CHUNKLOAD.get());
     addToBlacklist(RequirementTypeRegistration.FUNCTION.get());
+    addToBlacklist(RequirementTypeRegistration.CHECK_ENTITY.get());
+    addToBlacklist(RequirementTypeRegistration.KILL_ENTITY.get());
+    addToBlacklist(RequirementTypeRegistration.HEATH_ENTITY.get());
+    addToBlacklist(RequirementTypeRegistration.SPAWN_ENTITY.get());
   }
 
-  public static void addToBlacklist(RequirementType<?, ?> requirementType) {
+  public static void addToBlacklist(RequirementType<?, ?, ?> requirementType) {
     if (blacklist.contains(requirementType)) return;
     blacklist.add(requirementType);
   }
 
   public static final RandomSource RAND = RandomSource.create();
 
-  public final RequirementType<?, ?> requirementType;
+  public final RequirementType<R, C, T> requirementType;
   public final IOType mode;
   public final float modifier;
   public final float chance;
@@ -64,8 +74,8 @@ public abstract class RecipeModifier implements IRecipeModifier {
   public final float min;
   public final Component tooltip;
 
-  protected RecipeModifier(RequirementType<?, ?> requirementType, IOType mode, float modifier, float chance, float max,
-                   float min) {
+  protected RecipeModifier(RequirementType<R, C, T> requirementType, IOType mode, float modifier, float chance,
+                           float max, float min) {
     this.requirementType = requirementType;
     this.mode = mode;
     this.modifier = modifier;
@@ -76,7 +86,7 @@ public abstract class RecipeModifier implements IRecipeModifier {
   }
 
   @Override
-  public boolean shouldApply(RequirementType<?, ?> type, IOType mode) {
+  public boolean shouldApply(RequirementType<R, C, T> type, IOType mode) {
     return type == this.requirementType
         && mode == this.mode
         && this.chance > RAND.nextDouble();

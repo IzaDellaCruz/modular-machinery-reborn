@@ -30,7 +30,7 @@ public interface IRequirement<C extends MachineComponent<T>, T> {
    * This MUST return the same instance of the {@link RequirementType} as the one registered in the forge registry.
    * @return The type of this requirement.
    */
-  RequirementType<? extends IRequirement<C, T>, T> getType();
+  RequirementType<? extends IRequirement<C, T>, C, T> getType();
 
   /**
    * Used by the crafting process to find which component the requirement use.

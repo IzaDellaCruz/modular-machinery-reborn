@@ -102,7 +102,7 @@ public class RequirementItem implements IRequirement<ItemComponent, IOInventory>
   }
 
   @Override
-  public RequirementType<RequirementItem, IOInventory> getType() {
+  public RequirementType<RequirementItem, ItemComponent, IOInventory> getType() {
     return RequirementTypeRegistration.ITEM.get();
   }
 
