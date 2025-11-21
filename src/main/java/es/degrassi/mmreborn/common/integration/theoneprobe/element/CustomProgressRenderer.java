@@ -24,8 +24,7 @@ import java.util.function.Function;
 public class CustomProgressRenderer {
   private CustomProgressRenderer() {}
   private static final ResourceLocation ICONS = ResourceLocation.fromNamespaceAndPath("theoneprobe", "textures/gui/icons.png");
-  public static void render(IProgressStyle style, float current, float max, GuiGraphics graphics, int x, int y, int w,
-                            int h) {
+  public static void render(IProgressStyle style, float current, float max, GuiGraphics graphics, int x, int y, int w, int h) {
     if (style.isLifeBar()) {
       renderLifeBar(current, graphics, x, y, w, h);
     } else if (style.isArmorBar()) {

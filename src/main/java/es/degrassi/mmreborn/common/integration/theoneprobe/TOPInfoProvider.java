@@ -2,23 +2,41 @@ package es.degrassi.mmreborn.common.integration.theoneprobe;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.crafting.helper.CraftingStatus;
+import es.degrassi.mmreborn.common.entity.EffectDispenserEntity;
+import es.degrassi.mmreborn.common.entity.FuelTankEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
+import es.degrassi.mmreborn.common.entity.RedstonePortEntity;
+import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
+import es.degrassi.mmreborn.common.entity.base.IAutoEntity;
+import es.degrassi.mmreborn.common.entity.base.IAutoInputEntity;
+import es.degrassi.mmreborn.common.entity.base.IAutoOutputEntity;
 import es.degrassi.mmreborn.common.integration.theoneprobe.element.CustomProgress;
+import es.degrassi.mmreborn.common.integration.theoneprobe.element.FuelElement;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
+import es.degrassi.mmreborn.common.util.RomanNumber;
+import mcjty.theoneprobe.api.ElementAlignment;
+import mcjty.theoneprobe.api.ILayoutStyle;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.IProbeInfoProvider;
 import mcjty.theoneprobe.api.ITheOneProbe;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.apiimpl.styles.LayoutStyle;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProbe, Void> {
@@ -26,6 +44,7 @@ public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProb
   public Void apply(ITheOneProbe probe) {
     probe.registerProvider(this);
     probe.registerElementFactory(new CustomProgress.CustomProgressFactory());
+    probe.registerElementFactory(new FuelElement.FuelElementFactory());
     return null;
   }
 
@@ -40,9 +59,80 @@ public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProb
     if (tile instanceof MachineControllerEntity controller) {
       if (controller.isPaused()) {
         info.mcText(Component.translatable("gui.controller.status.paused").withStyle(ChatFormatting.DARK_RED));
-        return;
+      } else{
+        showCraftingInfo(controller, info);
       }
-      showCraftingInfo(controller, info);
+    }
+    if (tile instanceof ColorableMachineComponentEntity entity) {
+      if (entity instanceof FuelTankEntity e) addFuelInfo(e, info);
+      if (entity instanceof RedstonePortEntity e) addRedstoneInfo(e, info);
+      if (entity instanceof EffectDispenserEntity e) addEffectInfo(e, info);
+      if (entity instanceof IAutoEntity<?> e) addAutoInfo(e, info);
+    }
+  }
+
+  private void addAutoInfo(IAutoEntity<?> entity, IProbeInfo info) {
+    if (entity instanceof IAutoInputEntity auto) {
+      boolean autoInput = auto.isShouldAutoInput();
+      Component input = Component.translatable("mmr.tooltip.auto_input", Component.translatable("mmr.gui.tooltip.enabled." + autoInput).withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY);
+      info.mcText(input);
+    }
+
+    if (entity instanceof IAutoOutputEntity auto) {
+      boolean autoOutput = auto.isShouldAutoOutput();
+      Component output = Component.translatable("mmr.tooltip.auto_output", Component.translatable("mmr.gui.tooltip.enabled." + autoOutput).withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY);
+      info.mcText(output);
+    }
+  }
+
+  private void addFuelInfo(FuelTankEntity entity, IProbeInfo info) {
+    long amount = entity.getFuelHandler().getFuel();
+    long capacity = entity.getFuelHandler().getMaxFuel();
+    var percent = amount * 1f / capacity;
+    ChatFormatting currentColor = ChatFormatting.RED;
+    if (percent >= 0.80f) currentColor = ChatFormatting.GREEN;
+    else if (percent >= 0.30f) currentColor = ChatFormatting.GOLD;
+    info.horizontal(style())
+        .element(new FuelElement(percent))
+        .mcText(Component.translatable("tooltip.fuel_tank.tank", amount, capacity).withStyle(currentColor));
+  }
+
+  private void addRedstoneInfo(RedstonePortEntity entity, IProbeInfo info) {
+    Component text = null;
+    int amount = entity.getMode().isOutput()
+        ? entity.getOutputAmount()
+        : entity.provideComponent().getContainerProvider();
+    Component power = Component.literal("" + amount).withStyle(ChatFormatting.RED);
+    if (entity.getMode().isOutput()) {
+      if (amount > 0)
+        text = Component.translatable("mmr.tooltip.redstone.emit", power).withStyle(ChatFormatting.GRAY);
+    } else {
+      text = Component.translatable("mmr.tooltip.redstone.receive", power).withStyle(ChatFormatting.GRAY);
+    }
+    if (text != null) {
+      info.horizontal(style())
+          .item(new ItemStack(Items.REDSTONE), info.defaultItemStyle().bounds(8, 8))
+          .mcText(text);
+    }
+  }
+
+  private void addEffectInfo(EffectDispenserEntity entity, IProbeInfo info) {
+    if (entity.isApplyingEffect()) {
+      int radius = entity.getSize().radius;
+      boolean interdimensional = entity.getSize().interdimensional;
+      entity.getEffect().ifPresent(effect -> {
+        var level = RomanNumber.toRoman(effect.getAmplifier() + 1);
+        var stack = new ItemStack(Items.POTION);
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(PotionContents.getColor(List.of(effect))), List.of(effect)));
+        info.horizontal(style())
+            .item(stack)
+            .mcText(Component.translatable(effect.getDescriptionId()).append(" ").append(level).withStyle(ChatFormatting.DARK_AQUA));
+        if (interdimensional) {
+          info.mcText(Component.translatable("mmr.tooltip.effect.interdimensional").withStyle(ChatFormatting.GRAY));
+        } else {
+          info.mcText(Component.translatable("mmr.tooltip.effect", Component.literal(radius + "").withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY));
+        }
+      });
     }
   }
 
@@ -66,5 +156,9 @@ public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProb
         runningCores
     );
     info.mcText(component);
+  }
+
+  private ILayoutStyle style() {
+    return new LayoutStyle().spacing(4).alignment(ElementAlignment.ALIGN_CENTER).leftPadding(4);
   }
 }

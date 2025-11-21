@@ -6,14 +6,13 @@ import es.degrassi.mmreborn.common.entity.base.IAutoInputEntity;
 import es.degrassi.mmreborn.common.entity.base.IAutoOutputEntity;
 import es.degrassi.mmreborn.common.integration.jade.elements.FuelElement;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.BlockAccessor;
@@ -21,6 +20,9 @@ import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElementHelper;
+
+import java.util.List;
+import java.util.Optional;
 
 public class MachineHatchComponentProvider implements IBlockComponentProvider {
   public static final MachineHatchComponentProvider INSTANCE = new MachineHatchComponentProvider();
@@ -76,7 +78,9 @@ public class MachineHatchComponentProvider implements IBlockComponentProvider {
   private void addEffectInfo(IElementHelper helper, ITooltip tooltip, CompoundTag effectTag) {
     var effect = MobEffectInstance.load(effectTag.getCompound("instance"));
     if (effect != null) {
-      var stack = PotionContents.createItemStack(Items.POTION, Holder.direct(new Potion(effect)));
+      var stack = new ItemStack(Items.POTION);
+      stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(PotionContents.getColor(List.of(effect))), List.of(effect)));
+
       tooltip.add(helper.item(stack, 0.5f));
       tooltip.append(helper.spacer(4, 0));
       tooltip.append(helper.text(Component.translatable(effect.getDescriptionId()).append(" ").append(effectTag.getString("level")).withStyle(ChatFormatting.DARK_AQUA)).translate(new Vec2(0, 1)));
