@@ -1,10 +1,14 @@
 package es.degrassi.mmreborn.common.manager;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
-import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.ISyncable;
@@ -30,23 +34,24 @@ import es.degrassi.mmreborn.common.machine.component.ParallelComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
-import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
@@ -54,212 +59,251 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   @Getter
   private final MachineControllerEntity controller;
 
-  private final Map<BlockPos, MachineComponent<?>> foundComponents = Maps.newHashMap();
-  private final Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
-  private final Map<BlockPos, List<ModifierReplacement>> foundModifiers = Maps.newHashMap();
-  private final Map<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> foundModifiersValues = Maps.newHashMap();
+  public static final LoadingCache<MachineControllerEntity, List<BlockPos>> cache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
+    @Override
+    public @NotNull List<BlockPos> load(MachineControllerEntity key) {
+      BlockPos pos = key.getBlockPos();
+      return ModularMachineryReborn.MACHINES.getOrDefault(key.getId(), DynamicMachine.DUMMY)
+          .getPattern()
+          .getBlocksFiltered(key.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))
+          .entrySet()
+          .stream()
+          .filter(e -> !e.getValue().equals(BlockIngredient.MACHINE))
+          .map(Map.Entry::getKey)
+          .map(pos::offset)
+          .toList();
+    }
+  });
 
-  @Getter
-  @Accessors(makeFinal = true)
-  private final Set<BlockPos> cachedBlocks = Sets.newHashSet();
+  private final LoadingCache<BlockPos, Optional<MachineComponent<?>>> fC;
+  private final LoadingCache<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> fCV;
+  private final LoadingCache<BlockPos, List<ModifierReplacement>> fM;
+  private final LoadingCache<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> fMV;
 
   public ComponentManager(MachineControllerEntity entity) {
     this.controller = entity;
+    this.fC = CacheBuilder.newBuilder()
+        .build(new CacheLoader<>() {
+          @Override
+          public @NotNull Optional<MachineComponent<?>> load(BlockPos key) {
+            if (controller.getLevel() == null) return Optional.empty();
+            if (key.equals(controller.getBlockPos())) return Optional.of(new FunctionComponent(key));
+            if (controller.getLevel().getBlockEntity(key) instanceof MachineComponentEntity<?> e) {
+              return Optional.ofNullable(e.provideComponent());
+            }
+            return Optional.empty();
+          }
+        });
+    this.fCV = CacheBuilder.newBuilder()
+        .build(new CacheLoader<>() {
+          @Override
+          public @NotNull Map<IOType, List<MachineComponent<?>>> load(ComponentType<?> key) {
+            Map<IOType, List<MachineComponent<?>>> foundComponentsValues = Maps.newHashMap();
+            for (MachineComponent<?> comp :
+                fC.asMap()
+                    .values()
+                    .stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .filter(c -> c.getComponentType().equals(key))
+                    .toList()) {
+                foundComponentsValues.computeIfAbsent(comp.getIOType(), io -> Lists.newArrayList()).add(comp);
+            }
+            return foundComponentsValues;
+          }
+        });
+    this.fM = CacheBuilder.newBuilder()
+        .build(new CacheLoader<>() {
+          @Override
+          public @NotNull List<ModifierReplacement> load(BlockPos key) {
+            if (controller.getLevel() == null) return Collections.emptyList();
+            return controller.getFoundMachine()
+                .getPattern()
+                .getPattern()
+                .getModifiers(controller.getFacing())
+                .entrySet()
+                .stream()
+                .filter((entry) -> {
+                  BlockPos realPos = controller.getBlockPos().offset(entry.getKey());
+                  BlockInWorld biw = new BlockInWorld(controller.getLevel(), realPos, false);
+                  return (realPos.equals(key)
+                      && entry.getValue()
+                      .stream()
+                      .anyMatch(modifier -> modifier.getIngredient().getAll().stream().anyMatch(state -> state.test(biw))));
+                })
+                .map(Map.Entry::getValue)
+                .flatMap(List::stream)
+                .toList();
+          }
+        });
+    this.fMV = CacheBuilder.newBuilder()
+        .build(new CacheLoader<>() {
+          @Override
+          public @NotNull List<RecipeModifier<?, ?, ?>> load(RequirementType<?, ?, ?> key) {
+            return fM.asMap()
+                .values()
+                .stream()
+                .flatMap(List::stream)
+                .map(ModifierReplacement::getModifiers)
+                .flatMap(List::stream)
+                .filter(r -> r.getRequirementType().equals(key))
+                .toList();
+          }
+        });
   }
 
   public final void reset() {
-    cachedBlocks.forEach(block -> {
-      if (controller.getLevel().getBlockEntity(block) instanceof ColorableMachineComponentEntity entity) {
-        entity.getControllerPosSet().remove(controller.getBlockPos());
-        entity.setMachineColor(Config.machineColor);
-        if (entity instanceof TextureableMachineEntity e) e.resetTextures();
-        entity.setChanged();
-      }
-    });
-    foundComponents.clear();
-    foundModifiers.clear();
-    foundComponentsValues.clear();
-    foundModifiersValues.clear();
+    fC.invalidateAll();
+    fM.invalidateAll();
+    fCV.invalidateAll();
+    fMV.invalidateAll();
   }
 
-  public final void updateModifiers() {
-    if (controller.getFoundMachine() == DynamicMachine.DUMMY) return;
-    Level level = controller.getLevel();
-    if (level == null) return;
-    foundModifiers.clear();
-    foundModifiers.putAll(gatherModifiers());
-    foundModifiersValues.clear();
-    foundModifiersValues.putAll(filterModifiers());
-    controller.setChanged();
+  public final void resetWithColor() {
+    try {
+      for (BlockPos current : cache.get(controller).stream().toList()) {
+        if (Objects.requireNonNull(controller.getLevel()).getBlockEntity(current) instanceof ColorableMachineComponentEntity entity) {
+          entity.getControllerPosSet().remove(controller.getBlockPos());
+          entity.setMachineColor(Config.machineColor);
+          if (entity instanceof TextureableMachineEntity e) e.resetTextures();
+        }
+      }
+    } catch (ExecutionException | NullPointerException ignored) {}
+    fC.invalidateAll();
+    fM.invalidateAll();
+    fCV.invalidateAll();
+    fMV.invalidateAll();
   }
 
   public final void updateComponents() {
-    if (controller.getFoundMachine() == DynamicMachine.DUMMY)
-      return;
+    if (controller.getFoundMachine() == DynamicMachine.DUMMY) return;
     Level level = controller.getLevel();
     if (level == null) return;
-    reset();
-    foundComponents.putAll(gatherComponents());
-
+    resetWithColor();
+    cache.refresh(controller);
     if (controller.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
       controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
     } else if(!controller.getBlockState().getValue(BlockMachineComponent.CONNECT_TEXTURES)) {
       controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, true));
     }
-    foundComponents.forEach((pos, comp) -> {
-      var oldState = controller.getLevel().getBlockState(pos);
-      var entity = controller.getLevel().getBlockEntity(pos);
-      if (!(entity instanceof TextureableMachineEntity)) return;
-      var data = entity.getModelData();
-      if (!data.has(HatchBakedModel.TEXTURE_DATA)) return;
-      var state = oldState.setValue(BlockMachineComponent.CONNECT_TEXTURES,
-          data.get(HatchBakedModel.TEXTURE_DATA).hasDefaultTextures());
-      controller.getLevel().setBlockAndUpdate(pos, state);
-    });
-    foundComponentsValues.putAll(filter());
-    updateModifiers();
-    controller.getProcessor().setMachineInventoryChanged();
-    controller.setChanged();
+    try {
+      Set<ComponentType<?>> toRefreshComponent = Sets.newHashSet();
+      Set<RequirementType<?, ?, ?>> toRefreshRequirement = Sets.newHashSet();
+      cache.get(controller).forEach(pos -> {
+        var oldState = controller.getLevel().getBlockState(pos);
+        var entity = controller.getLevel().getBlockEntity(pos);
+        if (!(entity instanceof TextureableMachineEntity)) return;
+        var data = entity.getModelData();
+        if (!data.has(HatchBakedModel.TEXTURE_DATA)) return;
+        var state = oldState.setValue(BlockMachineComponent.CONNECT_TEXTURES,
+            data.get(HatchBakedModel.TEXTURE_DATA).hasDefaultTextures());
+        try {
+          if (entity instanceof MachineComponentEntity<?>) {
+            fC.refresh(pos);
+            fC.get(pos)
+                .map(MachineComponent::getComponentType)
+                .ifPresent(toRefreshComponent::add);
+            fM.refresh(pos);
+            fM.get(pos)
+                .stream()
+                .map(ModifierReplacement::getModifiers)
+                .flatMap(List::stream)
+                .map(RecipeModifier::getRequirementType)
+                .forEach(toRefreshRequirement::add);
+          }
+          toRefreshComponent.forEach(fCV::refresh);
+          toRefreshRequirement.forEach(fMV::refresh);
+        } catch (ExecutionException ignored) {}
+        controller.getLevel().setBlockAndUpdate(pos, state);
+      });
+      controller.setChanged();
+    } catch(ExecutionException ignored) {}
   }
 
-  private Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> filter() {
-    Map<ComponentType<?>, Map<IOType, List<MachineComponent<?>>>> foundComponentsValues = Maps.newHashMap();
-    for (MachineComponent<?> comp : foundComponents.values()) {
-      foundComponentsValues
-          .computeIfAbsent(comp.getComponentType(), t -> Maps.newHashMap())
-          .computeIfAbsent(comp.getIOType(), io -> Lists.newArrayList())
-          .add(comp);
-    }
-    return foundComponentsValues;
-  }
-
-  private Map<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> filterModifiers() {
-    Map<RequirementType<?, ?, ?>, List<RecipeModifier<?, ?, ?>>> foundModifiersValues = Maps.newHashMap();
-    for (var modifierList : foundModifiers.values()) {
-      modifierList.stream()
-          .map(ModifierReplacement::getModifiers)
-          .flatMap(List::stream)
-          .forEach(modifier -> {
-            foundModifiersValues.computeIfAbsent(modifier.getRequirementType(), t -> Lists.newArrayList())
-                .add(modifier);
-          });
-    }
-    return foundModifiersValues;
-  }
-
+  @SuppressWarnings("unchecked")
   public final List<MachineComponent<?>> getFoundComponentsList() {
-    if (foundComponents.isEmpty()) updateComponents();
-    return foundComponents.values()
+    return (List<MachineComponent<?>>) (Object) fC.asMap()
+        .values()
         .stream()
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .toList();
   }
 
   public List<ModifierReplacement> getFoundModifiersList() {
-    if (foundModifiers.isEmpty()) updateComponents();
-    return foundModifiers.values().stream().flatMap(List::stream).toList();
+    return fM.asMap()
+        .values()
+        .stream()
+        .flatMap(List::stream)
+        .toList();
   }
 
-  public final Map<BlockPos, MachineComponent<?>> getFoundComponentsMap() {
-    return foundComponents;
+  public final Map<BlockPos, Optional<MachineComponent<?>>> getFoundComponentsMap() {
+    return fC.asMap();
   }
 
   public final Map<BlockPos, List<ModifierReplacement>> getFoundModifiersMap() {
-    return foundModifiers;
-  }
-
-  private Map<BlockPos, MachineComponent<?>> gatherComponents() {
-    Map<BlockPos, MachineComponent<?>> map = Maps.newHashMap();
-    Map<BlockPos, BlockIngredient> filteredMap = controller.getFoundMachine().getPattern().getBlocksFiltered(controller.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
-    BlockPos controllerPos = controller.getBlockPos();
-    Level level = controller.getLevel();
-    if (level == null) return map;
-    for (BlockPos potentialPosition : filteredMap.keySet()) {
-      BlockPos realPos = controllerPos.offset(potentialPosition);
-      if (!realPos.equals(controllerPos))
-        cachedBlocks.add(realPos);
-      BlockEntity te = level.getBlockEntity(realPos);
-      if (te instanceof ColorableMachineComponentEntity entity) {
-        entity.getControllerPosSet().add(controllerPos);
-      }
-      if (te instanceof MachineComponentEntity<?> entity) {
-        var component = entity.provideComponent();
-        if (entity instanceof ControllerAccessible accessible) {
-          if (accessible.getControllerPos() == null)
-            accessible.setControllerPos(controllerPos.immutable());
-          if (component != null && controllerPos.equals(accessible.getControllerPos()))
-            map.put(realPos, component);
-        } else {
-          map.put(realPos, component);
-        }
-      }
-    }
-    map.put(controllerPos, new FunctionComponent(controllerPos));
-    return map;
-  }
-
-  private Map<BlockPos, List<ModifierReplacement>> gatherModifiers() {
-    Map<BlockPos, List<ModifierReplacement>> map = Maps.newHashMap();
-    if (controller.getLevel() == null) return map;
-    controller.getFoundMachine()
-        .getPattern()
-        .getPattern()
-        .getModifiers(controller.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))
-        .forEach((potentialPosition, modifiers) -> {
-          BlockPos realPos = controller.getBlockPos().offset(potentialPosition);
-          BlockInWorld biw = new BlockInWorld(controller.getLevel(), realPos, false);
-          if (modifiers.stream().anyMatch(modifier -> modifier.getIngredient().getAll().stream().anyMatch(state -> state.test(biw))))
-            map.put(realPos, modifiers);
-        });
-    return map;
+    return fM.asMap();
   }
 
   @SuppressWarnings("unchecked")
   public <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> List<RecipeModifier<R, C, T>> getModifiers(RequirementType<R, C, T> type) {
-    if (foundModifiersValues.isEmpty() && !getController().getFoundMachine().getModifiers().isEmpty()) updateModifiers();
-    return Optional.ofNullable(foundModifiersValues.get(type))
-        .orElse(List.of())
-        .stream()
-        .map(r -> (RecipeModifier<R, C, T>) r)
-        .toList();
+    try {
+      return (List<RecipeModifier<R, C, T>>) (Object) fMV.get(type);
+    } catch (ExecutionException e) {
+      return List.of();
+    }
   }
 
   public <C extends MachineComponent<T>, T> Optional<C> getComponent(IRequirement<C, T> requirement, ICraftingContext context) {
-    if (foundComponentsValues.isEmpty()) updateComponents();
-    if (requirement.getType().equals(RequirementTypeRegistration.DURABILITY.get())) {
-      return getComponent(requirement.getComponentType(), IOType.INPUT);
+    try {
+      if (requirement.getType().equals(RequirementTypeRegistration.DURABILITY.get())) {
+        return getComponent(requirement.getComponentType(), IOType.INPUT);
+      }
+      return getComponent(requirement.getComponentType(), requirement.getMode());
+    } catch(Exception e) {
+      return Optional.empty();
     }
-    return getComponent(requirement.getComponentType(), requirement.getMode());
   }
 
   public Optional<ParallelComponent> getParallel() {
-    return getComponent(ComponentRegistration.COMPONENT_PARALLEL.get(), IOType.INPUT);
+    try {
+      return getComponent(ComponentRegistration.COMPONENT_PARALLEL.get(), IOType.INPUT);
+    } catch(Exception e) {
+      return Optional.empty();
+    }
   }
 
   public Optional<ItemComponent> getItemComponent(IOType mode) {
-    return getComponent(ComponentRegistration.COMPONENT_ITEM.get(), mode);
+    try {
+      return getComponent(ComponentRegistration.COMPONENT_ITEM.get(), mode);
+    } catch(Exception e) {
+      return Optional.empty();
+    }
   }
 
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<T>, T> Optional<C> getComponent(ComponentType<T> type, IOType mode) {
-    if (foundComponentsValues.isEmpty()) updateComponents();
-    return Optional.ofNullable(foundComponentsValues.get(type))
-        .map(m -> m.get(mode))
-        .stream()
-        .flatMap(List::stream)
-        .map(m -> (C) m)
-        .filter(Objects::nonNull)
-        .sorted()
-        .reduce((c1, c2) -> {
-          if (c1.canMerge(c2)) return c1.merge(c2);
-          return c1;
-        });
+    try {
+      return fCV.get(type).get(mode)
+          .stream()
+          .map(c -> (C) c)
+          .filter(Objects::nonNull)
+          .sorted()
+          .reduce((c1, c2) -> {
+            if (c1.canMerge(c2)) return c1.merge(c2);
+            return c1;
+          });
+    } catch (ExecutionException ignored) {
+      throw new ComponentNotFoundException(controller.getFoundMachine(), type);
+    }
   }
 
   @Override
   public CompoundTag serializeNBT(HolderLookup.Provider provider) {
     CompoundTag nbt = new CompoundTag();
     CompoundTag componentsByType = new CompoundTag();
-    foundComponentsValues.forEach((type, map) -> {
+    fCV.asMap().forEach((type, map) -> {
       CompoundTag listByMode = new CompoundTag();
       map.forEach((mode, list) -> listByMode.put(
           mode.getSerializedName(),
@@ -269,18 +313,17 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     });
     nbt.put("components", componentsByType);
     ListTag modifiers = new ListTag();
-    foundModifiers
-        .forEach((pos, list) -> {
-          ListTag mods = list.stream().map(ModifierReplacement::asTag).collect(ListTag::new, ListTag::add, ListTag::add);
-          CompoundTag mod = new CompoundTag();
-          CompoundTag position = new CompoundTag();
-          position.putInt("x", pos.getX());
-          position.putInt("y", pos.getY());
-          position.putInt("z", pos.getZ());
-          mod.put("position", position);
-          mod.put("modifiers", mods);
-          modifiers.add(mod);
-        });
+    fM.asMap().forEach((pos, list) -> {
+      ListTag mods = list.stream().map(ModifierReplacement::asTag).collect(ListTag::new, ListTag::add, ListTag::add);
+      CompoundTag mod = new CompoundTag();
+      CompoundTag position = new CompoundTag();
+      position.putInt("x", pos.getX());
+      position.putInt("y", pos.getY());
+      position.putInt("z", pos.getZ());
+      mod.put("position", position);
+      mod.put("modifiers", mods);
+      modifiers.add(mod);
+    });
     nbt.put("modifiers", modifiers);
     return nbt;
   }

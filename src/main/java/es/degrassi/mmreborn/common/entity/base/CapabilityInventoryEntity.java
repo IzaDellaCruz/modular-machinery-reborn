@@ -14,6 +14,7 @@ public interface CapabilityInventoryEntity<T> extends ItemDroppeable {
         getMode().isInput() ? new int[]{ 0 } : new int[]{},
         getMode().isOutput() ? new int[]{ 0 } : new int[]{},
         stack -> stack.getCapability(getCapability()) != null,
+        64,
         Direction.values());
   }
 

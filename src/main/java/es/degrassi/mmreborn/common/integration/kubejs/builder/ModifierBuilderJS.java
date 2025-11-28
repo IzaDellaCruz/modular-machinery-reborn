@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import com.google.common.collect.Lists;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ModifierBuilderJS {
   private BlockIngredient ingredient;
@@ -75,7 +76,7 @@ public class ModifierBuilderJS {
     public RecipeModifierBuilderJS target(ResourceLocation target) {
       this.target = ModularMachineryReborn.getRequirementRegistrar().get(target);
       if (this.target == null) throw new IllegalArgumentException("Invalid recipe target");
-      if (RecipeModifier.blacklist.stream().map(RequirementType::getId).anyMatch(target::equals))
+      if (RecipeModifier.blacklist.stream().map(Supplier::get).map(RequirementType::getId).anyMatch(target::equals))
         throw new IllegalArgumentException("This type is not allowed as recipe modifier type");
       return this;
     }

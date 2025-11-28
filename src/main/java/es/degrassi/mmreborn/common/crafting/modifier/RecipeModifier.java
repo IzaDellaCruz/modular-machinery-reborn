@@ -17,6 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 @Getter
 public abstract class RecipeModifier<
@@ -44,24 +46,30 @@ public abstract class RecipeModifier<
       }), "Recipe modifier"
   );
 
-  public static final List<RequirementType<?, ?, ?>> blacklist = Lists.newArrayList();
+  public static final List<Supplier<RequirementType<?, ?, ?>>> blacklist = Lists.newArrayList();
 
   static {
-    addToBlacklist(RequirementTypeRegistration.DIMENSION.get());
-    addToBlacklist(RequirementTypeRegistration.BIOME.get());
-    addToBlacklist(RequirementTypeRegistration.WEATHER.get());
-    addToBlacklist(RequirementTypeRegistration.TIME.get());
-    addToBlacklist(RequirementTypeRegistration.CHUNKLOAD.get());
-    addToBlacklist(RequirementTypeRegistration.FUNCTION.get());
-    addToBlacklist(RequirementTypeRegistration.CHECK_ENTITY.get());
-    addToBlacklist(RequirementTypeRegistration.KILL_ENTITY.get());
-    addToBlacklist(RequirementTypeRegistration.HEATH_ENTITY.get());
-    addToBlacklist(RequirementTypeRegistration.SPAWN_ENTITY.get());
+    addToBlacklist(RequirementTypeRegistration.DIMENSION);
+    addToBlacklist(RequirementTypeRegistration.BIOME);
+    addToBlacklist(RequirementTypeRegistration.WEATHER);
+    addToBlacklist(RequirementTypeRegistration.TIME);
+    addToBlacklist(RequirementTypeRegistration.CHUNKLOAD);
+    addToBlacklist(RequirementTypeRegistration.FUNCTION);
+    addToBlacklist(RequirementTypeRegistration.CHECK_ENTITY);
+    addToBlacklist(RequirementTypeRegistration.KILL_ENTITY);
+    addToBlacklist(RequirementTypeRegistration.HEATH_ENTITY);
+    addToBlacklist(RequirementTypeRegistration.SPAWN_ENTITY);
+    addToBlacklist(RequirementTypeRegistration.COMMAND);
+    addToBlacklist(RequirementTypeRegistration.EMPTY);
+    addToBlacklist(RequirementTypeRegistration.HEIGHT);
+    addToBlacklist(RequirementTypeRegistration.REDSTONE);
+    addToBlacklist(RequirementTypeRegistration.STRUCTURE);
   }
 
-  public static void addToBlacklist(RequirementType<?, ?, ?> requirementType) {
+  @SuppressWarnings("unchecked")
+  public static <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> void addToBlacklist(Supplier<RequirementType<R, C, T>> requirementType) {
     if (blacklist.contains(requirementType)) return;
-    blacklist.add(requirementType);
+    blacklist.add((Supplier<RequirementType<?, ?, ?>>) (Object) requirementType);
   }
 
   public static final RandomSource RAND = RandomSource.create();
@@ -74,8 +82,9 @@ public abstract class RecipeModifier<
   public final float min;
   public final Component tooltip;
 
-  protected RecipeModifier(RequirementType<R, C, T> requirementType, IOType mode, float modifier, float chance,
-                           float max, float min) {
+  protected RecipeModifier(RequirementType<R, C, T> requirementType, IOType mode, float modifier, float chance, float max, float min) {
+    if (blacklist.stream().anyMatch(c -> c.get().equals(requirementType)))
+      throw new UnsupportedOperationException("requirement type: " + requirementType.getId() + " is not a valid option for a Recipe Modifier");
     this.requirementType = requirementType;
     this.mode = mode;
     this.modifier = modifier;
@@ -121,6 +130,6 @@ public abstract class RecipeModifier<
   }
 
   protected String getTargetValue() {
-    return ModularMachineryReborn.getRequirementRegistrar().getKey(requirementType).getPath();
+    return Objects.requireNonNull(ModularMachineryReborn.getRequirementRegistrar().getKey(requirementType)).getPath();
   }
 }

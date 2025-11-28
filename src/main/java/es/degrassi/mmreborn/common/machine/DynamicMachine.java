@@ -105,6 +105,10 @@ public class DynamicMachine {
     return definedColor;
   }
 
+  public boolean isDummy() {
+    return this.equals(DUMMY);
+  }
+
   public JsonObject asJson() {
     JsonObject json = new JsonObject();
     json.addProperty("registryName", registryName.toString());

@@ -53,6 +53,7 @@ public class RedstoneComponent extends MachineComponent<Integer> {
 
   @Override
   public void onStatusChanged(MachineStatus oldStatus, MachineStatus newStatus, Component errorMessage) {
+    super.onStatusChanged(oldStatus, newStatus, errorMessage);
     if (newStatus != MachineStatus.RUNNING && oldStatus == MachineStatus.RUNNING) {
       setOutputAmount(0);
     }

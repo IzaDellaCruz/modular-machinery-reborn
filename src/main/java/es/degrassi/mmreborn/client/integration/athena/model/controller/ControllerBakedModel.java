@@ -8,6 +8,7 @@ import es.degrassi.mmreborn.client.integration.athena.utils.MMRAthenaQuad;
 import es.degrassi.mmreborn.client.model.controller.ControllerOverrideList;
 import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.item.ControllerItem;
+import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.common.util.MachineModelLocation;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -68,7 +69,7 @@ public class ControllerBakedModel implements MMRBakedModel {
                                   RandomSource rand, ModelData data, @Nullable RenderType type) {
     try {
       var machine = data.get(DATA);
-      assert machine != null;
+      if (machine == null) machine = new ControllerData(DynamicMachine.DUMMY, new NullableEnumMap<>(Direction.class));
       var isCustom = machine.hasCustomModel();
       if (isCustom || (state != null && !state.getValue(BlockMachineComponent.CONNECT_TEXTURES))) {
         return new es.degrassi.mmreborn.client.model.controller.ControllerBakedModel().getQuads(
@@ -106,7 +107,7 @@ public class ControllerBakedModel implements MMRBakedModel {
   @Override
   public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData data) {
     var textureData = data.get(DATA);
-    assert textureData != null;
+    if (textureData == null) textureData = new ControllerData(DynamicMachine.DUMMY, null);
     if (textureData.hasCustomModel()) return data.derive().build();
     WrappedGetter getter = new WrappedGetter(level);
     final NullableEnumMap<Direction, Map<Direction, List<MMRAthenaQuad>>> quads = new NullableEnumMap<>(Direction.class);

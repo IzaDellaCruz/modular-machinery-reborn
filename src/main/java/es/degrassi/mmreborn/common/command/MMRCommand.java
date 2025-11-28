@@ -6,6 +6,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.util.EnergyDisplayUtil;
 import es.degrassi.mmreborn.common.block.prop.ConfigLoaded;
 import es.degrassi.mmreborn.common.data.Config;
+import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.MachineJsonReloadListener;
 import es.degrassi.mmreborn.common.network.server.SOpenFilePacket;
 import net.minecraft.ChatFormatting;
@@ -58,6 +59,9 @@ public class MMRCommand {
       .thenRun(() -> {
         if (player != null)
           player.sendSystemMessage(Component.translatable(ModularMachineryReborn.MODID + ".command.reload.machines").withStyle(ChatFormatting.GRAY));
-      });
+      })
+      .thenRun(() ->
+          ModularMachineryReborn.CONTROLLERS.forEach(MachineControllerEntity::unform)
+      );
   }
 }

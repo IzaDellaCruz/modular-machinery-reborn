@@ -40,6 +40,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
     this.overlayTexture = defaultOverlayTexture;
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
-      public void onChange(int slot, ItemStack stack) {
+      public void onChange(int slot, @NotNull ItemStack stack) {
         if (getController() != null)
           getController().getProcessor().setMachineInventoryChanged();
         if (getLevel() instanceof ServerLevel l)
@@ -92,12 +93,12 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
   }
 
   @Override
-  public IOInventory buildInventory(int slots) {
+  public IOInventory buildInventory(int slots, int stackSize) {
     int[] inSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], ItemStack::isDamageableItem, Direction.values());
+    return new IOInventory(inSlots, new int[0], ItemStack::isDamageableItem, 1, Direction.values());
   }
 
   @Nullable
@@ -121,7 +122,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
 
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
-      public void onChange(int slot, ItemStack stack) {
+      public void onChange(int slot, @NotNull ItemStack stack) {
         if (getController() != null)
           getController().getProcessor().setMachineInventoryChanged();
         if (getLevel() instanceof ServerLevel l)

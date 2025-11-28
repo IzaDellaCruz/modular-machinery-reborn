@@ -3,8 +3,10 @@ package es.degrassi.mmreborn.client.screen.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import es.degrassi.mmreborn.client.container.SlotItemComponent;
 import es.degrassi.mmreborn.client.screen.BaseScreen;
+import es.degrassi.mmreborn.common.util.TextComponentUtil;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
-import es.degrassi.mmreborn.common.util.Utils;
+import mekanism.common.util.UnitDisplayUtils;
+import mekanism.common.util.text.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,8 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -191,11 +191,10 @@ public class GuiSlotScroll extends GuiElement {
     } else if (count > 1) {
       //Note: For cases like 9,999,999 we intentionally display as 9999.9K instead of 10M so that people
       // do not think they have more stored than they actually have just because it is rounding up
-      if (count < 10_000) {
-        text = Component.literal(Long.toString(count).replace("\u00A0", " ")//non-breaking space
-            .replace("\u202f", " "));
+      if (count < 100) {
+        text = TextComponentUtil.getString(Long.toString(count));
       } else {
-        text = Component.literal(Utils.decimalFormat(count));
+        text = UnitDisplayUtils.getDisplay(count, 1);
       }
     }
     if (text != null) {
@@ -210,20 +209,28 @@ public class GuiSlotScroll extends GuiElement {
       return;
     }
     long count = slot.getItem().getCount();
-    if (count < 10_000) {
+    if (count < 100) {
       guiGraphics.renderTooltip(font(), stack, slotX - getGuiLeft(), slotY - getGuiTop());
     } else {
       //If the slot's displayed count is truncated, make sure we also add the actual amount to the tooltip
-      gui().renderItemTooltipWithExtra(guiGraphics, stack, slotX, slotY,
-          Collections.singletonList(Component.literal(NumberFormat.getIntegerInstance().format(count))));
+      gui().renderItemTooltipWithExtra(guiGraphics, stack, slotX - getGuiLeft(), slotY - getGuiTop(),
+          Collections.singletonList(Component.literal(TextUtils.format(count)).withStyle(ChatFormatting.GOLD).append(Component.literal("/").withStyle(ChatFormatting.GRAY))
+              .append(Component.literal(TextUtils.format(slot.getMaxStackSize())).withStyle(ChatFormatting.GOLD))));
     }
   }
 
   private void renderSlotText(GuiGraphics guiGraphics, Component text, int x, int y) {
+    float scale = 0.6F;
+    float scaledWidth = font().width(text) * scale;
+    if (scaledWidth >= 16) {
+      //If we need a lower scale slightly due to having a lot of text, calculate it
+      //Note: If it would still overflow, then we just let the scrolling text handle it
+      scale = 0.5F;
+    }
     PoseStack pose = guiGraphics.pose();
     pose.pushPose();
     pose.translate(0, 0, 200);
-    drawScaledScrollingString(guiGraphics, text, x, y + 9, IFancyFontRenderer.TextAlignment.RIGHT, 0xFFFFFF, 16, 0, true, 1f);
+    drawScaledScrollingString(guiGraphics, text, x, y + 9, IFancyFontRenderer.TextAlignment.RIGHT, 0xFFFFFF, 16, 0, true, scale);
     pose.popPose();
   }
 }

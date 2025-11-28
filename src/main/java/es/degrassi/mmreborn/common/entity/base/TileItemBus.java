@@ -53,7 +53,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
   private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
   protected TileItemBus(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, ItemBusSize size, IOType ioType) {
-    super(entityType, pos, blockState, size.getSlotCount());
+    super(entityType, pos, blockState, size.getSlotCount(), size.stackSize);
     this.size = size;
     this.ioType = ioType;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_" + ioType.getSerializedName() + "bus_" + size.getSerializedName());

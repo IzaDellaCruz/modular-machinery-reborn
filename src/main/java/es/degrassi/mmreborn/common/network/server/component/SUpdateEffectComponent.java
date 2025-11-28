@@ -1,8 +1,6 @@
 package es.degrassi.mmreborn.common.network.server.component;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.api.codec.NamedCodec;
-import es.degrassi.mmreborn.common.block.prop.EffectDispenserSize;
 import es.degrassi.mmreborn.common.entity.EffectDispenserEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,7 +12,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Optional;
 
-public record SUpdateEffectComponent(EffectDispenserSize size, Optional<MobEffectInstance> effect, BlockPos pos) implements CustomPacketPayload {
+public record SUpdateEffectComponent(Optional<MobEffectInstance> effect, BlockPos pos) implements CustomPacketPayload {
 
   public static final Type<SUpdateEffectComponent> TYPE = new Type<>(ModularMachineryReborn.rl("update_effect"));
   @Override
@@ -23,8 +21,6 @@ public record SUpdateEffectComponent(EffectDispenserSize size, Optional<MobEffec
   }
 
   public static final StreamCodec<RegistryFriendlyByteBuf, SUpdateEffectComponent> CODEC = StreamCodec.composite(
-      ByteBufCodecs.fromCodec(NamedCodec.enumCodec(EffectDispenserSize.class).codec()),
-      SUpdateEffectComponent::size,
       ByteBufCodecs.optional(MobEffectInstance.STREAM_CODEC),
       SUpdateEffectComponent::effect,
       BlockPos.STREAM_CODEC,
@@ -36,7 +32,7 @@ public record SUpdateEffectComponent(EffectDispenserSize size, Optional<MobEffec
     if (context.flow().isClientbound())
       context.enqueueWork(() -> {
         if (context.player().level().getBlockEntity(packet.pos) instanceof EffectDispenserEntity entity) {
-          entity.getHandler().setData(packet.size, packet.effect);
+          entity.getHandler().setData(packet.effect);
         }
       });
   }

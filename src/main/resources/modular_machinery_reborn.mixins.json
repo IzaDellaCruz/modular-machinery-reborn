@@ -3,7 +3,8 @@
   "package": "es.degrassi.mmreborn.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "AthenaFactoryManagerMixin"
+    "AthenaFactoryManagerMixin",
+    "LevelMixin"
   ],
   "client": [
     "ModelBakeryMixin"

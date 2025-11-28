@@ -80,6 +80,7 @@ public class CraftingStatus {
   }
 
   public static CraftingStatus deserialize(CompoundTag tag, HolderLookup.Provider registries) {
+    if (tag.isEmpty()) return CraftingStatus.MISSING_STRUCTURE;
     Type type = Type.fromString(tag.getString("type"));
     Component message = null;
     if (tag.contains("message")) {

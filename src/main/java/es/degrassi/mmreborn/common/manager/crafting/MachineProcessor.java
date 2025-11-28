@@ -60,9 +60,11 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
     if (!this.initialized)
       this.init();
 
+    if (this.tile.getStatus().isMissingStructure()) return;
+
     this.cores.forEach(MachineProcessorCore::tick);
 
-    if (this.tile.getStatus() == MachineStatus.RUNNING && this.cores.stream().noneMatch(MachineProcessorCore::hasActiveRecipe)) {
+    if (this.tile.getStatus() == MachineStatus.RUNNING && this.cores.stream().noneMatch(MachineProcessorCore::hasActiveRecipe) && !this.tile.getStatus().isMissingStructure()) {
       this.tile.setStatus(MachineStatus.IDLE);
     }
   }
@@ -77,9 +79,9 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
   private void init() {
     this.initialized = true;
     AtomicInteger cores = new AtomicInteger(1);
-    tile.getComponentManager().getParallel().ifPresent(pos -> cores.set(pos.getContainerProvider()));
-    updateActiveCores(cores.get());
-    this.cores.forEach(MachineProcessorCore::init);
+      tile.getComponentManager().getParallel().ifPresent(pos -> cores.set(pos.getContainerProvider()));
+      updateActiveCores(cores.get());
+      this.cores.forEach(MachineProcessorCore::init);
   }
 
   public void setRunning() {
@@ -87,7 +89,7 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
   }
 
   public void setError(Component message) {
-    if(this.cores.stream().allMatch(core -> core.getError() != null || core.getCurrentRecipe() == null))
+    if(this.cores.stream().allMatch(core -> !core.isActive() || core.getError() != null || core.getCurrentRecipe() == null))
       this.tile.setStatus(MachineStatus.ERRORED, message);
   }
 
@@ -142,7 +144,6 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
   public record Template() implements IProcessorTemplate<MachineProcessor> {
     public static final Template DEFAULT = new Template();
     public static final NamedCodec<Template> CODEC = NamedCodec.unit(DEFAULT);
-
 
     @Override
     public ProcessorType<MachineProcessor> getType() {

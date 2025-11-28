@@ -21,6 +21,7 @@ import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -32,10 +33,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 @Setter
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class EffectDispenserEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<EffectComponent>,
     ControllerAccessible, TextureableMachineEntity, ISyncableStuff, ITickEntity, IServerTickEntity {
   @Getter
@@ -57,7 +62,7 @@ public class EffectDispenserEntity extends ColorableMachineComponentEntity imple
   public EffectDispenserEntity(BlockPos pos, BlockState blockState, EffectDispenserSize size) {
     super(EntityRegistration.EFFECT_DISPENSER.get(), pos, blockState);
     this.size = size;
-    this.handler = new EffectHandler(size, this);
+    this.handler = new EffectHandler(this);
   }
 
   public EffectDispenserEntity(BlockPos pos, BlockState state) {
@@ -139,8 +144,6 @@ public class EffectDispenserEntity extends ColorableMachineComponentEntity imple
 
     this.baseTexture = nbt.contains("baseTexture") ? ResourceLocation.parse(nbt.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = nbt.contains("overlayTexture") ? ResourceLocation.parse(nbt.getString("overlayTexture")) : defaultOverlayTexture;
-
-    this.handler.deserializeNBT(pRegistries, nbt.getCompound("effectHandler"));
   }
 
   @Override
@@ -154,8 +157,6 @@ public class EffectDispenserEntity extends ColorableMachineComponentEntity imple
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
-
-    compound.put("effectHandler", handler.serializeNBT(pRegistries));
   }
 
   @Override

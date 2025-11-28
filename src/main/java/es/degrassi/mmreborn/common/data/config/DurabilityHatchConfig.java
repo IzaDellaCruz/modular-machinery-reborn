@@ -1,6 +1,5 @@
 package es.degrassi.mmreborn.common.data.config;
 
-import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import lombok.Getter;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -31,6 +30,11 @@ public class DurabilityHatchConfig {
   public final ModConfigSpec.ConfigValue<Integer> NORMAL_durability_cols;
   public final ModConfigSpec.ConfigValue<Integer> BIG_durability_cols;
 
+  public final ModConfigSpec.ConfigValue<Integer> TINY_stack_size;
+  public final ModConfigSpec.ConfigValue<Integer> SMALL_stack_size;
+  public final ModConfigSpec.ConfigValue<Integer> NORMAL_stack_size;
+  public final ModConfigSpec.ConfigValue<Integer> BIG_stack_size;
+
   public DurabilityHatchConfig(ModConfigSpec.Builder builder) {
     builder.push(ItemDurabilityHatchSize.TINY.getSerializedName());
     TINY_durability_size = builder
@@ -38,7 +42,10 @@ public class DurabilityHatchConfig {
         .defineInRange("slots", ItemDurabilityHatchSize.TINY.defaultSlots, 1, Integer.MAX_VALUE);
     TINY_durability_cols = builder
         .comment("Defines the slot cols number of item durability hatch")
-        .defineInRange("cols", ItemBusSize.TINY.defaultCols, 1, Integer.MAX_VALUE);
+        .defineInRange("cols", ItemDurabilityHatchSize.TINY.defaultCols, 1, Integer.MAX_VALUE);
+    TINY_stack_size = builder
+        .comment("Defined the durability hatch slot max stack size")
+        .defineInRange("stackSize", ItemDurabilityHatchSize.TINY.defaultStackSize, 1, Integer.MAX_VALUE);
     builder.pop();
     builder.push(ItemDurabilityHatchSize.SMALL.getSerializedName());
     SMALL_durability_size = builder
@@ -47,6 +54,9 @@ public class DurabilityHatchConfig {
     SMALL_durability_cols = builder
         .comment("Defines the slot cols number of item durability hatch")
         .defineInRange("cols", ItemDurabilityHatchSize.SMALL.defaultCols, 1, Integer.MAX_VALUE);
+    SMALL_stack_size = builder
+        .comment("Defined the durability hatch slot max stack size")
+        .defineInRange("stackSize", ItemDurabilityHatchSize.SMALL.defaultStackSize, 1, Integer.MAX_VALUE);
     builder.pop();
     builder.push(ItemDurabilityHatchSize.NORMAL.getSerializedName());
     NORMAL_durability_size = builder
@@ -55,6 +65,9 @@ public class DurabilityHatchConfig {
     NORMAL_durability_cols = builder
         .comment("Defines the slot cols number of item durability hatch")
         .defineInRange("cols", ItemDurabilityHatchSize.NORMAL.defaultCols, 1, Integer.MAX_VALUE);
+    NORMAL_stack_size = builder
+        .comment("Defined the durability hatch slot max stack size")
+        .defineInRange("stackSize", ItemDurabilityHatchSize.NORMAL.defaultStackSize, 1, Integer.MAX_VALUE);
     builder.pop();
     builder.push(ItemDurabilityHatchSize.BIG.getSerializedName());
     BIG_durability_size = builder
@@ -63,6 +76,9 @@ public class DurabilityHatchConfig {
     BIG_durability_cols = builder
         .comment("Defines the slot cols number of item durability hatch")
         .defineInRange("cols", ItemDurabilityHatchSize.BIG.defaultCols, 1, Integer.MAX_VALUE);
+    BIG_stack_size = builder
+        .comment("Defined the durability hatch slot max stack size")
+        .defineInRange("stackSize", ItemDurabilityHatchSize.BIG.defaultStackSize, 1, Integer.MAX_VALUE);
     builder.pop();
   }
 
@@ -82,5 +98,14 @@ public class DurabilityHatchConfig {
       case NORMAL -> NORMAL_durability_cols.get();
       case BIG -> BIG_durability_cols.get();
     };
+  }
+
+  public int stackSize(ItemDurabilityHatchSize size) {
+    return (switch (size) {
+      case TINY -> TINY_stack_size;
+      case SMALL -> SMALL_stack_size;
+      case NORMAL -> NORMAL_stack_size;
+      case BIG -> BIG_stack_size;
+    }).get();
   }
 }

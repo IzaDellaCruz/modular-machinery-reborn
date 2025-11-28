@@ -3,11 +3,14 @@ package es.degrassi.mmreborn.common.entity;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.machine.SoundManagerEntity;
 import es.degrassi.mmreborn.api.controller.ComponentMapper;
+import es.degrassi.mmreborn.api.controller.IMultiblockController;
+import es.degrassi.mmreborn.api.controller.MMRWorldSavedData;
 import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.api.network.syncable.IntegerSyncable;
 import es.degrassi.mmreborn.api.network.syncable.NbtSyncable;
+import es.degrassi.mmreborn.api.network.syncable.ResourceLocationSyncable;
 import es.degrassi.mmreborn.api.network.syncable.StringSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
 import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerData;
@@ -36,8 +39,10 @@ import es.degrassi.mmreborn.common.util.sound.SoundManager;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
@@ -57,7 +62,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import static es.degrassi.mmreborn.ModularMachineryReborn.CONTROLLERS;
@@ -66,11 +74,13 @@ import static es.degrassi.mmreborn.ModularMachineryReborn.CONTROLLERS;
 @Setter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MachineControllerEntity extends BlockEntityRestrictedTick implements ComponentMapper, ISyncableStuff,
-    IServerTickEntity, IClientTickEntity, SoundManagerEntity {
+public class MachineControllerEntity extends BlockEntityRestrictedTick implements ComponentMapper, ISyncableStuff, IServerTickEntity, IClientTickEntity,
+    SoundManagerEntity, IMultiblockController {
   @Setter
   private CraftingStatus craftingStatus = CraftingStatus.MISSING_STRUCTURE;
   private boolean isPaused = false;
+  @Getter
+  private boolean formed = false;
   private ResourceLocation id = DynamicMachine.DUMMY.getRegistryName();
   private MachineStatus status = MachineStatus.IDLE;
   private Component errorMessage = Component.empty();
@@ -84,8 +94,8 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   public MachineControllerEntity(BlockPos pos, BlockState state) {
     super(EntityRegistration.CONTROLLER.get(), pos, state);
-    componentManager = new ComponentManager(this);
-    processor = new MachineProcessor(this);
+    this.componentManager = new ComponentManager(this);
+    this.processor = new MachineProcessor(this);
     CONTROLLERS.add(this);
   }
 
@@ -137,6 +147,10 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
         .build();
   }
 
+  public DynamicMachine getFoundMachine() {
+    return ModularMachineryReborn.MACHINES.getOrDefault(id, DynamicMachine.DUMMY);
+  }
+
   public boolean isPaused() {
     return isPaused;
   }
@@ -173,37 +187,45 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   }
 
   @Override
+  @SneakyThrows
   public void doRestrictedTick() {
     IServerTickEntity.super.doRestrictedTick();
+
+    if (!isFormed() || craftingStatus.isMissingStructure() || status.isMissingStructure()) return;
+
     tryPause();
-
-    if (!status.isMissingStructure()) {
-      if (isPaused() || status.isErrored()) return;
-      try {
-        processor.tick();
-      } catch (ComponentNotFoundException e) {
-        ModularMachineryReborn.LOGGER.error(e.getMessage());
-      }
-      return;
+    if (isPaused() || craftingStatus.isFailure()) return;
+    try {
+      processor.tick();
+    } catch (ComponentNotFoundException e) {
+      ModularMachineryReborn.LOGGER.error(e.getMessage());
     }
-
-    checkStructure(false);
   }
 
   @Override
   public void setRemoved() {
     if (this.level != null && this.level.isClientSide() && this.soundManager != null)
       this.soundManager.stop();
-    componentManager.reset();
-    processor.reset();
+    if (getLevel() instanceof ServerLevel serverLevel && !getFoundMachine().isDummy()) {
+      componentManager.reset();
+      processor.reset();
+      MMRWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
+    }
     super.setRemoved();
   }
 
   public void setMachine(ResourceLocation machine) {
     this.id = machine;
+    this.formed = false;
+    ComponentManager.cache.refresh(this);
     tryColorize(getBlockPos());
-    if (getLevel() instanceof ServerLevel l)
+    if (getLevel() instanceof ServerLevel l) {
       PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SMachineUpdatePacket(id, getBlockPos()));
+      var mwsd = MMRWorldSavedData.getOrCreate(l);
+      mwsd.removeMapping(this);
+      mwsd.removeAsyncLogic(this);
+      mwsd.addAsyncLogic(this);
+    }
     setRequestModelUpdate(true);
     refreshClientData();
     setChanged();
@@ -212,28 +234,24 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void checkStructure(boolean immediate) {
     if (this.getFoundMachine() == DynamicMachine.DUMMY || getLevel() == null) return;
     long gameTime = getLevel().getGameTime();
-    componentManager.reset();
-    processor.reset();
-    if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
-    lastCheckTick = gameTime;
-    if (!getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))) {
-      setStatus(MachineStatus.MISSING_STRUCTURE);
-    } else {
-      componentManager.updateComponents();
-      distributeCasingColor();
-      setStatus(MachineStatus.IDLE);
-    }
+    unform();
     setRequestModelUpdate(true);
     setChanged();
+    if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
+    lastCheckTick = gameTime;
+    if (getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getFacing())) {
+      formed = true;
+      setStatus(MachineStatus.IDLE);
+      componentManager.updateComponents();
+      try {
+        ComponentManager.cache.get(this).forEach(this::tryColorize);
+      } catch (ExecutionException ignored) {}
+    }
   }
 
   @Override
   public int getMachineColor() {
     return getFoundMachine().getMachineColor();
-  }
-
-  public void distributeCasingColor() {
-    getComponentManager().getCachedBlocks().forEach(this::tryColorize);
   }
 
   private void tryColorize(BlockPos pos) {
@@ -256,19 +274,15 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     }
   }
 
-  public DynamicMachine getFoundMachine() {
-    return ModularMachineryReborn.MACHINES.getOrDefault(id, DynamicMachine.DUMMY);
-  }
-
   @Override
+  @SneakyThrows
   protected void loadAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {
     super.loadAdditional(compound, pRegistries);
     this.craftingStatus = CraftingStatus.deserialize(compound.getCompound("status"), pRegistries);
-    this.id = ResourceLocation.parse(compound.getString("machine"));
-    processor.deserialize(compound.getCompound("craftingManager"));
+    this.processor.deserialize(compound.getCompound("craftingManager"));
     this.isPaused = compound.getBoolean("isPaused");
-    if (getLevel() != null && !getLevel().isClientSide)
-      checkStructure(true);
+    setMachine(ResourceLocation.parse(compound.getString("machine")));
+    setStatus(MachineStatus.MISSING_STRUCTURE);
   }
 
   @Override
@@ -290,7 +304,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   }
 
   @Override
-  public Map<BlockPos, MachineComponent<?>> getFoundComponentsMap() {
+  public Map<BlockPos, Optional<MachineComponent<?>>> getFoundComponentsMap() {
     return componentManager.getFoundComponentsMap();
   }
 
@@ -305,14 +319,92 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     processor.getStuffToSync(container);
     componentManager.getStuffToSync(container);
     RegistryAccess registries = this.getLevel().registryAccess();
-    container.accept(StringSyncable.create(() -> id.toString(), s -> id = ResourceLocation.parse(s)));
+    container.accept(ResourceLocationSyncable.create(() -> id, s -> id = s));
     container.accept(IntegerSyncable.create(() -> lastFocus, i -> lastFocus = i));
-    container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(getLevel().registryAccess()), s -> craftingStatus = CraftingStatus.deserialize(s, getLevel().registryAccess())));
+    container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(registries), s -> craftingStatus = CraftingStatus.deserialize(s, registries)));
     container.accept(StringSyncable.create(() -> this.status.toString(), status -> this.status = MachineStatus.value(status)));
     container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.errorMessage, registries), errorMessage -> this.errorMessage = Component.Serializer.fromJson(errorMessage, registries)));
   }
 
   public SoundType getInteractionSound() {
     return getFoundMachine().getInteractionSound(status);
+  }
+
+  public void unform() {
+    if (getLevel() instanceof ServerLevel sl) {
+      this.formed = false;
+      setStatus(MachineStatus.MISSING_STRUCTURE);
+      processor.reset();
+      componentManager.resetWithColor();
+      MMRWorldSavedData.getOrCreate(sl).addAsyncLogic(this);
+      setChanged();
+    }
+  }
+
+  @Override
+  public boolean isPosInCache(BlockPos pos) {
+    try {
+      return ComponentManager.cache.get(this).contains(pos);
+    } catch(ExecutionException e) {
+      return false;
+    }
+  }
+
+  @Override
+  public void onBlockStateChanged(BlockPos pos, BlockState newState) {
+    if (level instanceof ServerLevel serverLevel) {
+      if (pos.equals(getBlockPos())) {
+        unform();
+        var mwsd = MMRWorldSavedData.getOrCreate(serverLevel);
+        mwsd.removeMapping(this);
+      } else {
+        if (getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getFacing())) {
+          onStructureFormed();
+        } else {
+          unform();
+          var mwsd = MMRWorldSavedData.getOrCreate(serverLevel);
+          mwsd.removeMapping(this);
+          mwsd.addAsyncLogic(this);
+        }
+      }
+    }
+  }
+
+  public Direction getFacing() {
+    return getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
+  }
+
+  public void onStructureFormed() {
+    formed = true;
+    setStatus(MachineStatus.IDLE);
+    componentManager.updateComponents();
+    try {
+      ComponentManager.cache.get(this).forEach(this::tryColorize);
+    } catch (ExecutionException ignored) {}
+  }
+
+  @Getter
+  private final Lock patternLock = new ReentrantLock();
+
+  @Override
+  public void asyncCheckPattern(long periodID) {
+    if (
+        (craftingStatus.isFailure() || !formed)
+            && !Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())
+    ) {
+      lastCheckTick = periodID;
+      if (getLevel() instanceof ServerLevel sl) {
+        sl.getServer().execute(() -> {
+          patternLock.lock();
+          if (getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getFacing())) {
+            onStructureFormed();
+            var mwsd = MMRWorldSavedData.getOrCreate(sl);
+            mwsd.addMapping(this);
+            mwsd.removeAsyncLogic(this);
+          }
+          patternLock.unlock();
+        });
+      }
+    }
   }
 }

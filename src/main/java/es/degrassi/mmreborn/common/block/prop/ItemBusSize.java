@@ -15,13 +15,16 @@ public enum ItemBusSize implements StringRepresentable, ConfigLoaded {
 
   public int slots;
   public int cols;
+  public int stackSize;
 
   public final int defaultSlots;
   public final int defaultCols;
+  public final int defaultStackSize;
 
   ItemBusSize(int defaultSlots, int defaultCols) {
     this.defaultSlots = defaultSlots;
     this.defaultCols = defaultCols;
+    this.defaultStackSize = 64;
   }
 
   public static ItemBusSize value(String value) {

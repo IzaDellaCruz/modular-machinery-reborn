@@ -13,10 +13,14 @@ public enum FuelTankSize implements ConfigLoaded, StringRepresentable {
   HUGE(secondsToTicks(10000));
 
   public long burnTimeCapacity;
+  public int stackSize;
+
   public final long defaultBurnTimeCapacity;
+  public final int defaultStackSize;
 
   FuelTankSize(long defaultBurnTimeCapacity) {
     this.defaultBurnTimeCapacity = defaultBurnTimeCapacity;
+    this.defaultStackSize = 64;
   }
 
   public static FuelTankSize value(String value) {

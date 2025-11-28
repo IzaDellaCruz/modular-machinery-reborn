@@ -155,15 +155,15 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementHealthEntity, EntityComponent, EntityHandler>> HEATH_ENTITY =
       MACHINE_REQUIREMENTS.register(rootLC("health_entity"),
       () -> RequirementType.world(RequirementHealthEntity.CODEC));
-  public static final Supplier<RequirementType<RequirementStructure, StructureComponent, Structure>> STRUCTURE =
-      MACHINE_REQUIREMENTS.register(rootLC("structure"),
-      () -> RequirementType.world(RequirementStructure.CODEC));
   public static final Supplier<RequirementType<RequirementRedstone, RedstoneComponent, Integer>> REDSTONE =
       MACHINE_REQUIREMENTS.register(rootLC("redstone"),
       () -> RequirementType.world(RequirementRedstone.CODEC));
   public static final Supplier<RequirementType<RequirementCommand, CommandComponent, Void>> COMMAND =
       MACHINE_REQUIREMENTS.register(rootLC("command"),
       () -> RequirementType.world(RequirementCommand.CODEC));
+  public static final Supplier<RequirementType<RequirementStructure, StructureComponent, Structure>> STRUCTURE =
+      MACHINE_REQUIREMENTS.register(rootLC("structure"),
+      () -> RequirementType.world(RequirementStructure.CODEC));
 
   public static void register(IEventBus bus) {
     MACHINE_REQUIREMENTS.register(bus);

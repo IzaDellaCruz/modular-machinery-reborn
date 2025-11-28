@@ -22,6 +22,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,11 +55,7 @@ public class MachineControllerJS {
   public void setId(String id) {
     ResourceLocation loc = ResourceLocation.tryParse(id);
     if (loc != null) {
-      TaskDelayer.enqueue(0, () -> {
-        this.internal.getProcessor().reset();
-        this.internal.getComponentManager().reset();
-        this.internal.setMachine(loc);
-      });
+      TaskDelayer.enqueue(0, () -> this.internal.setMachine(loc));
     } else {
       throw new IllegalArgumentException("Invalid machine ID: " + id);
     }
@@ -329,7 +326,7 @@ public class MachineControllerJS {
   }
 
   /** FUEL STUFF **/
-  public long getFuelAmount() {
+  public long getFuelAmount() throws ExecutionException {
     return internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
         .stream()
@@ -337,7 +334,7 @@ public class MachineControllerJS {
         .sum();
   }
 
-  public long getFuelCapacity() {
+  public long getFuelCapacity() throws ExecutionException {
     return internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
         .stream()
@@ -345,7 +342,7 @@ public class MachineControllerJS {
         .sum();
   }
 
-  public void addFuel(long amount) {
+  public void addFuel(long amount) throws ExecutionException {
     AtomicLong amt = new AtomicLong(amount);
     internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
@@ -358,7 +355,7 @@ public class MachineControllerJS {
         });
   }
 
-  public void removeFuel(long amount) {
+  public void removeFuel(long amount) throws ExecutionException {
     AtomicLong amt = new AtomicLong(amount);
     internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_FUEL.get(), IOType.INPUT)
@@ -373,21 +370,21 @@ public class MachineControllerJS {
 
   /** CHUNKLOAD STUFF **/
 
-  public void enableChunkload(int radius) {
+  public void enableChunkload(int radius) throws ExecutionException {
     this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
         .map(MachineComponent::getContainerProvider)
         .ifPresent(component -> component.setActive((ServerLevel) this.internal.getLevel(), radius));
   }
 
-  public void disableChunkload() {
+  public void disableChunkload() throws ExecutionException {
     this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
         .map(MachineComponent::getContainerProvider)
         .ifPresent(component -> component.setInactive((ServerLevel) this.internal.getLevel()));
   }
 
-  public boolean isChunkloadEnabled() {
+  public boolean isChunkloadEnabled() throws ExecutionException {
     return this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
         .map(MachineComponent::getContainerProvider)
@@ -395,7 +392,7 @@ public class MachineControllerJS {
         .orElse(false);
   }
 
-  public int getChunkloadRadius() {
+  public int getChunkloadRadius() throws ExecutionException {
     return this.internal.getComponentManager()
         .getComponent(ComponentRegistration.COMPONENT_CHUNKLOAD.get(), IOType.OUTPUT)
         .map(MachineComponent::getContainerProvider)

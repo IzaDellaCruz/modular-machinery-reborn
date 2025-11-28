@@ -2,7 +2,7 @@ package es.degrassi.mmreborn;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
 import es.degrassi.mmreborn.api.crafting.IProcessor;
@@ -31,7 +31,7 @@ import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
-import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
+import es.degrassi.mmreborn.common.manager.ComponentManager;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -54,9 +54,10 @@ import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import es.degrassi.mmreborn.common.util.LootTableHelper;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.common.util.MiscUtils;
-import es.degrassi.mmreborn.common.util.TaskDelayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.InterModComms;
@@ -67,6 +68,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -77,12 +79,14 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 @Mod(ModularMachineryReborn.MODID)
 public class ModularMachineryReborn {
@@ -91,7 +95,7 @@ public class ModularMachineryReborn {
 
   public static final BiMap<ResourceLocation, DynamicMachine> MACHINES = HashBiMap.create();
   public static final BiMap<ResourceLocation, BlockController> MACHINES_BLOCK = HashBiMap.create();
-  public static final Set<MachineControllerEntity> CONTROLLERS = Sets.newHashSet();
+  public static final List<MachineControllerEntity> CONTROLLERS = Lists.newArrayList();
 
   public ModularMachineryReborn(final ModContainer CONTAINER, final IEventBus MOD_BUS) {
     initConfigs(CONTAINER);
@@ -143,14 +147,19 @@ public class ModularMachineryReborn {
         Pair.of(ItemBusSize.class, (ItemBusSize size) -> {
           size.slots = ItemBusConfig.get().itemSize(size);
           size.cols = ItemBusConfig.get().itemCols(size);
+          size.stackSize = ItemBusConfig.get().stackSize(size);
         }),
         Pair.of(ItemDurabilityHatchSize.class, (ItemDurabilityHatchSize size) -> {
           size.slots = DurabilityHatchConfig.get().durabilitySize(size);
           size.cols = DurabilityHatchConfig.get().durabilityCols(size);
+          size.stackSize = DurabilityHatchConfig.get().stackSize(size);
         }),
         Pair.of(ExperienceHatchSize.class, (ExperienceHatchSize size) -> size.capacity = ExperienceHatchConfig.get().experienceSize(size)),
         Pair.of(ParallelHatchSize.class, (ParallelHatchSize size) -> size.max = ParallelHatchConfig.get().maxParallel(size)),
-        Pair.of(FuelTankSize.class, (FuelTankSize size) -> size.burnTimeCapacity = FuelTankConfig.get().fuelCapacity(size)),
+        Pair.of(FuelTankSize.class, (FuelTankSize size) -> {
+          size.burnTimeCapacity = FuelTankConfig.get().fuelCapacity(size);
+          size.stackSize = FuelTankConfig.get().stackSize(size);
+        }),
         Pair.of(EffectDispenserSize.class, (EffectDispenserSize size) -> {
           size.radius = EffectDispenserConfig.get().radius(size);
           size.interdimensional = EffectDispenserConfig.get().interdimensional(size);
@@ -169,13 +178,16 @@ public class ModularMachineryReborn {
   }
 
   private void breakEvent(final BlockEvent.BreakEvent event) {
-    if (event.getPlayer().level().isClientSide) return;
-    CONTROLLERS
-        .stream()
-        .filter(controller -> controller.getComponentManager().getCachedBlocks().contains(event.getPos()))
-        .forEach(controller -> {
-          controller.setStatus(MachineStatus.MISSING_STRUCTURE);
-        });
+    /*MMRLogger.INSTANCE.debug("breaking event in pos: {}", event.getPos());
+    CONTROLLERS.forEach(controller -> {
+      try {
+        if (ComponentManager.cache.get(controller).contains(event.getPos())) {
+          controller.unform();
+        }
+      } catch (ExecutionException e) {
+        MMRLogger.INSTANCE.error("Error loading cache", e);
+      }
+    });*/
   }
 
   private void syncDatapacks(final OnDatapackSyncEvent event) {
@@ -298,6 +310,23 @@ public class ModularMachineryReborn {
         MMRCommand.reloadMachines(player.server, player);
       }
     }
+  }
+
+  public static MinecraftServer getMinecraftServer() {
+    return ServerLifecycleHooks.getCurrentServer();
+  }
+
+  public static boolean isClientSide() {
+    return FMLEnvironment.dist.isClient();
+  }
+
+  public static boolean canGetServerLevel() {
+    if (isClientSide()) {
+      return Minecraft.getInstance().level != null;
+    }
+    var server = getMinecraftServer();
+    return server != null &&
+        !(server.isStopped() || server.isShutdown() || !server.isRunning() || server.isCurrentlySaving());
   }
 
   public static Registry<ProcessorType<? extends IProcessor>> processorRegistrar() {

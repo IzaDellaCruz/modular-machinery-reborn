@@ -12,13 +12,16 @@ public enum ItemDurabilityHatchSize implements StringRepresentable, ConfigLoaded
 
   public int slots;
   public int cols;
+  public int stackSize;
 
   public final int defaultSlots;
   public final int defaultCols;
+  public final int defaultStackSize;
 
   ItemDurabilityHatchSize(int defaultSlots, int defaultCols) {
     this.defaultSlots = defaultSlots;
     this.defaultCols = defaultCols;
+    this.defaultStackSize = 64;
   }
 
   public static ItemDurabilityHatchSize value(String value) {

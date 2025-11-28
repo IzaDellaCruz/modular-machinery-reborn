@@ -25,7 +25,17 @@ public abstract class TileInventory extends ColorableMachineComponentEntity impl
     this.slots = slots;
   }
 
-  public abstract IOInventory buildInventory(int slots);
+  protected TileInventory(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, int slots, int stackSize) {
+    super(entityType, pos, blockState);
+    this.inventory = buildInventory(slots, stackSize);
+    this.slots = slots;
+  }
+
+  public IOInventory buildInventory(int slots) {
+    return buildInventory(slots, 64);
+  }
+
+  public abstract IOInventory buildInventory(int slots, int slotLimit);
 
   @Override
   protected void loadAdditional(CompoundTag compound, HolderLookup.Provider pRegistries) {

@@ -73,7 +73,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
   protected void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pMovedByPiston) {
     ResourceLocation id = ModularMachineryReborn.MACHINES_BLOCK.inverse().get(this);
     if (id != null && pLevel.getBlockEntity(pPos) instanceof MachineControllerEntity entity) {
-      entity.setId(id);
+      entity.setMachine(id);
       if (entity.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
         pLevel.setBlockAndUpdate(pPos, pState.setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
       }
@@ -91,7 +91,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
     ControllerItem.getMachine(stack).ifPresent(machine -> {
       BlockEntity tile = level.getBlockEntity(pos);
       if (tile instanceof MachineControllerEntity machineTile) {
-        machineTile.setId(machine.getRegistryName());
+        machineTile.setMachine(machine.getRegistryName());
         if (level instanceof ServerLevel serverLevel)
           level.getServer().tell(new TickTask(1, () -> PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), new SMachineUpdatePacket(machine.getRegistryName(), pos))));
       }

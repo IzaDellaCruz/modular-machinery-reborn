@@ -140,12 +140,12 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   }
 
   @Override
-  public IOInventory buildInventory(int slots) {
+  public IOInventory buildInventory(int slots, int stackSize) {
     int[] inSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], stack -> stack.getBurnTime(RecipeType.SMELTING) > 0, Direction.values());
+    return new IOInventory(inSlots, new int[0], stack -> stack.getBurnTime(RecipeType.SMELTING) > 0, stackSize, Direction.values());
   }
 
   @Override
@@ -163,7 +163,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
 
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
-      public void onChange(int slot, ItemStack stack) {
+      public void onChange(int slot, @NotNull ItemStack stack) {
         if (getController() != null)
           getController().getProcessor().setMachineInventoryChanged();
         if (getLevel() instanceof ServerLevel l)

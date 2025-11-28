@@ -27,12 +27,12 @@ public class ItemOutputBusEntity extends TileItemBus implements IAutoOutputEntit
   }
 
   @Override
-  public IOInventory buildInventory(int slots) {
+  public IOInventory buildInventory(int slots, int stackSize) {
     int[] outSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       outSlots[i] = i;
     }
-    return new IOInventory(new int[0], outSlots, Direction.values());
+    return new IOInventory(new int[0], outSlots, stackSize, Direction.values());
   }
 
   @Override

@@ -28,12 +28,12 @@ public class ItemInputBusEntity extends TileItemBus implements IAutoInputEntity 
   }
 
   @Override
-  public IOInventory buildInventory(int slots) {
+  public IOInventory buildInventory(int slots, int stackSize) {
     int[] inSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], Direction.values());
+    return new IOInventory(inSlots, new int[0], stackSize, Direction.values());
   }
 
   @Override

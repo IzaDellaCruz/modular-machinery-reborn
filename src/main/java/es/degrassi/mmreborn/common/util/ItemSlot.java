@@ -1,15 +1,19 @@
 package es.degrassi.mmreborn.common.util;
 
+import com.mojang.datafixers.util.Pair;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.api.network.syncable.ItemStackSyncable;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -50,14 +54,39 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
   }
 
   public void deserialize(HolderLookup.Provider registries, CompoundTag nbt) {
-    if (nbt.contains("item"))
-      stack = ItemStack.parseOptional(registries, nbt.getCompound("item"));
+    if (nbt.contains("item")) {
+      var ops = registries.createSerializationContext(NbtOps.INSTANCE);
+      var item = nbt.getCompound("item");
+      var id = item.get("id");
+      var components = item.get("components");
+      var count = item.getInt("count");
+      AtomicReference<DataComponentPatch> comps = new AtomicReference<>(DataComponentPatch.EMPTY);
+      DataComponentPatch.CODEC.decode(ops, components).result()
+          .map(Pair::getFirst)
+          .ifPresent(comps::set);
+      ItemStack.ITEM_NON_AIR_CODEC.decode(ops, id).result()
+          .map(Pair::getFirst)
+          .ifPresent(itemId -> {
+            stack = new ItemStack(itemId, count, comps.get());
+          });
+    }
   }
 
   public CompoundTag serializeNBT(HolderLookup.Provider registries) {
     var nbt = new CompoundTag();
-    if(!this.stack.isEmpty())
-      nbt.put("item", this.stack.save(registries));
+    var ops = registries.createSerializationContext(NbtOps.INSTANCE);
+    if(!this.stack.isEmpty()) {
+      CompoundTag item = new CompoundTag();
+      ItemStack.ITEM_NON_AIR_CODEC.encodeStart(ops,
+          stack.getItemHolder()).result().ifPresent(id -> {
+          DataComponentPatch.CODEC.encodeStart(ops, this.stack.getComponentsPatch()).result().ifPresent(components -> {
+            item.put("id", id);
+            item.put("components", components);
+            item.putInt("count", this.stack.getCount());
+          });
+      });
+      nbt.put("item", item);
+    }
     nbt.putInt("slot", this.slot);
     nbt.putInt("capacity", capacity);
     nbt.putInt("maxInput", maxInput);
@@ -132,11 +161,10 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
       amountToInsert = Math.min(amountToInsert, this.maxInput);
 
     //Check the inserted stack max size, in case a mod like AE2 try to insert a stack of non-stackable items
-    amountToInsert = Math.min(amountToInsert, stack.getMaxStackSize());
-
+    amountToInsert = stack.isStackable() ? amountToInsert : stack.getMaxStackSize();
     //Check the current stack limit (if not empty stack)
     if(!this.stack.isEmpty())
-      amountToInsert = Math.min(amountToInsert, this.stack.getMaxStackSize() - this.stack.getCount());
+      amountToInsert = Math.min(amountToInsert, this.capacity - this.stack.getCount());
 
     //Check the slot capacity
     amountToInsert = Math.min(amountToInsert, this.capacity - this.stack.getCount());

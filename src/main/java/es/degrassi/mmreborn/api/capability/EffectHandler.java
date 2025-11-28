@@ -6,16 +6,12 @@ import es.degrassi.mmreborn.common.network.server.component.SUpdateEffectCompone
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
@@ -23,12 +19,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class EffectHandler implements INBTSerializable<CompoundTag> {
-  private static final String SIZE_TAG = "size";
-  private static final String EFFECT_TAG = "effect";
-  private static final String IS_APPLYING_TAG = "isApplying";
-
-  private EffectDispenserSize size;
+public class EffectHandler {
   private final EffectDispenserEntity entity;
   @Getter
   @Setter
@@ -36,13 +27,15 @@ public class EffectHandler implements INBTSerializable<CompoundTag> {
   @Getter
   @Setter
   private MobEffectInstance effect;
-  public EffectHandler(EffectDispenserSize size, EffectDispenserEntity entity) {
-    this.size = size;
+  public EffectHandler(EffectDispenserEntity entity) {
     this.entity = entity;
   }
 
-  public void setData(EffectDispenserSize size, Optional<MobEffectInstance> effect) {
-    this.size = size;
+  private EffectDispenserSize getSize() {
+    return entity.getSize();
+  }
+
+  public void setData(Optional<MobEffectInstance> effect) {
     effect.ifPresentOrElse(ef -> {
       this.effect = ef;
       this.isApplyingEffect = true;
@@ -53,8 +46,8 @@ public class EffectHandler implements INBTSerializable<CompoundTag> {
   }
 
   public void applyEffect(MobEffectInstance effect, Predicate<Entity> filter) {
-    this.setData(size, Optional.of(effect));
-    if (size.interdimensional) {
+    this.setData(Optional.of(effect));
+    if (getSize().interdimensional) {
       Stream.Builder<ServerLevel> levels = Stream.builder();
       entity.getLevel().getServer().getAllLevels().forEach(levels::add);
       levels
@@ -70,34 +63,15 @@ public class EffectHandler implements INBTSerializable<CompoundTag> {
       return;
     }
     BlockPos machinePos = entity.getBlockPos();
-    AABB bb = new AABB(machinePos).inflate(size.radius);
+    AABB bb = new AABB(machinePos).inflate(getSize().radius);
     entity.getLevel().getEntitiesOfClass(LivingEntity.class, bb, filter).stream()
-        .filter(entity -> entity.distanceToSqr(machinePos.getX(), machinePos.getY(), machinePos.getZ()) < size.radius * size.radius)
+        .filter(entity -> entity.distanceToSqr(machinePos.getX(), machinePos.getY(), machinePos.getZ()) < getSize().radius * getSize().radius)
         .forEach(entity -> entity.addEffect(effect));
     setChanged();
   }
 
-  @Override
-  public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-    CompoundTag nbt = new CompoundTag();
-    nbt.putString(SIZE_TAG, size.getSerializedName());
-    nbt.putBoolean(IS_APPLYING_TAG, isApplyingEffect);
-    if (effect != null && !entity.getLevel().isClientSide)
-      nbt.put(EFFECT_TAG, MobEffectInstance.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), effect).getOrThrow());
-    return nbt;
-  }
-
-  @Override
-  public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-    this.size = EffectDispenserSize.value(nbt.getString(SIZE_TAG));
-    this.isApplyingEffect = nbt.getBoolean(IS_APPLYING_TAG);
-    if (nbt.contains(EFFECT_TAG))
-      this.effect = loadEffect(nbt.getCompound(EFFECT_TAG), provider);
-    else effect = null;
-  }
-
   public void resetEffect() {
-    setData(size, Optional.empty());
+    setData(Optional.empty());
     setChanged();
   }
 
@@ -105,14 +79,7 @@ public class EffectHandler implements INBTSerializable<CompoundTag> {
     entity.setChanged();
     if (entity.getLevel() instanceof ServerLevel sl) {
       PacketDistributor.sendToPlayersTrackingChunk(sl, new ChunkPos(entity.getBlockPos()),
-          new SUpdateEffectComponent(size, Optional.ofNullable(effect), entity.getBlockPos()));
+          new SUpdateEffectComponent(Optional.ofNullable(effect), entity.getBlockPos()));
     }
-  }
-
-  private static MobEffectInstance loadEffect(CompoundTag nbt, HolderLookup.Provider provider) {
-    return MobEffectInstance.CODEC
-        .parse(provider.createSerializationContext(NbtOps.INSTANCE), nbt)
-        .resultOrPartial()
-        .orElse(null);
   }
 }
