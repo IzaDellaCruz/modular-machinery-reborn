@@ -1,7 +1,9 @@
 package es.degrassi.mmreborn.common.item;
 
+import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
+import es.degrassi.mmreborn.api.MinBlocksPredicate;
 import es.degrassi.mmreborn.common.block.BlockController;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.BlockRegistration;
@@ -57,6 +59,8 @@ public class ControllerItem extends ItemBlockMachineComponent {
     getMachine(stack).ifPresentOrElse(machine -> {
       if (tooltipFlag.hasShiftDown()) {
         tooltipComponents.add(Component.translatable("modular_machinery_reborn.controller.required").withStyle(ChatFormatting.GRAY));
+        Map<String, MinBlocksPredicate.MinMax> predicates = machine.getPattern().minBlocks().minBlocks();
+        Map<MutableComponent, MutableComponent> minmaxComps = Maps.newHashMap();
         machine.getPattern()
             .getPattern()
             .asList()
@@ -71,6 +75,10 @@ public class ControllerItem extends ItemBlockMachineComponent {
               if (ingredient == null) return null;
               HashMap<BlockIngredient, Long> ing = new HashMap<>();
               ing.put(ingredient, entry.getValue());
+              var unified = ingredient.getNamesUnified();
+              Optional.ofNullable(predicates.get(ingredient.getId()))
+                  .map(MinBlocksPredicate.MinMax::guiText)
+                  .ifPresent(text -> minmaxComps.put(unified, text));
               return ing.entrySet();
             })
             .filter(Objects::nonNull)
@@ -78,6 +86,9 @@ public class ControllerItem extends ItemBlockMachineComponent {
             .collect(Collectors.groupingBy(entry -> entry.getKey().getNamesUnified(), Collectors.summingLong(Map.Entry::getValue)))
             .forEach((component, amount) -> {
               if (component != null && amount > 0) {
+                var minmaxComp = minmaxComps.get(component);
+                if (minmaxComp != null)
+                  component.append(minmaxComp.withStyle(ChatFormatting.DARK_GRAY));
                 tooltipComponents.add(
                     Component.translatable(
                         "modular_machinery_reborn.controller.required.item",

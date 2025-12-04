@@ -19,6 +19,9 @@ public final class ZhCnLang extends Lang {
     add(mm("controller.tooltip.0"), "使用蓝图右键已放置的控制器");
     add(mm("controller.tooltip.1"), "来显示关于这个控制器的结构");
     add(mm("controller.no_machine"), "未找到机器");
+    add(mmr("controller.max"), " (Max: %s)");
+    add(mmr("controller.min"), " (Min: %s)");
+    add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[SHIFT]");
     add(mm("controller.control"), "[CTRL]");
     add(mm("controller.shift.blocks"), "显示需求的方块");

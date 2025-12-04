@@ -31,7 +31,6 @@ import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
-import es.degrassi.mmreborn.common.manager.ComponentManager;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -76,7 +75,6 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -112,7 +110,6 @@ public class ModularMachineryReborn {
 
     final IEventBus GAME_BUS = NeoForge.EVENT_BUS;
     GAME_BUS.addListener(this::serverStarting);
-    GAME_BUS.addListener(this::breakEvent);
     GAME_BUS.addListener(this::syncDatapacks);
     GAME_BUS.addListener(this::registerReloadListener);
     GAME_BUS.addListener(this::registerCommands);
@@ -175,19 +172,6 @@ public class ModularMachineryReborn {
 
   private void serverStarting(final ServerStartingEvent event) {
     LootTableHelper.generate(event.getServer());
-  }
-
-  private void breakEvent(final BlockEvent.BreakEvent event) {
-    /*MMRLogger.INSTANCE.debug("breaking event in pos: {}", event.getPos());
-    CONTROLLERS.forEach(controller -> {
-      try {
-        if (ComponentManager.cache.get(controller).contains(event.getPos())) {
-          controller.unform();
-        }
-      } catch (ExecutionException e) {
-        MMRLogger.INSTANCE.error("Error loading cache", e);
-      }
-    });*/
   }
 
   private void syncDatapacks(final OnDatapackSyncEvent event) {

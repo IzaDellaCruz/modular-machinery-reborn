@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.mmreborn.api.BlockIngredient;
+import es.degrassi.mmreborn.api.MinBlocksPredicate;
 import es.degrassi.mmreborn.client.item.MMRItemTooltipComponent;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.popup.ConfirmationPopup;
@@ -113,6 +114,7 @@ public class StructurePlacerWidget extends TopTabWidget {
               if (Screen.hasShiftDown()) {
                 components.add(Either.left(Component.translatable("modular_machinery_reborn.controller.required").withStyle(ChatFormatting.GRAY)));
                 Map<MutableComponent, List<ItemStack>> map = Maps.newHashMap();
+                Map<String, MinBlocksPredicate.MinMax> predicates = machine.getPattern().minBlocks().minBlocks();
                 machine.getPattern()
                     .getPattern()
                     .asList()
@@ -125,7 +127,12 @@ public class StructurePlacerWidget extends TopTabWidget {
                     .map(entry -> {
                       BlockIngredient ingredient = machine.getPattern().getPattern().asMap().get(entry.getKey());
                       if (ingredient == null) return null;
-                      return Pair.of(ingredient.getStacks(entry.getValue().intValue()), ingredient.getNamesUnified());
+                      var unified = ingredient.getNamesUnified();
+                      Optional.ofNullable(predicates.get(ingredient.getId()))
+                          .map(MinBlocksPredicate.MinMax::guiText)
+                          .map(t -> t.withStyle(ChatFormatting.DARK_GRAY))
+                          .ifPresent(unified::append);
+                      return Pair.of(ingredient.getStacks(entry.getValue().intValue()), unified);
                     })
                     .filter(Objects::nonNull)
                     .forEachOrdered(pair -> {

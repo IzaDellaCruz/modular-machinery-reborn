@@ -19,6 +19,9 @@ public final class PtBrLang extends Lang {
     add(mm("controller.tooltip.0"), "Clique no controlador posicionado com um projeto");
     add(mm("controller.tooltip.1"), "para mostrar a estrutura ao redor do controlador.");
     add(mm("controller.no_machine"), "Nenhuma máquina fornecida");
+    add(mmr("controller.max"), " (Max: %s)");
+    add(mmr("controller.min"), " (Min: %s)");
+    add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[SHIFT]");
     add(mm("controller.control"), "[CTRL]");
     add(mm("controller.shift.blocks"), "para mostrar os blocos necessários");

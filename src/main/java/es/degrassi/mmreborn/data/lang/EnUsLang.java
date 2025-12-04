@@ -19,6 +19,9 @@ public final class EnUsLang extends Lang {
     add(mm("controller.tooltip.0"), "Click in placed controller with blueprint");
     add(mm("controller.tooltip.1"), "to show the structure around the controller");
     add(mm("controller.no_machine"), "No machine provided");
+    add(mmr("controller.max"), " (Max: %s)");
+    add(mmr("controller.min"), " (Min: %s)");
+    add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[SHIFT]");
     add(mm("controller.control"), "[CTRL]");
     add(mm("controller.shift.blocks"), "to show the required blocks");

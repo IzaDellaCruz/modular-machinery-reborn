@@ -19,6 +19,9 @@ public final class RuRuLang extends Lang {
     add(mm("controller.tooltip.0"), "Нажмите по контроллеру с чертежом,");
     add(mm("controller.tooltip.1"), "Чтобы показать мульти-структуру.");
     add(mm("controller.no_machine"), "Не существует мульти-структуры");
+    add(mmr("controller.max"), " (Max: %s)");
+    add(mmr("controller.min"), " (Min: %s)");
+    add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[Shift]");
     add(mm("controller.control"), "[Ctrl]");
     add(mm("controller.shift.blocks"), "чтобы отобразить список блоков");

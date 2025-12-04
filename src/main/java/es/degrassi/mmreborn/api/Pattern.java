@@ -131,14 +131,15 @@ public class Pattern {
     return keys;
   }
 
-  public boolean match(LevelReader world, BlockPos machinePos, Direction machineFacing) {
+  public boolean match(LevelReader world, BlockPos machinePos, Direction machineFacing, MinBlocksPredicate predicate) {
+    predicate.reset();
     Map<BlockPos, BlockIngredient> blocks = get(machineFacing);
     BlockPos.MutableBlockPos worldPos = new BlockPos.MutableBlockPos();
     for (BlockPos pos : blocks.keySet()) {
       BlockIngredient ingredient = blocks.get(pos);
       worldPos.set(pos.getX() + machinePos.getX(), pos.getY() + machinePos.getY(), pos.getZ() + machinePos.getZ());
       BlockInWorld info = new BlockInWorld(world, worldPos, false);
-      if (!ingredient.test(info)) return false;
+      if (!predicate.test(ingredient, info)) return false;
     }
     return true;
   }
