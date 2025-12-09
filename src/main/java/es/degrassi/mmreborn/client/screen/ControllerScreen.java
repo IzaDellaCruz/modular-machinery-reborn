@@ -193,6 +193,13 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
       guiGraphics.drawString(font, draw, offsetX, offsetY, 0xFFFFFF);
       offsetY += 7;
     }
+    Component structureError = getMenu().getEntity().getStructureError();
+    out = font.split(structureError, Mth.floor(screenWidth * (1 / scale)));
+    for (var draw : out) {
+      offsetY += 7;
+      guiGraphics.drawString(font, draw, offsetX, offsetY, 0xFFFFFF);
+      offsetY += 7;
+    }
     guiGraphics.pose().popPose();
     renderTooltip(guiGraphics, mouseX, mouseY);
   }

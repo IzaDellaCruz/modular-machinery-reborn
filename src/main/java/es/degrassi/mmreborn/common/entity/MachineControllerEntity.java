@@ -48,6 +48,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -84,6 +85,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   private ResourceLocation id = DynamicMachine.DUMMY.getRegistryName();
   private MachineStatus status = MachineStatus.IDLE;
   private Component errorMessage = Component.empty();
+  private Component structureError = Component.empty();
   private final ComponentManager componentManager;
   private final MachineProcessor processor;
   private int lastFocus;
@@ -234,7 +236,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void checkStructure(boolean immediate) {
     if (this.getFoundMachine() == DynamicMachine.DUMMY || getLevel() == null) return;
     long gameTime = getLevel().getGameTime();
-    unform();
+    onStructureUnformed();
     setRequestModelUpdate(true);
     setChanged();
     if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
@@ -324,21 +326,11 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(registries), s -> craftingStatus = CraftingStatus.deserialize(s, registries)));
     container.accept(StringSyncable.create(() -> this.status.toString(), status -> this.status = MachineStatus.value(status)));
     container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.errorMessage, registries), errorMessage -> this.errorMessage = Component.Serializer.fromJson(errorMessage, registries)));
+    container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.structureError, registries), errorMessage -> this.structureError = Component.Serializer.fromJson(errorMessage, registries)));
   }
 
   public SoundType getInteractionSound() {
     return getFoundMachine().getInteractionSound(status);
-  }
-
-  public void unform() {
-    if (getLevel() instanceof ServerLevel sl) {
-      this.formed = false;
-      setStatus(MachineStatus.MISSING_STRUCTURE);
-      processor.reset();
-      componentManager.resetWithColor();
-      MMRWorldSavedData.getOrCreate(sl).addAsyncLogic(this);
-      setChanged();
-    }
   }
 
   @Override
@@ -354,14 +346,14 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void onBlockStateChanged(BlockPos pos, BlockState newState) {
     if (level instanceof ServerLevel serverLevel) {
       if (pos.equals(getBlockPos())) {
-        unform();
+        onStructureUnformed();
         var mwsd = MMRWorldSavedData.getOrCreate(serverLevel);
         mwsd.removeMapping(this);
       } else {
         if (getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getFacing())) {
           onStructureFormed();
         } else {
-          unform();
+          onStructureUnformed();
           var mwsd = MMRWorldSavedData.getOrCreate(serverLevel);
           mwsd.removeMapping(this);
           mwsd.addAsyncLogic(this);
@@ -378,9 +370,30 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     formed = true;
     setStatus(MachineStatus.IDLE);
     componentManager.updateComponents();
+    this.structureError = Component.empty();
     try {
       ComponentManager.cache.get(this).forEach(this::tryColorize);
     } catch (ExecutionException ignored) {}
+  }
+
+  private List<Component> getStructureErrors() {
+    return getFoundMachine().getPattern().getMinBlocksPredicate().getErrors();
+  }
+
+  public Component formatStructureErrors() {
+    return getStructureErrors().stream().reduce(Component.empty(), MutableComponent::append, MutableComponent::append);
+  }
+
+  public void onStructureUnformed() {
+    if (getLevel() instanceof ServerLevel sl) {
+      this.formed = false;
+      setStatus(MachineStatus.MISSING_STRUCTURE);
+      this.structureError = formatStructureErrors();
+      processor.reset();
+      componentManager.resetWithColor();
+      MMRWorldSavedData.getOrCreate(sl).addAsyncLogic(this);
+      setChanged();
+    }
   }
 
   @Getter
@@ -388,10 +401,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void asyncCheckPattern(long periodID) {
-    if (
-        (craftingStatus.isFailure() || !formed)
-            && !Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())
-    ) {
+    if (!formed && Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) {
       lastCheckTick = periodID;
       if (getLevel() instanceof ServerLevel sl) {
         sl.getServer().execute(() -> {
@@ -401,6 +411,8 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
             var mwsd = MMRWorldSavedData.getOrCreate(sl);
             mwsd.addMapping(this);
             mwsd.removeAsyncLogic(this);
+          } else {
+            onStructureUnformed();
           }
           patternLock.unlock();
         });

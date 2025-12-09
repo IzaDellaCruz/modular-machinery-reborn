@@ -58,11 +58,14 @@ public final class EsEsLang extends Lang {
     add(mm("controller.tooltip.0"), "Click in placed controller with blueprint");
     add(mm("controller.tooltip.1"), "to show the structure around the controller");
     add(mm("controller.no_machine"), "No machine provided");
+    add(mmr("controller.exactly"), " (Exactly %s)");
     add(mmr("controller.max"), " (Max: %s)");
     add(mmr("controller.min"), " (Min: %s)");
     add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[SHIFT]");
     add(mm("controller.control"), "[CTRL]");
+    add(mm("controller.alt"), "[ALT]");
+    add(mm("controller.alt.minmax"), "to show the min-max specifications");
     add(mm("controller.shift.blocks"), "to show the required blocks");
     add(mm("controller.control.modifier"), "to show the modifier blocks");
     add(mm("controller.required"), "Required:");
@@ -77,6 +80,10 @@ public final class EsEsLang extends Lang {
     add(mmr("place.no_item"), "Tried to place %s in %s but couldn't find the item %s in the player inventory");
     add(mmr("place.replace"), "Breaking %s at %s to place new block...");
     add(mmr("damagesource.kill"), "%s was killed by a %s");
+    add(mmr("structure.error.exact"), "Expected %s, but found %s (%s)");
+    add(mmr("structure.error.max"), "Expected at most %s, but found %s (%s)");
+    add(mmr("structure.error.min"), "Expected at least %s, but found %s (%s)");
+    add(mmr("structure.error.between"), "Expected to be between %s and %s, but found %s (%s)");
   }
 
   @Override

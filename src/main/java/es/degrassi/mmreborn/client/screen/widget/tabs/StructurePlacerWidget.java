@@ -2,10 +2,10 @@ package es.degrassi.mmreborn.client.screen.widget.tabs;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.mmreborn.api.BlockIngredient;
-import es.degrassi.mmreborn.api.MinBlocksPredicate;
 import es.degrassi.mmreborn.client.item.MMRItemTooltipComponent;
 import es.degrassi.mmreborn.client.screen.ControllerScreen;
 import es.degrassi.mmreborn.client.screen.popup.ConfirmationPopup;
@@ -25,6 +25,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -111,10 +112,21 @@ public class StructurePlacerWidget extends TopTabWidget {
     components.add(Either.left(component));
     Optional.of(parentScreen.getMenu().getEntity().getFoundMachine())
         .ifPresentOrElse(machine -> {
-              if (Screen.hasShiftDown()) {
+              if (Screen.hasShiftDown() && InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_N)) {
+                machine.getPattern().getMinBlocksPredicate()
+                    .minBlocks()
+                    .forEach((key, value) -> {
+                      components.add(Either.left(Component.translatable(
+                          "modular_machinery_reborn.controller.required.block",
+                          key.getNamesUnified().append(value.guiText())
+                      ).withStyle(ChatFormatting.GRAY)));
+                    });
+              } else if (Screen.hasShiftDown()) {
+                components.add(Either.left(Component.translatable("modular_machinery_reborn.controller.required.block.key",
+                    Component.translatable("modular_machinery_reborn.controller.required.shift").append(" + N")
+                        .withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY)));
                 components.add(Either.left(Component.translatable("modular_machinery_reborn.controller.required").withStyle(ChatFormatting.GRAY)));
                 Map<MutableComponent, List<ItemStack>> map = Maps.newHashMap();
-                Map<String, MinBlocksPredicate.MinMax> predicates = machine.getPattern().minBlocks().minBlocks();
                 machine.getPattern()
                     .getPattern()
                     .asList()
@@ -127,12 +139,7 @@ public class StructurePlacerWidget extends TopTabWidget {
                     .map(entry -> {
                       BlockIngredient ingredient = machine.getPattern().getPattern().asMap().get(entry.getKey());
                       if (ingredient == null) return null;
-                      var unified = ingredient.getNamesUnified();
-                      Optional.ofNullable(predicates.get(ingredient.getId()))
-                          .map(MinBlocksPredicate.MinMax::guiText)
-                          .map(t -> t.withStyle(ChatFormatting.DARK_GRAY))
-                          .ifPresent(unified::append);
-                      return Pair.of(ingredient.getStacks(entry.getValue().intValue()), unified);
+                      return Pair.of(ingredient.getStacks(entry.getValue().intValue()), ingredient.getNamesUnified());
                     })
                     .filter(Objects::nonNull)
                     .forEachOrdered(pair -> {
@@ -170,7 +177,11 @@ public class StructurePlacerWidget extends TopTabWidget {
                 });
               } else {
                 components.add(Either.left(Component.translatable("modular_machinery_reborn.controller.required.block.key",
-                    Component.translatable("modular_machinery_reborn.controller.required.shift").withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY)));
+                    Component.translatable("modular_machinery_reborn.controller.required.shift").append(" + N")
+                        .withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY)));
+                components.add(Either.left(Component.translatable("modular_machinery_reborn.controller.required.block.key",
+                    Component.translatable("modular_machinery_reborn.controller.required.shift")
+                        .withStyle(ChatFormatting.YELLOW)).withStyle(ChatFormatting.GRAY)));
               }
 
               if (Screen.hasControlDown() && !Screen.hasShiftDown()) {

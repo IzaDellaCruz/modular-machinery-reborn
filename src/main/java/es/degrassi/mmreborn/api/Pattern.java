@@ -132,7 +132,6 @@ public class Pattern {
   }
 
   public boolean match(LevelReader world, BlockPos machinePos, Direction machineFacing, MinBlocksPredicate predicate) {
-    predicate.reset();
     Map<BlockPos, BlockIngredient> blocks = get(machineFacing);
     BlockPos.MutableBlockPos worldPos = new BlockPos.MutableBlockPos();
     for (BlockPos pos : blocks.keySet()) {

@@ -19,11 +19,14 @@ public final class ZhCnLang extends Lang {
     add(mm("controller.tooltip.0"), "使用蓝图右键已放置的控制器");
     add(mm("controller.tooltip.1"), "来显示关于这个控制器的结构");
     add(mm("controller.no_machine"), "未找到机器");
+    add(mmr("controller.exactly"), " (Exactly %s)");
     add(mmr("controller.max"), " (Max: %s)");
     add(mmr("controller.min"), " (Min: %s)");
     add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[SHIFT]");
     add(mm("controller.control"), "[CTRL]");
+    add(mm("controller.alt"), "[ALT]");
+    add(mm("controller.alt.minmax"), "to show the min-max specifications");
     add(mm("controller.shift.blocks"), "显示需求的方块");
     add(mm("controller.control.modifier"), "显示调节器方块");
     add(mm("controller.required"), "需要:");
@@ -38,6 +41,10 @@ public final class ZhCnLang extends Lang {
     add(mmr("place.no_item"), "尝试放置 %s 在 %s 但是在玩家库存中未找到 %s ");
     add(mmr("place.replace"), "正在破坏 %s 位于 %s 以放置新方块");
     add(mmr("damagesource.kill"), "%s was killed by a %s");
+    add(mmr("structure.error.exact"), "Expected %s, but found %s (%s)");
+    add(mmr("structure.error.max"), "Expected at most %s, but found %s (%s)");
+    add(mmr("structure.error.min"), "Expected at least %s, but found %s (%s)");
+    add(mmr("structure.error.between"), "Expected to be between %s and %s, but found %s (%s)");
   }
 
   @Override

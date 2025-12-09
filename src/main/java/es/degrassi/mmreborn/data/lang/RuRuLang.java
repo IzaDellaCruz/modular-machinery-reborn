@@ -19,11 +19,14 @@ public final class RuRuLang extends Lang {
     add(mm("controller.tooltip.0"), "Нажмите по контроллеру с чертежом,");
     add(mm("controller.tooltip.1"), "Чтобы показать мульти-структуру.");
     add(mm("controller.no_machine"), "Не существует мульти-структуры");
+    add(mmr("controller.exactly"), " (Exactly %s)");
     add(mmr("controller.max"), " (Max: %s)");
     add(mmr("controller.min"), " (Min: %s)");
     add(mmr("controller.min_max"), " (Min: %s, Max: %s)");
     add(mm("controller.shift"), "[Shift]");
     add(mm("controller.control"), "[Ctrl]");
+    add(mm("controller.alt"), "[ALT]");
+    add(mm("controller.alt.minmax"), "to show the min-max specifications");
     add(mm("controller.shift.blocks"), "чтобы отобразить список блоков");
     add(mm("controller.control.modifier"), "чтобы отобразить список модифицируемых блоков");
     add(mm("controller.required"), "Требуется:");
@@ -38,6 +41,10 @@ public final class RuRuLang extends Lang {
     add(mmr("place.no_item"), "Не удалось разместить блок %s в %s, отсутствует предмет в инвентаре");
     add(mmr("place.replace"), "Убирается блок %s в %s, чтобы разместить другой блок");
     add(mmr("damagesource.kill"), "%s was killed by a %s");
+    add(mmr("structure.error.exact"), "Expected %s, but found %s (%s)");
+    add(mmr("structure.error.max"), "Expected at most %s, but found %s (%s)");
+    add(mmr("structure.error.min"), "Expected at least %s, but found %s (%s)");
+    add(mmr("structure.error.between"), "Expected to be between %s and %s, but found %s (%s)");
   }
 
   @Override

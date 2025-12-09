@@ -61,7 +61,7 @@ public class MMRCommand {
           player.sendSystemMessage(Component.translatable(ModularMachineryReborn.MODID + ".command.reload.machines").withStyle(ChatFormatting.GRAY));
       })
       .thenRun(() ->
-          ModularMachineryReborn.CONTROLLERS.forEach(MachineControllerEntity::unform)
+          ModularMachineryReborn.CONTROLLERS.forEach(MachineControllerEntity::onStructureUnformed)
       );
   }
 }
