@@ -57,7 +57,7 @@ public final class MinBlocksPredicate implements BiPredicate<BlockIngredient, Bl
     errors.clear();
   }
 
-  public Optional<Component> compute(BlockInWorld block) {
+  private Optional<Component> compute(BlockInWorld block) {
     for (var entry : minBlocks.entrySet()) {
       var key = entry.getKey();
       var value = entry.getValue();
@@ -74,8 +74,7 @@ public final class MinBlocksPredicate implements BiPredicate<BlockIngredient, Bl
   @Override
   public boolean test(BlockIngredient blockIngredient, BlockInWorld blockInWorld) {
     if (!blockIngredient.test(blockInWorld)) return false;
-    var result = compute(blockInWorld);
-    return result.map(pair -> {
+    return compute(blockInWorld).map(pair -> {
       errors.add(pair);
       return false;
     }).orElse(true);

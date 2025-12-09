@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Pattern {
   private final List<List<String>> strings;
@@ -140,7 +141,15 @@ public class Pattern {
       BlockInWorld info = new BlockInWorld(world, worldPos, false);
       if (!predicate.test(ingredient, info)) return false;
     }
-    return true;
+    AtomicBoolean result = new AtomicBoolean(true);
+    predicate.getTests().forEach((ing, found) -> {
+      var minmax = predicate.minBlocks().get(ing);
+      if (!minmax.test(found)) {
+        result.set(false);
+        predicate.getErrors().add(minmax.errorMessage(found, ing.getNamesUnified()));
+      }
+    });
+    return result.get();
   }
 
   public JsonObject asJson() {
