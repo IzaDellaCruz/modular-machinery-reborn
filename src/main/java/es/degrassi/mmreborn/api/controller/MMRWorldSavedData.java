@@ -113,11 +113,11 @@ public class MMRWorldSavedData extends SavedData {
         try {
           controller.asyncCheckPattern(periodID);
         } catch(Throwable e) {
-          MMRLogger.INSTANCE.error("Error while assembling multiblock {}: {}", controller.getId(), e.getMessage());
+          MMRLogger.INSTANCE.error("Error while assembling multiblock {}", controller.getId(), e);
         }
       }
     } catch(Throwable e) {
-      MMRLogger.INSTANCE.error("Error while assembling multiblocks: {}", e.getMessage());
+      MMRLogger.INSTANCE.error("Error while assembling multiblocks", e);
     } finally {
       IN_SERVICE.set(false);
     }

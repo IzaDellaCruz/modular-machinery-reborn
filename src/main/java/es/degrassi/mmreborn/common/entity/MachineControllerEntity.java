@@ -187,7 +187,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   }
 
   @Override
-  @SneakyThrows
   public void doRestrictedTick() {
     IServerTickEntity.super.doRestrictedTick();
 
@@ -220,13 +219,12 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     ComponentManager.cache.refresh(this);
     tryColorize(getBlockPos());
     if (getLevel() instanceof ServerLevel l) {
-      PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SMachineUpdatePacket(id, getBlockPos()));
+      PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SMachineUpdatePacket(machine, getBlockPos()));
       var mwsd = MMRWorldSavedData.getOrCreate(l);
       mwsd.removeMapping(this);
       mwsd.removeAsyncLogic(this);
       mwsd.addAsyncLogic(this);
     }
-    setRequestModelUpdate(true);
     refreshClientData();
     setChanged();
   }
@@ -235,7 +233,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     if (this.getFoundMachine() == DynamicMachine.DUMMY || getLevel() == null) return;
     long gameTime = getLevel().getGameTime();
     unform();
-    setRequestModelUpdate(true);
+    refreshClientData();
     setChanged();
     if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
     lastCheckTick = gameTime;
@@ -281,8 +279,11 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     this.craftingStatus = CraftingStatus.deserialize(compound.getCompound("status"), pRegistries);
     this.processor.deserialize(compound.getCompound("craftingManager"));
     this.isPaused = compound.getBoolean("isPaused");
-    setMachine(ResourceLocation.parse(compound.getString("machine")));
-    setStatus(MachineStatus.MISSING_STRUCTURE);
+    this.id = ResourceLocation.parse(compound.getString("machine"));
+    if (getLevel() != null && !getLevel().isClientSide) {
+      setMachine(id);
+      setStatus(MachineStatus.MISSING_STRUCTURE);
+    }
   }
 
   @Override
@@ -388,10 +389,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void asyncCheckPattern(long periodID) {
-    if (
-        (craftingStatus.isFailure() || !formed)
-            && !Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())
-    ) {
+    if (!formed && !Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) {
       lastCheckTick = periodID;
       if (getLevel() instanceof ServerLevel sl) {
         sl.getServer().execute(() -> {
