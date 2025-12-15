@@ -60,11 +60,9 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
     if (!this.initialized)
       this.init();
 
-    if (this.tile.getStatus().isMissingStructure()) return;
-
     this.cores.forEach(MachineProcessorCore::tick);
 
-    if (this.tile.getStatus() == MachineStatus.RUNNING && this.cores.stream().noneMatch(MachineProcessorCore::hasActiveRecipe) && !this.tile.getStatus().isMissingStructure()) {
+    if (this.tile.getStatus() != MachineStatus.IDLE && this.cores.stream().noneMatch(MachineProcessorCore::hasActiveRecipe) && !this.tile.getStatus().isMissingStructure()) {
       this.tile.setStatus(MachineStatus.IDLE);
     }
   }
@@ -79,9 +77,9 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
   private void init() {
     this.initialized = true;
     AtomicInteger cores = new AtomicInteger(1);
-      tile.getComponentManager().getParallel().ifPresent(pos -> cores.set(pos.getContainerProvider()));
-      updateActiveCores(cores.get());
-      this.cores.forEach(MachineProcessorCore::init);
+    tile.getComponentManager().getParallel().ifPresent(pos -> cores.set(pos.getContainerProvider()));
+    updateActiveCores(cores.get());
+    this.cores.forEach(MachineProcessorCore::init);
   }
 
   public void setRunning() {

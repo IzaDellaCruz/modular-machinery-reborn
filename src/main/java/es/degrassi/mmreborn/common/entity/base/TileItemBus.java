@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
+import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
@@ -61,8 +62,13 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
       public void onChange(int slot, ItemStack stack) {
-        if (getController() != null)
-          getController().getProcessor().setMachineInventoryChanged();
+        getControllerPosSet().forEach(p -> {
+          if (getLevel() == null) return;
+          if (getLevel().isClientSide()) return;
+          if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+            controller.getProcessor().setMachineInventoryChanged();
+          }
+        });
         if (getLevel() instanceof ServerLevel l)
           PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()),
               new SUpdateItemComponentPacket(slot, stack, getBlockPos()));
@@ -102,8 +108,13 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
       public void onChange(int slot, ItemStack stack) {
-        if (getController() != null)
-          getController().getProcessor().setMachineInventoryChanged();
+        getControllerPosSet().forEach(p -> {
+          if (getLevel() == null) return;
+          if (getLevel().isClientSide()) return;
+          if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+            controller.getProcessor().setMachineInventoryChanged();
+          }
+        });
         if (getLevel() instanceof ServerLevel l)
           PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()),
               new SUpdateItemComponentPacket(slot, stack, getBlockPos()));

@@ -189,16 +189,18 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   @Override
   public void doRestrictedTick() {
     IServerTickEntity.super.doRestrictedTick();
-
-    if (!isFormed() || craftingStatus.isMissingStructure() || status.isMissingStructure()) return;
+    assert level != null;
+    if (!isFormed()) return;
 
     tryPause();
     if (isPaused() || craftingStatus.isFailure()) return;
+    level.getProfiler().push("Crafting Manager tick");
     try {
       processor.tick();
     } catch (ComponentNotFoundException e) {
       ModularMachineryReborn.LOGGER.error(e.getMessage());
     }
+    level.getProfiler().pop();
   }
 
   @Override
@@ -208,7 +210,8 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     if (getLevel() instanceof ServerLevel serverLevel && !getFoundMachine().isDummy()) {
       componentManager.reset();
       processor.reset();
-      MMRWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
+      MMRWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
+      MMRWorldSavedData.getOrCreate(serverLevel).removeMapping(this);
     }
     super.setRemoved();
   }

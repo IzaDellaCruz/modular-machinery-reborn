@@ -86,8 +86,13 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
       public void onChange(int slot, @NotNull ItemStack stack) {
-        if (getController() != null)
-          getController().getProcessor().setMachineInventoryChanged();
+        getControllerPosSet().forEach(p -> {
+          if (getLevel() == null) return;
+          if (getLevel().isClientSide()) return;
+          if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+            controller.getProcessor().setMachineInventoryChanged();
+          }
+        });
         if (getLevel() instanceof ServerLevel l)
           PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()),
               new SUpdateItemComponentPacket(slot, stack, getBlockPos()));
@@ -164,8 +169,13 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
       @Override
       public void onChange(int slot, @NotNull ItemStack stack) {
-        if (getController() != null)
-          getController().getProcessor().setMachineInventoryChanged();
+        getControllerPosSet().forEach(p -> {
+          if (getLevel() == null) return;
+          if (getLevel().isClientSide()) return;
+          if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+            controller.getProcessor().setMachineInventoryChanged();
+          }
+        });
         if (getLevel() instanceof ServerLevel l)
           PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()),
               new SUpdateItemComponentPacket(slot, stack, getBlockPos()));

@@ -192,6 +192,9 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
       cache.get(controller).forEach(pos -> {
         var oldState = controller.getLevel().getBlockState(pos);
         var entity = controller.getLevel().getBlockEntity(pos);
+        if (entity instanceof ColorableMachineComponentEntity ce) {
+          ce.getControllerPosSet().add(controller.getBlockPos());
+        }
         if (!(entity instanceof TextureableMachineEntity)) return;
         var data = entity.getModelData();
         if (!data.has(HatchBakedModel.TEXTURE_DATA)) return;

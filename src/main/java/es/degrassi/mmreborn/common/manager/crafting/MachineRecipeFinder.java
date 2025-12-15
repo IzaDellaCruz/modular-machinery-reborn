@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
+import es.degrassi.mmreborn.common.util.Comparators;
 import lombok.Setter;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import com.google.common.collect.Lists;
@@ -36,13 +37,13 @@ public class MachineRecipeFinder {
 
   public void init() {
     if (tile.getLevel() == null)
-      throw new IllegalStateException("Broken machine " + tile.getFoundMachine().getRegistryName() + "doesn't have a world");
+      throw new IllegalStateException("Broken machine " + tile.getId() + "doesn't have a world");
     this.recipes = tile.getLevel()
         .getRecipeManager()
         .getAllRecipesFor(RecipeRegistration.RECIPE_TYPE.get())
         .stream()
         .filter(recipe -> recipe.value().getOwningMachineIdentifier().equals(tile.getId()))
-        .sorted(Comparator.comparing(RecipeHolder::value))
+        .sorted(Comparators::compareRecipes)
         .map(RecipeChecker::new)
         .toList()
         .reversed();
@@ -51,10 +52,7 @@ public class MachineRecipeFinder {
   }
 
   public Optional<RecipeHolder<MachineRecipe>> findRecipe(boolean immediately) {
-    if (tile.getLevel() == null)
-      return Optional.empty();
-
-    if (!this.core.isActive())
+    if (tile.getLevel() == null || !this.core.isActive())
       return Optional.empty();
 
     if (immediately || this.recipeCheckCooldown-- <= 0) {
@@ -69,7 +67,7 @@ public class MachineRecipeFinder {
         if (!this.componentChanged && checker.isInventoryRequirementsOnly() && !immediately)
           continue;
         if (checker.check(this.tile, this.mutableCraftingContext.setRecipe(checker.getRecipe().value(),
-            checker.getRecipe().id()), immediately || this.componentChanged)) {
+            checker.getRecipe().id()), this.componentChanged || immediately)) {
           setComponentChanged(false);
           return Optional.of(checker.getRecipe());
         }

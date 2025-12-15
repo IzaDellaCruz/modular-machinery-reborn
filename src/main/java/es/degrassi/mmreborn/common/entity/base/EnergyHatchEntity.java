@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
+import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
@@ -157,6 +158,16 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     this.canInsert = canInsert;
   }
 
+  private void onContentsChange() {
+    getControllerPosSet().forEach(p -> {
+      if (getLevel() == null) return;
+      if (getLevel().isClientSide()) return;
+      if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+        controller.getProcessor().setMachineInventoryChanged();
+      }
+    });
+  }
+
   @Override
   public int receiveEnergy(int maxReceive, boolean simulate) {
     if (!canReceive()) {
@@ -167,8 +178,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     if (!simulate) {
       this.energy = MiscUtils.clamp(this.energy + insertable, 0, this.size.maxEnergy);
       markForUpdate();
-      if (getController() != null)
-        getController().getProcessor().setMachineInventoryChanged();
+      onContentsChange();
       if (getLevel() instanceof ServerLevel l)
         PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SUpdateEnergyComponentPacket(this.energy, getBlockPos()));
     }
@@ -184,8 +194,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     extractable = Math.min(extractable, convertDownEnergy(size.transferLimit));
     if (!simulate) {
       this.energy = MiscUtils.clamp(this.energy - extractable, 0, this.size.maxEnergy);
-      if (getController() != null)
-        getController().getProcessor().setMachineInventoryChanged();
+      onContentsChange();
       markForUpdate();
       if (getLevel() instanceof ServerLevel l)
         PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SUpdateEnergyComponentPacket(this.energy, getBlockPos()));
@@ -222,8 +231,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     if (compound.contains("controllerPos")) {
       controllerPos = BlockPos.of(compound.getLong("controllerPos"));
     }
-    if (getController() != null)
-      getController().getProcessor().setMachineInventoryChanged();
+    onContentsChange();
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_energy" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
 
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
@@ -276,8 +284,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
 
     if (getLevel() instanceof ServerLevel l)
       PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SUpdateEnergyComponentPacket(this.energy, getBlockPos()));
-    if (getController() != null)
-      getController().getProcessor().setMachineInventoryChanged();
+    onContentsChange();
     markForUpdate();
   }
 

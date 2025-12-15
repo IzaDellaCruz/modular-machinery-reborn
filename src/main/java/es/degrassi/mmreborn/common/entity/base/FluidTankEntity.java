@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
 import es.degrassi.mmreborn.common.entity.FluidInputHatchEntity;
+import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
@@ -79,8 +80,13 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.capabilityInventory = createCapabilityInventory();
 
     this.tank.setListener(() -> {
-      if (getController() != null)
-        getController().getProcessor().setMachineInventoryChanged();
+      getControllerPosSet().forEach(p -> {
+        if (getLevel() == null) return;
+        if (getLevel().isClientSide()) return;
+        if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+          controller.getProcessor().setMachineInventoryChanged();
+        }
+      });
     });
 
     this.shouldAutoOutput = ioType.isOutput();
@@ -177,8 +183,13 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
 
     this.tank.setListener(() -> {
-      if (getController() != null)
-        getController().getProcessor().setMachineInventoryChanged();
+      getControllerPosSet().forEach(p -> {
+        if (getLevel() == null) return;
+        if (getLevel().isClientSide()) return;
+        if (getLevel().getBlockEntity(p) instanceof MachineControllerEntity controller) {
+          controller.getProcessor().setMachineInventoryChanged();
+        }
+      });
     });
 
     this.shouldAutoOutput = ioType.isOutput() && shouldAutoOutput;

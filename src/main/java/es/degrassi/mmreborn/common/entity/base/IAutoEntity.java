@@ -22,6 +22,9 @@ public interface IAutoEntity<T> {
 
   @Nullable
   default T getNeighbour(BlockCapability<T, Direction> cap, Direction side) {
+    if (getLevel().getBlockEntity(getBlockPos().relative(side)) instanceof IAutoEntity<?>) {
+      return null;
+    }
     if(getNeighbourStorages().get(side) == null)
       getNeighbourStorages().put(side, BlockCapabilityCache.create(cap,
           (ServerLevel)this.getLevel(), this.getBlockPos().relative(side), side.getOpposite(), () -> !this.isRemoved(), () -> getNeighbourStorages().remove(side)));
