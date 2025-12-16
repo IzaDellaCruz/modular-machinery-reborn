@@ -79,7 +79,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   @Setter
   private CraftingStatus craftingStatus = CraftingStatus.MISSING_STRUCTURE;
   private boolean isPaused = false;
-  @Getter
   private boolean formed = false;
   private ResourceLocation id = DynamicMachine.DUMMY.getRegistryName();
   private MachineStatus status = MachineStatus.IDLE;
@@ -96,7 +95,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     super(EntityRegistration.CONTROLLER.get(), pos, state);
     this.componentManager = new ComponentManager(this);
     this.processor = new MachineProcessor(this);
-    CONTROLLERS.add(this);
   }
 
   @Override
@@ -151,16 +149,13 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     return ModularMachineryReborn.MACHINES.getOrDefault(id, DynamicMachine.DUMMY);
   }
 
-  public boolean isPaused() {
-    return isPaused;
-  }
-
   public void tryPause() {
     setPaused(RedstoneHelper.getReceivingRedstone(this) > 0);
   }
 
   public void setPaused(boolean paused) {
     if (paused) setStatus(MachineStatus.PAUSED);
+    assert getLevel() != null;
     if (!getLevel().isClientSide && paused != isPaused) {
       PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) getLevel(), new ChunkPos(getBlockPos()),
           new SSyncPauseStatePacket(paused, getBlockPos()));
@@ -190,10 +185,18 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void doRestrictedTick() {
     IServerTickEntity.super.doRestrictedTick();
     assert level != null;
-    if (!isFormed()) return;
+    if (!isFormed()) {
+      var mwsd = MMRWorldSavedData.getOrCreate((ServerLevel) level);
+      if (!mwsd.containsAsyncLogicOrMapping(this)) {
+        mwsd.addAsyncLogic(this);
+      }
+      if (!getStatus().isMissingStructure()) setStatus(MachineStatus.MISSING_STRUCTURE);
+      return;
+    }
+
 
     tryPause();
-    if (isPaused() || craftingStatus.isFailure()) return;
+    if (isPaused()) return;
     level.getProfiler().push("Crafting Manager tick");
     try {
       processor.tick();
@@ -208,8 +211,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     if (this.level != null && this.level.isClientSide() && this.soundManager != null)
       this.soundManager.stop();
     if (getLevel() instanceof ServerLevel serverLevel && !getFoundMachine().isDummy()) {
-      componentManager.reset();
-      processor.reset();
       MMRWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
       MMRWorldSavedData.getOrCreate(serverLevel).removeMapping(this);
     }
@@ -219,10 +220,13 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void setMachine(ResourceLocation machine) {
     this.id = machine;
     this.formed = false;
-    ComponentManager.cache.refresh(this);
     tryColorize(getBlockPos());
     if (getLevel() instanceof ServerLevel l) {
       PacketDistributor.sendToPlayersTrackingChunk(l, new ChunkPos(getBlockPos()), new SMachineUpdatePacket(machine, getBlockPos()));
+      CONTROLLERS.add(this);
+      try {
+        ComponentManager.cache.get(this);
+      } catch (ExecutionException ignored) {}
       var mwsd = MMRWorldSavedData.getOrCreate(l);
       mwsd.removeMapping(this);
       mwsd.removeAsyncLogic(this);
@@ -232,30 +236,13 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     setChanged();
   }
 
-  public void checkStructure(boolean immediate) {
-    if (this.getFoundMachine() == DynamicMachine.DUMMY || getLevel() == null) return;
-    long gameTime = getLevel().getGameTime();
-    unform();
-    refreshClientData();
-    setChanged();
-    if (!Utils.shouldRunPeriodicCheck(immediate, gameTime, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) return;
-    lastCheckTick = gameTime;
-    if (getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getFacing())) {
-      formed = true;
-      setStatus(MachineStatus.IDLE);
-      componentManager.updateComponents();
-      try {
-        ComponentManager.cache.get(this).forEach(this::tryColorize);
-      } catch (ExecutionException ignored) {}
-    }
-  }
-
   @Override
   public int getMachineColor() {
     return getFoundMachine().getMachineColor();
   }
 
   private void tryColorize(BlockPos pos) {
+    if (getLevel() == null) return;
     BlockEntity te = this.getLevel().getBlockEntity(pos);
     AtomicBoolean shouldColor = new AtomicBoolean(true);
     if (te instanceof TextureableMachineEntity entity) {
@@ -283,9 +270,9 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     this.processor.deserialize(compound.getCompound("craftingManager"));
     this.isPaused = compound.getBoolean("isPaused");
     this.id = ResourceLocation.parse(compound.getString("machine"));
-    if (getLevel() != null && !getLevel().isClientSide) {
-      setMachine(id);
-      setStatus(MachineStatus.MISSING_STRUCTURE);
+    setMachine(id);
+    if (getLevel() instanceof ServerLevel) {
+      onBlockStateChanged(getBlockPos(), getBlockState());
     }
   }
 
@@ -334,17 +321,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     return getFoundMachine().getInteractionSound(status);
   }
 
-  public void unform() {
-    if (getLevel() instanceof ServerLevel sl) {
-      this.formed = false;
-      setStatus(MachineStatus.MISSING_STRUCTURE);
-      processor.reset();
-      componentManager.resetWithColor();
-      MMRWorldSavedData.getOrCreate(sl).addAsyncLogic(this);
-      setChanged();
-    }
-  }
-
   @Override
   public boolean isPosInCache(BlockPos pos) {
     try {
@@ -358,17 +334,12 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void onBlockStateChanged(BlockPos pos, BlockState newState) {
     if (level instanceof ServerLevel serverLevel) {
       if (pos.equals(getBlockPos())) {
-        unform();
-        var mwsd = MMRWorldSavedData.getOrCreate(serverLevel);
-        mwsd.removeMapping(this);
+        onStructureUnformed();
       } else {
         if (getFoundMachine().getPattern().match(getLevel(), getBlockPos(), getFacing())) {
           onStructureFormed();
         } else {
-          unform();
-          var mwsd = MMRWorldSavedData.getOrCreate(serverLevel);
-          mwsd.removeMapping(this);
-          mwsd.addAsyncLogic(this);
+          onStructureUnformed();
         }
       }
     }
@@ -379,12 +350,25 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   }
 
   public void onStructureFormed() {
-    formed = true;
-    setStatus(MachineStatus.IDLE);
-    componentManager.updateComponents();
-    try {
-      ComponentManager.cache.get(this).forEach(this::tryColorize);
-    } catch (ExecutionException ignored) {}
+      formed = true;
+      setStatus(MachineStatus.IDLE);
+      componentManager.updateComponents();
+      try {
+        ComponentManager.cache.get(this).forEach(this::tryColorize);
+      } catch (ExecutionException ignored) {}
+  }
+
+  public void onStructureUnformed() {
+    if (getLevel() instanceof ServerLevel sl) {
+      formed = false;
+      setStatus(MachineStatus.MISSING_STRUCTURE);
+      componentManager.resetWithColor();
+      processor.reset();
+      var mwsd = MMRWorldSavedData.getOrCreate(sl);
+      mwsd.removeMapping(this);
+      mwsd.removeAsyncLogic(this);
+      mwsd.addAsyncLogic(this);
+    }
   }
 
   @Getter
@@ -402,6 +386,8 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
             var mwsd = MMRWorldSavedData.getOrCreate(sl);
             mwsd.addMapping(this);
             mwsd.removeAsyncLogic(this);
+          } else {
+            onStructureUnformed();
           }
           patternLock.unlock();
         });

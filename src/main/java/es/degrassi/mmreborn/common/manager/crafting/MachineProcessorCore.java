@@ -89,7 +89,6 @@ public class MachineProcessorCore implements ISyncableStuff {
             this.requirementList.getProcessRequirements().entrySet().removeIf(entry -> entry.getKey() < this.recipeProgressTime / this.recipeTotalTime);
           });
       this.futureRecipeID = null;
-      this.tile.checkStructure(true);
     }
     this.recipeFinder.init();
   }

@@ -17,9 +17,9 @@ public interface IMultiblockController {
 
   ResourceLocation getId();
 
-  void unform();
-
   void onStructureFormed();
+
+  void onStructureUnformed();
 
   default DynamicMachine getController() {
     return self().getFoundMachine();

@@ -11,14 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
 
 public record SMachineUpdatePacket(ResourceLocation machine, BlockPos pos) implements CustomPacketPayload {
 
   public static final Type<SMachineUpdatePacket> TYPE = new Type<>(ModularMachineryReborn.rl("update_machine"));
 
   @Override
-  public @NotNull Type<SMachineUpdatePacket> type() {
+  public Type<SMachineUpdatePacket> type() {
     return TYPE;
   }
 

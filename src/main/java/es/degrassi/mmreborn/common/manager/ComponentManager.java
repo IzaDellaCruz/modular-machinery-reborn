@@ -6,7 +6,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
@@ -63,7 +62,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     @Override
     public @NotNull List<BlockPos> load(MachineControllerEntity key) {
       BlockPos pos = key.getBlockPos();
-      return ModularMachineryReborn.MACHINES.getOrDefault(key.getId(), DynamicMachine.DUMMY)
+      return key
+          .getFoundMachine()
           .getPattern()
           .getBlocksFiltered(key.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))
           .entrySet()

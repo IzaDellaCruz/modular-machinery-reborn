@@ -2,7 +2,7 @@ package es.degrassi.mmreborn;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
 import es.degrassi.mmreborn.api.crafting.IProcessor;
@@ -82,9 +82,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Mod(ModularMachineryReborn.MODID)
 public class ModularMachineryReborn {
@@ -93,7 +92,7 @@ public class ModularMachineryReborn {
 
   public static final BiMap<ResourceLocation, DynamicMachine> MACHINES = HashBiMap.create();
   public static final BiMap<ResourceLocation, BlockController> MACHINES_BLOCK = HashBiMap.create();
-  public static final List<MachineControllerEntity> CONTROLLERS = Lists.newArrayList();
+  public static final Set<MachineControllerEntity> CONTROLLERS = Sets.newHashSet();
 
   public ModularMachineryReborn(final ModContainer CONTAINER, final IEventBus MOD_BUS) {
     initConfigs(CONTAINER);

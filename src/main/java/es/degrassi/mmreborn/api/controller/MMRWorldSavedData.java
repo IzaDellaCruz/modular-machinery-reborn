@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.api.controller;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -133,5 +134,9 @@ public class MMRWorldSavedData extends SavedData {
       executorService.shutdownNow();
     }
     executorService = null;
+  }
+
+  public boolean containsAsyncLogicOrMapping(MachineControllerEntity machineControllerEntity) {
+    return controllers.contains(machineControllerEntity) || mapping.containsValue(machineControllerEntity);
   }
 }
