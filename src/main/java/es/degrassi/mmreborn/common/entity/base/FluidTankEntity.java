@@ -174,6 +174,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     CompoundTag tankTag = compound.getCompound("tank");
     newTank.readFromNBT(provider, tankTag);
     this.tank = newTank;
+    this.capabilityInventory.deserialize(compound.getCompound("capInventory"), provider);
     if (compound.contains("controllerPos")) {
       controllerPos = BlockPos.of(compound.getLong("controllerPos"));
     }
@@ -207,6 +208,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     CompoundTag tankTag = new CompoundTag();
     this.tank.writeToNBT(provider, tankTag);
     compound.put("tank", tankTag);
+    compound.put("capInventory", this.capabilityInventory.writeNBT(provider));
     if (controllerPos != null)
       compound.putLong("controllerPos", controllerPos.asLong());
     if (baseTexture != null)
