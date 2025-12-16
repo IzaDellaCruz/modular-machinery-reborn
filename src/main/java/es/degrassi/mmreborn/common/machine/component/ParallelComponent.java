@@ -62,6 +62,11 @@ public class ParallelComponent extends MachineComponent<Integer> {
   }
 
   @Override
+  public <C extends MachineComponent<Integer>> boolean canMerge(C c) {
+    return false;
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<Integer>> C merge(C c) {
     return (C) this;
