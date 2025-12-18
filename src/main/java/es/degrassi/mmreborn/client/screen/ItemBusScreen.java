@@ -230,16 +230,6 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     pose.popPose();
   }
 
-  @Override
-  protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
-    super.renderTooltip(guiGraphics, x, y);
-    for (var element : children()) {
-      if(element instanceof TabGroupWidget widget) {
-        widget.renderTooltip(guiGraphics, x, y);
-      }
-    }
-  }
-
   protected void drawForegroundText(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
   }
 

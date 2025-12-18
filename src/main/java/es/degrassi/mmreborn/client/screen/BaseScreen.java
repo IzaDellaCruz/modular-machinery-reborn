@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.container.ContainerBase;
 import es.degrassi.mmreborn.client.screen.widget.GuiElement;
 import es.degrassi.mmreborn.client.screen.widget.IGuiWrapper;
+import es.degrassi.mmreborn.client.screen.widget.tabs.TabGroupWidget;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import net.minecraft.ChatFormatting;
@@ -21,7 +22,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -46,7 +46,7 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   }
 
   @Override
-  public @NotNull ItemStack getCarriedItem() {
+  public ItemStack getCarriedItem() {
     return getMenu().getCarried();
   }
 
@@ -92,7 +92,7 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   }
 
   @Override
-  public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+  public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
     int i = this.leftPos;
     int j = this.topPos;
     // Neo: replicate the super method's implementation to insert the event between background and widgets
@@ -166,6 +166,17 @@ public abstract class BaseScreen<T extends ContainerBase<E>, E extends Colorable
   @Override
   protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
     if (this.shouldRenderLabels) super.renderLabels(guiGraphics, mouseX, mouseY);
+  }
+
+  @Override
+  protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
+    super.renderTooltip(guiGraphics, x, y);
+
+    for (var element : children()) {
+      if (element instanceof TabGroupWidget widget) {
+        widget.renderTooltip(guiGraphics, x, y);
+      }
+    }
   }
 
   @Override

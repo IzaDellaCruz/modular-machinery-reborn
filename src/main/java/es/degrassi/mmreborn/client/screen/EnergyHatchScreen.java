@@ -85,12 +85,6 @@ public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHa
       Font font = Minecraft.getInstance().font;
       guiGraphics.renderTooltip(font, text, x, y);
     }
-
-    for (var element : children()) {
-      if (element instanceof TabGroupWidget widget) {
-        widget.renderTooltip(guiGraphics, x, y);
-      }
-    }
   }
 
   @Override

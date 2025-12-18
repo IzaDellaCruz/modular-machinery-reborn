@@ -113,12 +113,6 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
         guiGraphics.renderTooltip(font, button.getTooltipMessage().stream().map(Component::getVisualOrderText).toList(), x, y);
       }
     }
-
-    for (var element : children()) {
-      if (element instanceof TabGroupWidget widget) {
-        widget.renderTooltip(guiGraphics, x, y);
-      }
-    }
   }
 
   @Override
