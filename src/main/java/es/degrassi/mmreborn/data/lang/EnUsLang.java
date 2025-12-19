@@ -237,7 +237,7 @@ public final class EnUsLang extends Lang {
     addBlock(BlockRegistration.ENERGY_INPUT_HATCH_REINFORCED, "Reinforced Energy Input Hatch");
     addBlock(BlockRegistration.ENERGY_INPUT_HATCH_BIG, "Big Energy Input Hatch");
     addBlock(BlockRegistration.ENERGY_INPUT_HATCH_HUGE, "Huge Energy Input Hatch");
-    addBlock(BlockRegistration.ENERGY_INPUT_HATCH_LUDICROUS, "Experience Energy Input Hatch");
+    addBlock(BlockRegistration.ENERGY_INPUT_HATCH_LUDICROUS, "Ludicrous Energy Input Hatch");
     addBlock(BlockRegistration.ENERGY_INPUT_HATCH_ULTIMATE, "Ultimate Energy Input Hatch");
 
     addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_TINY, "Tiny Energy Output Hatch");
@@ -246,7 +246,7 @@ public final class EnUsLang extends Lang {
     addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_REINFORCED, "Reinforced Energy Output Hatch");
     addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_BIG, "Big Energy Output Hatch");
     addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_HUGE, "Huge Energy Output Hatch");
-    addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_LUDICROUS, "Experience Energy Output Hatch");
+    addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_LUDICROUS, "Ludicrous Energy Output Hatch");
     addBlock(BlockRegistration.ENERGY_OUTPUT_HATCH_ULTIMATE, "Ultimate Energy Output Hatch");
 
     addBlock(BlockRegistration.PARALLEL_HATCH_BASIC, "Basic Parallel Hatch");
