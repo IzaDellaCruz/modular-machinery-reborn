@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DataResult;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.Holder;
@@ -198,35 +199,35 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   @Override
   public boolean test(BlockInWorld block) {
     boolean isTag = !this.tags.isEmpty();
+    boolean partial = false;
     if (isTag) {
       if (this.not) {
-        return this.tags.stream().noneMatch(tag -> block.getState().is(tag));
+        partial = this.tags.stream().noneMatch(tag -> block.getState().is(tag));
       } else {
-        return this.tags.stream().anyMatch(tag -> block.getState().is(tag));
+        partial = this.tags.stream().anyMatch(tag -> block.getState().is(tag));
       }
+    }
+    if (this.not) {
+      return partial || this.uniqueStates.stream().noneMatch(state -> state.test(block));
     } else {
-      if (this.not) {
-        return this.uniqueStates.stream().noneMatch(state -> state.test(block));
-      } else {
-        return this.uniqueStates.stream().anyMatch(state -> state.test(block));
-      }
+      return partial || this.uniqueStates.stream().anyMatch(state -> state.test(block));
     }
   }
 
   public boolean test(Block block) {
     boolean isTag = !this.tags.isEmpty();
+    boolean partial = false;
     if (isTag) {
       if (not) {
-        return this.tags.stream().noneMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
+        partial = this.tags.stream().noneMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
       } else {
-        return this.tags.stream().anyMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
+        partial = this.tags.stream().anyMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
       }
+    }
+    if (this.not) {
+      return partial || this.uniqueStates.stream().noneMatch(state -> state.getBlockState().getBlock() == block);
     } else {
-      if (this.not) {
-        return this.uniqueStates.stream().noneMatch(state -> state.getBlockState().getBlock() == block);
-      } else {
-        return this.uniqueStates.stream().anyMatch(state -> state.getBlockState().getBlock() == block);
-      }
+      return partial || this.uniqueStates.stream().anyMatch(state -> state.getBlockState().getBlock() == block);
     }
   }
 
