@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import es.degrassi.mmreborn.api.BlockIngredient;
+import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
@@ -65,7 +66,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
       return key
           .getFoundMachine()
           .getPattern()
-          .getBlocksFiltered(key.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))
+          .getBlocks(key.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))
           .entrySet()
           .stream()
           .filter(e -> !e.getValue().equals(BlockIngredient.MACHINE))
@@ -89,6 +90,11 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
             if (controller.getLevel() == null) return Optional.empty();
             if (key.equals(controller.getBlockPos())) return Optional.of(new FunctionComponent(key));
             if (controller.getLevel().getBlockEntity(key) instanceof MachineComponentEntity<?> e) {
+              if (e instanceof ControllerAccessible ca && ca.getControllerPos() == null) {
+                ca.setControllerPos(controller.getBlockPos());
+              } else if (e instanceof ControllerAccessible ca && !ca.getControllerPos().equals(controller.getBlockPos())) {
+                return Optional.empty();
+              }
               return Optional.ofNullable(e.provideComponent());
             }
             return Optional.empty();
@@ -100,11 +106,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           public @NotNull Map<IOType, List<MachineComponent<?>>> load(ComponentType<?> key) {
             Map<IOType, List<MachineComponent<?>>> foundComponentsValues = Maps.newHashMap();
             for (MachineComponent<?> comp :
-                fC.asMap()
-                    .values()
+                getFoundComponentsList()
                     .stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
                     .filter(c -> c.getComponentType().equals(key))
                     .toList()) {
                 foundComponentsValues.computeIfAbsent(comp.getIOType(), io -> Lists.newArrayList()).add(comp);
@@ -121,18 +124,13 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
                 .getPattern()
                 .getPattern()
                 .getModifiers(controller.getFacing())
-                .entrySet()
+                .get(key)
                 .stream()
-                .filter((entry) -> {
-                  BlockPos realPos = controller.getBlockPos().offset(entry.getKey());
-                  BlockInWorld biw = new BlockInWorld(controller.getLevel(), realPos, false);
-                  return (realPos.equals(key)
-                      && entry.getValue()
-                      .stream()
-                      .anyMatch(modifier -> modifier.getIngredient().getAll().stream().anyMatch(state -> state.test(biw))));
-                })
-                .map(Map.Entry::getValue)
-                .flatMap(List::stream)
+                .filter(modifier -> modifier.test(new BlockInWorld(
+                    controller.getLevel(),
+                    controller.getBlockPos().offset(key),
+                    false
+                )))
                 .toList();
           }
         });
@@ -140,10 +138,8 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         .build(new CacheLoader<>() {
           @Override
           public @NotNull List<RecipeModifier<?, ?, ?>> load(RequirementType<?, ?, ?> key) {
-            return fM.asMap()
-                .values()
+            return getFoundModifiersList()
                 .stream()
-                .flatMap(List::stream)
                 .map(ModifierReplacement::getModifiers)
                 .flatMap(List::stream)
                 .filter(r -> r.getRequirementType().equals(key))
@@ -161,7 +157,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
 
   public final void resetWithColor() {
     try {
-      for (BlockPos current : cache.get(controller).stream().toList()) {
+      for (BlockPos current : cache.get(controller)) {
         if (Objects.requireNonNull(controller.getLevel()).getBlockEntity(current) instanceof ColorableMachineComponentEntity entity) {
           entity.getControllerPosSet().remove(controller.getBlockPos());
           entity.setMachineColor(Config.machineColor);
@@ -169,10 +165,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         }
       }
     } catch (ExecutionException | NullPointerException ignored) {}
-    fC.invalidateAll();
-    fM.invalidateAll();
-    fCV.invalidateAll();
-    fMV.invalidateAll();
+    reset();
   }
 
   public final void updateComponents() {
@@ -180,45 +173,54 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     Level level = controller.getLevel();
     if (level == null) return;
     resetWithColor();
+    var controllerPos = controller.getBlockPos();
     cache.refresh(controller);
     if (controller.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
-      controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
+      level.setBlockAndUpdate(controllerPos, controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
     } else if(!controller.getBlockState().getValue(BlockMachineComponent.CONNECT_TEXTURES)) {
-      controller.getLevel().setBlockAndUpdate(controller.getBlockPos(), controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, true));
+      level.setBlockAndUpdate(controllerPos, controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, true));
     }
     try {
       Set<ComponentType<?>> toRefreshComponent = Sets.newHashSet();
       Set<RequirementType<?, ?, ?>> toRefreshRequirement = Sets.newHashSet();
       cache.get(controller).forEach(pos -> {
-        var oldState = controller.getLevel().getBlockState(pos);
-        var entity = controller.getLevel().getBlockEntity(pos);
+        var oldState = level.getBlockState(pos);
+        var entity = level.getBlockEntity(pos);
         if (entity instanceof ColorableMachineComponentEntity ce) {
-          ce.getControllerPosSet().add(controller.getBlockPos());
+          ce.getControllerPosSet().add(controllerPos);
         }
+        try {
+          fC.refresh(pos);
+          fC.get(pos)
+              .map(MachineComponent::getComponentType)
+              .ifPresent(toRefreshComponent::add);
+          var isModifierToo = controller.getFoundMachine()
+              .getPattern()
+              .getPattern()
+              .getModifiers()
+              .parallelStream()
+              .map(ModifierReplacement::getPosition)
+              .map(controllerPos::offset)
+              .anyMatch(pos::equals);
+          if (!isModifierToo) return;
+          var key = pos.offset(-controllerPos.getX(), -controllerPos.getY(), -controllerPos.getZ());
+          fM.refresh(key);
+          fM.get(key)
+              .stream()
+              .map(ModifierReplacement::getModifiers)
+              .flatMap(List::stream)
+              .map(RecipeModifier::getRequirementType)
+              .forEach(toRefreshRequirement::add);
+        } catch (ExecutionException ignored) {}
         if (!(entity instanceof TextureableMachineEntity)) return;
         var data = entity.getModelData();
         if (!data.has(HatchBakedModel.TEXTURE_DATA)) return;
         var state = oldState.setValue(BlockMachineComponent.CONNECT_TEXTURES,
             data.get(HatchBakedModel.TEXTURE_DATA).hasDefaultTextures());
-        try {
-          if (entity instanceof MachineComponentEntity<?>) {
-            fC.refresh(pos);
-            fC.get(pos)
-                .map(MachineComponent::getComponentType)
-                .ifPresent(toRefreshComponent::add);
-            fM.refresh(pos);
-            fM.get(pos)
-                .stream()
-                .map(ModifierReplacement::getModifiers)
-                .flatMap(List::stream)
-                .map(RecipeModifier::getRequirementType)
-                .forEach(toRefreshRequirement::add);
-          }
-          toRefreshComponent.forEach(fCV::refresh);
-          toRefreshRequirement.forEach(fMV::refresh);
-        } catch (ExecutionException ignored) {}
-        controller.getLevel().setBlockAndUpdate(pos, state);
+        level.setBlockAndUpdate(pos, state);
       });
+      toRefreshComponent.forEach(fCV::refresh);
+      toRefreshRequirement.forEach(fMV::refresh);
       controller.setChanged();
     } catch(ExecutionException ignored) {}
   }

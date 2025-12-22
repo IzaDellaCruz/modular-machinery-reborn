@@ -137,7 +137,7 @@ public class RequirementItem implements IRequirement<ItemComponent, IOInventory>
     int amount = (int) context.getIntegerModifiedValue(this.ingredient.count(), this);
     int maxExtract = component.getIngredientAmount(this.ingredient.ingredient());
     if (maxExtract >= amount) {
-      component.removeFromInputs(this.ingredient.ingredient(), this.ingredient.count());
+      component.removeFromInputs(this.ingredient.ingredient(), amount);
       return CraftingResult.success();
     }
     return CraftingResult.error(Component.translatable("craftcheck.failure.item.input", amount, ingredient.ingredient().toString()));

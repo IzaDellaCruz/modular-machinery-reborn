@@ -13,13 +13,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
-public class ModifierReplacement {
+public class ModifierReplacement implements Predicate<BlockInWorld> {
   public static final NamedCodec<ModifierReplacement> CODEC = NamedCodec.record(instance -> instance.group(
-      BlockIngredient.MAP_CODEC.fieldOf("replacement").forGetter(ModifierReplacement::getIngredient),
+      BlockIngredient.CODEC.fieldOf("replacement").forGetter(ModifierReplacement::getIngredient),
       RecipeModifier.CODEC.listOf().fieldOf("modifiers").forGetter(ModifierReplacement::getModifiers),
       DefaultCodecs.BLOCK_POS.fieldOf("position").forGetter(ModifierReplacement::getPosition)
   ).apply(instance, ModifierReplacement::new), "Modifier Replacement");
@@ -49,6 +51,10 @@ public class ModifierReplacement {
 
   public List<Component> getDescriptionLines() {
     return description;
+  }
+
+  public boolean test(BlockInWorld biw) {
+    return getIngredient().test(biw);
   }
 
   public List<String> getDescriptionLinesString() {

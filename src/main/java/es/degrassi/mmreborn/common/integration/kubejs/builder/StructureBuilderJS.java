@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public class StructureBuilderJS {
+  @HideFromJS
   private final Structure.Builder builder;
+  @HideFromJS
   private List<List<String>> pattern;
+  @HideFromJS
   private Map<Character, BlockIngredient> keys;
 
   public static StructureBuilderJS create() {
@@ -39,6 +42,7 @@ public class StructureBuilderJS {
     return this;
   }
 
+  @HideFromJS
   public Structure build(List<ModifierReplacement> modifiers) {
     for (List<String> levels : pattern)
       builder.aisle(levels.toArray(new String[0]));
@@ -47,6 +51,7 @@ public class StructureBuilderJS {
     return builder.build(pattern, keys, modifiers);
   }
 
+  @HideFromJS
   public Structure build() {
     return build(List.of());
   }

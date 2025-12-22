@@ -71,7 +71,7 @@ public class RequirementExperience implements IRequirement<ExperienceComponent, 
     long amount = (long) context.getModifiedValue(required, this);
     final long originAmount = amount;
     long canExtract = 0;
-    for (int i = 0; i < component.getContainerProvider().getTanks(); i++) {
+    for (int i = 0; i < component.getContainerProvider().getTanks() && amount > 0; i++) {
        long toExtract = component.getContainerProvider().extractExperienceRecipe(i, amount, true);
        canExtract += toExtract;
        amount -= toExtract;

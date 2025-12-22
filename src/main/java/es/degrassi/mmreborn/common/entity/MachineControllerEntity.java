@@ -332,7 +332,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void onBlockStateChanged(BlockPos pos, BlockState newState) {
-    if (level instanceof ServerLevel serverLevel) {
+    if (level instanceof ServerLevel) {
       if (pos.equals(getBlockPos())) {
         onStructureUnformed();
       } else {

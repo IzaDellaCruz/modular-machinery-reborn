@@ -105,8 +105,7 @@ public class CraftingContext implements ICraftingContext {
 
   private <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> float getModifiedValue(float value, RequirementType<R, C, T> type, IOType mode) {
     float modified = value;
-    List<RecipeModifier<R, C, T>> modifiers = tile.getComponentManager().getModifiers(type);
-    for (var modifier : modifiers) {
+    for (var modifier : getModifiers(type)) {
       if (modifier.shouldApply(type, mode)) {
         modified = modifier.apply(modified);
       }

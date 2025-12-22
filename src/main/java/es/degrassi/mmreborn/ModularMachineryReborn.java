@@ -22,6 +22,7 @@ import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.command.MMRCommand;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifierTargetEvent;
 import es.degrassi.mmreborn.common.data.config.DurabilityHatchConfig;
 import es.degrassi.mmreborn.common.data.config.EffectDispenserConfig;
 import es.degrassi.mmreborn.common.data.config.EnergyHatchConfig;
@@ -106,6 +107,7 @@ public class ModularMachineryReborn {
 
     MOD_BUS.addListener(this::registerCapabilities);
     MOD_BUS.addListener(this::reloadConfig);
+    MOD_BUS.addListener(this::addToBlacklist);
 
     final IEventBus GAME_BUS = NeoForge.EVENT_BUS;
     GAME_BUS.addListener(this::serverStarting);
@@ -193,6 +195,27 @@ public class ModularMachineryReborn {
     Config.load();
     ConfigLoaded.load();
     EnergyDisplayUtil.loadFromConfig();
+
+    RecipeModifierTargetEvent.init();
+  }
+
+  private void addToBlacklist(RecipeModifierTargetEvent.Blacklist event) {
+    event.register(RequirementTypeRegistration.DIMENSION);
+    event.register(RequirementTypeRegistration.BIOME);
+    event.register(RequirementTypeRegistration.WEATHER);
+    event.register(RequirementTypeRegistration.TIME);
+    event.register(RequirementTypeRegistration.CHUNKLOAD);
+    event.register(RequirementTypeRegistration.FUNCTION);
+    event.register(RequirementTypeRegistration.CHECK_ENTITY);
+    event.register(RequirementTypeRegistration.KILL_ENTITY);
+    event.register(RequirementTypeRegistration.HEATH_ENTITY);
+    event.register(RequirementTypeRegistration.SPAWN_ENTITY);
+    event.register(RequirementTypeRegistration.COMMAND);
+    event.register(RequirementTypeRegistration.EMPTY);
+    event.register(RequirementTypeRegistration.HEIGHT);
+    event.register(RequirementTypeRegistration.REDSTONE);
+    event.register(RequirementTypeRegistration.STRUCTURE);
+    event.register(RequirementTypeRegistration.EFFECT);
   }
 
   private void reloadConfig(final ModConfigEvent.Reloading event) {

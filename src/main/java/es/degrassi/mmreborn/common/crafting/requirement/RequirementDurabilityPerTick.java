@@ -64,7 +64,7 @@ public class RequirementDurabilityPerTick implements IRequirement<DurabilityComp
     if(getMode().isInput())
       return processWithLog(amount -> Arrays.stream(this.ingredient.getItems()).mapToInt(item -> component.getContainerProvider().getDurabilityAmount(item)).sum() >= amount, a);
     else
-      return processWithLog(amount -> Arrays.stream(this.ingredient.getItems()).mapToInt(item -> component.getContainerProvider().getSpaceForDurability(item)).sum() >= amount, 1);
+      return processWithLog(amount -> Arrays.stream(this.ingredient.getItems()).mapToInt(item -> component.getContainerProvider().getSpaceForDurability(item)).sum() >= amount, a);
   }
 
   private boolean processWithLog(Function<Integer, Boolean> function, int amount) {

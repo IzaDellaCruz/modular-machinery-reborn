@@ -8,7 +8,7 @@ import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.crafting.modifier.MultiplicationRecipeModifier;
 import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.modifier.IRecipeModifier.OPERATION;
-import es.degrassi.mmreborn.common.crafting.modifier.SpeedRecipeModifier;
+import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifierTargetEvent;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
@@ -17,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import com.google.common.collect.Lists;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public class ModifierBuilderJS {
   private BlockIngredient ingredient;
@@ -60,7 +59,7 @@ public class ModifierBuilderJS {
   public static class RecipeModifierBuilderJS {
     private RequirementType<?, ?, ?> target = RequirementTypeRegistration.SPEED.get();
     private IOType mode = IOType.INPUT;
-    private float modifier;
+    private float modifier = 0F;
     private OPERATION operation = OPERATION.ADDITION;
     private float chance = 1F;
     private float min = Float.NEGATIVE_INFINITY;
@@ -76,7 +75,7 @@ public class ModifierBuilderJS {
     public RecipeModifierBuilderJS target(ResourceLocation target) {
       this.target = ModularMachineryReborn.getRequirementRegistrar().get(target);
       if (this.target == null) throw new IllegalArgumentException("Invalid recipe target");
-      if (RecipeModifier.blacklist.stream().map(Supplier::get).map(RequirementType::getId).anyMatch(target::equals))
+      if (RecipeModifierTargetEvent.Blacklist.BLACKLIST.stream().anyMatch(this.target::equals))
         throw new IllegalArgumentException("This type is not allowed as recipe modifier type");
       return this;
     }
@@ -121,9 +120,12 @@ public class ModifierBuilderJS {
       return this;
     }
 
+    @HideFromJS
     public RecipeModifier<?, ?, ?> build() {
+      if (target == null)
+        target = RequirementTypeRegistration.SPEED.get();
       if (target == RequirementTypeRegistration.SPEED.get())
-        return new SpeedRecipeModifier(operation, modifier, chance, max, min);
+        mode = IOType.INPUT;
       return switch (operation) {
         case ADDITION -> new AdditionRecipeModifier<>(target, mode, modifier, chance, max, min);
         case MULTIPLICATION -> new MultiplicationRecipeModifier<>(target, mode, modifier, chance, max, min);

@@ -1,6 +1,5 @@
 package es.degrassi.mmreborn.common.crafting.modifier;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
@@ -16,9 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 @Getter
 public abstract class RecipeModifier<
@@ -27,49 +24,26 @@ public abstract class RecipeModifier<
       T
     > implements IRecipeModifier<R, C, T> {
 
-  public static final NamedCodec<RecipeModifier<?, ?, ?>> CODEC = NamedCodec.record(energyModifierInstance ->
-      energyModifierInstance.group(
-          RegistrarCodec.REQUIREMENT_NEW.fieldOf("requirement").forGetter(modifier -> modifier.requirementType),
-          IOType.CODEC.fieldOf("mode").forGetter(modifier -> modifier.mode),
+  public static final NamedCodec<RecipeModifier<?, ?, ?>> CODEC = NamedCodec.record(modifierInstance ->
+      modifierInstance.group(
+          RegistrarCodec.REQUIREMENT_NEW.fieldOf("requirement").forGetter(RecipeModifier::getRequirementType),
+          IOType.CODEC.fieldOf("mode").forGetter(RecipeModifier::getMode),
           OPERATION.CODEC.fieldOf("operation").forGetter(RecipeModifier::getOperation),
-          NamedCodec.FLOAT.fieldOf("modifier").forGetter(modifier -> modifier.modifier),
-          NamedCodec.FLOAT.optionalFieldOf("chance", 1.0F).forGetter(modifier -> modifier.chance),
-          NamedCodec.FLOAT.optionalFieldOf("max", Float.POSITIVE_INFINITY).forGetter(modifier -> modifier.max),
-          NamedCodec.FLOAT.optionalFieldOf("min", Float.NEGATIVE_INFINITY).forGetter(modifier -> modifier.min)
-      ).apply(energyModifierInstance, (requirement, mode, operation, modifier, chance, max, min) -> {
-        if(requirement == RequirementTypeRegistration.SPEED.get())
-          return new SpeedRecipeModifier(operation, modifier, chance, max, min);
-        return switch (operation) {
-          case ADDITION -> new AdditionRecipeModifier<>(requirement, mode, modifier, chance, max, min);
-          case MULTIPLICATION -> new MultiplicationRecipeModifier<>(requirement, mode, modifier, chance, max, min);
-        };
-      }), "Recipe modifier"
+          NamedCodec.FLOAT.fieldOf("modifier").forGetter(RecipeModifier::getModifier),
+          NamedCodec.FLOAT.optionalFieldOf("chance", 1.0F).forGetter(RecipeModifier::getChance),
+          NamedCodec.FLOAT.optionalFieldOf("max", Float.POSITIVE_INFINITY).forGetter(RecipeModifier::getMax),
+          NamedCodec.FLOAT.optionalFieldOf("min", Float.NEGATIVE_INFINITY).forGetter(RecipeModifier::getMin)
+      ).apply(modifierInstance, RecipeModifier::create), "Recipe modifier"
   );
 
-  public static final List<Supplier<RequirementType<?, ?, ?>>> blacklist = Lists.newArrayList();
-
-  static {
-    addToBlacklist(RequirementTypeRegistration.DIMENSION);
-    addToBlacklist(RequirementTypeRegistration.BIOME);
-    addToBlacklist(RequirementTypeRegistration.WEATHER);
-    addToBlacklist(RequirementTypeRegistration.TIME);
-    addToBlacklist(RequirementTypeRegistration.CHUNKLOAD);
-    addToBlacklist(RequirementTypeRegistration.FUNCTION);
-    addToBlacklist(RequirementTypeRegistration.CHECK_ENTITY);
-    addToBlacklist(RequirementTypeRegistration.KILL_ENTITY);
-    addToBlacklist(RequirementTypeRegistration.HEATH_ENTITY);
-    addToBlacklist(RequirementTypeRegistration.SPAWN_ENTITY);
-    addToBlacklist(RequirementTypeRegistration.COMMAND);
-    addToBlacklist(RequirementTypeRegistration.EMPTY);
-    addToBlacklist(RequirementTypeRegistration.HEIGHT);
-    addToBlacklist(RequirementTypeRegistration.REDSTONE);
-    addToBlacklist(RequirementTypeRegistration.STRUCTURE);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <R extends IRequirement<C, T>, C extends MachineComponent<T>, T> void addToBlacklist(Supplier<RequirementType<R, C, T>> requirementType) {
-    if (blacklist.contains(requirementType)) return;
-    blacklist.add((Supplier<RequirementType<?, ?, ?>>) (Object) requirementType);
+  public static RecipeModifier<?, ?, ?> create(RequirementType<?, ?, ?> requirement, IOType mode, OPERATION operation, float modifier, float chance, float max, float min) {
+    if(requirement == RequirementTypeRegistration.SPEED.get())
+      mode = IOType.INPUT;
+      //return new SpeedRecipeModifier(operation, modifier, chance, max, min);
+    return switch (operation) {
+      case ADDITION -> new AdditionRecipeModifier<>(requirement, mode, modifier, chance, max, min);
+      case MULTIPLICATION -> new MultiplicationRecipeModifier<>(requirement, mode, modifier, chance, max, min);
+    };
   }
 
   public static final RandomSource RAND = RandomSource.create();
@@ -83,7 +57,7 @@ public abstract class RecipeModifier<
   public final Component tooltip;
 
   protected RecipeModifier(RequirementType<R, C, T> requirementType, IOType mode, float modifier, float chance, float max, float min) {
-    if (blacklist.stream().anyMatch(c -> c.get().equals(requirementType)))
+    if (RecipeModifierTargetEvent.Blacklist.BLACKLIST.stream().anyMatch(c -> c.equals(requirementType)))
       throw new UnsupportedOperationException("requirement type: " + requirementType.getId() + " is not a valid option for a Recipe Modifier");
     this.requirementType = requirementType;
     this.mode = mode;
