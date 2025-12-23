@@ -479,6 +479,7 @@ public final class ZhCnLang extends Lang {
     add(gui("controller.structure"), "已找到结构: %s");
     add(gui("controller.structure.none"), "无");
     add(gui("controller.status"), "当前状态: ");
+    add(gui("controller.error.info"), "Error Info: ");
     add(gui("controller.status.redstone_stopped"), "机器因红石信号停止工作");
     add(gui("controller.status.paused"), "暂停");
     add(gui("controller.status.missing_structure"), "结构不完整");

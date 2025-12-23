@@ -159,6 +159,7 @@
   "emi.tooltip.show.recipes": "显示配方",
   "gui.controller.blueprint": "已找到蓝图: %s",
   "gui.controller.blueprint.none": "无",
+  "gui.controller.error.info": "Error Info: ",
   "gui.controller.status": "当前状态: ",
   "gui.controller.status.crafting": "工作中...",
   "gui.controller.status.crafting.progress": "处理中: %s",

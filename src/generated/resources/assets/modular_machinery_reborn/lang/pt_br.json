@@ -159,6 +159,7 @@
   "emi.tooltip.show.recipes": "Mostrar Receitas",
   "gui.controller.blueprint": "Projeto Encontrado: %s",
   "gui.controller.blueprint.none": "Nenhum",
+  "gui.controller.error.info": "Error Info: ",
   "gui.controller.status": "Status: ",
   "gui.controller.status.crafting": "Processando...",
   "gui.controller.status.crafting.progress": "Progresso: %s",

@@ -478,6 +478,7 @@ public final class RuRuLang extends Lang {
     add(gui("controller.structure"), "Мульти-структура найдена: %s");
     add(gui("controller.structure.none"), "Ничего");
     add(gui("controller.status"), "Статус: ");
+    add(gui("controller.error.info"), "Error Info: ");
     add(gui("controller.status.redstone_stopped"), "Мульти-структура приостановлено из-за ред стоун сигнала");
     add(gui("controller.status.paused"), "Приостановлено");
     add(gui("controller.status.missing_structure"), "Мульти-структура не найдена");

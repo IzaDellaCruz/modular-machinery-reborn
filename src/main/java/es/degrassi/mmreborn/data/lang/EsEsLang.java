@@ -460,6 +460,7 @@ public final class EsEsLang extends Lang {
     add(gui("controller.structure"), "Estrcutura encontrada: %s");
     add(gui("controller.structure.none"), "Ninguna");
     add(gui("controller.status"), "Estado: ");
+    add(gui("controller.error.info"), "Error Info: ");
     add(gui("controller.status.redstone_stopped"), "Máquina parada por una señal de redstone recibida.");
     add(gui("controller.status.paused"), "Pausado");
     add(gui("controller.status.missing_structure"), "Sin estructura");

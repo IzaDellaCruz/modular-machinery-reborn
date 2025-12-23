@@ -23,7 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Function;
@@ -97,7 +96,7 @@ public class RequirementStructure implements IRequirement<StructureComponent, St
   }
 
   @Override
-  public @NotNull Component getMissingComponentErrorMessage(IOType ioType) {
+  public Component getMissingComponentErrorMessage(IOType ioType) {
     return Component.translatable("component.missing.structure");
   }
 
@@ -123,7 +122,7 @@ public class RequirementStructure implements IRequirement<StructureComponent, St
       case DESTROY -> info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.destroy").withStyle(ChatFormatting.DARK_RED));
       case PLACE_BREAK, PLACE_DESTROY -> info.addTooltip(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.place").withStyle(ChatFormatting.DARK_RED));
     }
-    info.setClickAction((machine, recipe, mouseButton) -> StructureCheckerRenderer.add(machine, this.structure));
+    info.setClickAction((machine, recipe, mouseButton) -> StructureCheckerRenderer.add(machine.getRegistryName(), this.structure));
     info.setItemIcon(Items.STRUCTURE_BLOCK);
   }
 

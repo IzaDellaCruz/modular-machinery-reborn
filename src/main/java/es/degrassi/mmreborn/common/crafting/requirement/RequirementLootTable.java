@@ -69,7 +69,11 @@ public class RequirementLootTable implements IRequirement<ItemComponent, IOInven
 
   @Override
   public boolean test(ItemComponent component, ICraftingContext context) {
-    return context.getMachineTile().getComponentManager().getParallel().isEmpty();
+    if (context.getMachineTile().getComponentManager().getParallel().isPresent()) {
+      context.getMachineTile().addErrorInfo(Component.translatable("craftcheck.failure.parallel.loot_table"));
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -81,6 +85,7 @@ public class RequirementLootTable implements IRequirement<ItemComponent, IOInven
     if (context.getMachineTile().getLevel() == null || context.getMachineTile().getLevel().getServer() == null)
       return CraftingResult.pass();
     if (context.getMachineTile().getComponentManager().getParallel().isPresent()) {
+      context.getMachineTile().setErrorMessage(Component.translatable("craftcheck.failure.parallel.loot_table"));
       return CraftingResult.error(Component.translatable("craftcheck.failure.parallel.loot_table"));
     }
     if (toOutput.isEmpty()) {

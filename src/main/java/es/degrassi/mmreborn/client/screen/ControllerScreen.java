@@ -28,7 +28,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -185,6 +184,20 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
       return;
     }
 
+    MutableComponent errorInfos = getMenu().getEntity().getErrorInfo().isEmpty() ? Component.empty() : Component.translatable("gui.controller.error.info");
+    List<FormattedCharSequence> o = font.split(
+        errorInfos.append(getMenu().getEntity().getErrorInfo().get()),
+        Mth.floor(screenWidth * (1 / scale))
+    );
+
+    if (!getMenu().getEntity().getErrorInfo().isEmpty()) {
+      for (FormattedCharSequence draw : o) {
+        offsetY += 7;
+        guiGraphics.drawString(font, draw, offsetX, offsetY, 0xFFFFFF);
+        offsetY += 7;
+      }
+    }
+
     // render the current status
     MutableComponent status = Component.translatable("gui.controller.status");
     List<FormattedCharSequence> out = font.split(status.append(getMenu().getEntity().getCraftingStatus().getUnlocMessage()), Mth.floor(screenWidth * (1 / scale)));
@@ -206,7 +219,7 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
     guiGraphics.pose().popPose();
   }
 
-  protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+  protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
     // Do not render the default texts
   }
 

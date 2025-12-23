@@ -13,9 +13,8 @@ import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiDurationComponent
 import es.degrassi.mmreborn.common.integration.jei.JeiComponentRegistry;
 import es.degrassi.mmreborn.common.integration.jei.MMRJeiPlugin;
 import es.degrassi.mmreborn.common.integration.jei.category.drawable.DrawableWrappedText;
+import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
-import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
-import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
 import lombok.Getter;
 import mezz.jei.api.constants.VanillaTypes;
@@ -39,7 +38,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.apache.commons.compress.utils.Lists;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,8 +60,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
     this.machine = machine;
     this.title = machine.getLocalizedName();
     this.background = MMRJeiPlugin.jeiHelpers.getGuiHelper().createBlankDrawable(256, 256);
-    ItemStack stack = new ItemStack(ItemRegistration.CONTROLLER.get());
-    stack.set(DataComponentRegistration.MACHINE_DATA, machine.getRegistryName());
+    ItemStack stack = ControllerItem.makeMachineItem(machine.getRegistryName());
     this.icon = MMRJeiPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, stack);
     this.infoCache = CacheBuilder.newBuilder().build(new CacheLoader<>() {
       @Override
@@ -93,12 +90,12 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   }
 
   @Override
-  public @NotNull RecipeType<MachineRecipe> getRecipeType() {
+  public RecipeType<MachineRecipe> getRecipeType() {
     return RecipeType.create(machine.getRegistryName().getNamespace(), machine.getRegistryName().getPath(), MachineRecipe.class);
   }
 
   @Override
-  public @NotNull Component getTitle() {
+  public Component getTitle() {
     return Component.literal(title);
   }
 
@@ -133,7 +130,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   }
 
   @Override
-  public void setRecipe(@NotNull IRecipeLayoutBuilder builder, MachineRecipe recipe, @NotNull IFocusGroup focuses) {
+  public void setRecipe(IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
     this.width = recipe.getWidth();
     this.height = recipe.getHeight();
     this.setupRecipeDimensions();
@@ -155,7 +152,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   }
 
   @Override
-  public void createRecipeExtras(IRecipeExtrasBuilder builder, @NotNull MachineRecipe recipe, @NotNull IFocusGroup focuses) {
+  public void createRecipeExtras(IRecipeExtrasBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
     IPlaceable<?> text = builder.addDrawable(
         new DrawableWrappedText(
             Lists.newArrayList(recipe.textsToRender.iterator()),
@@ -175,7 +172,11 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
 
     AtomicInteger index = new AtomicInteger();
     AtomicInteger row = new AtomicInteger(0);
-    recipe.getDisplayInfoRequirements().stream().map(this.infoCache).filter(RequirementDisplayInfo::shouldRender).forEach(info -> {
+    recipe.getDisplayInfoRequirements()
+        .stream()
+        .map(this.infoCache)
+        .filter(RequirementDisplayInfo::shouldRender)
+        .forEach(info -> {
       int x = index.get() * (ICON_SIZE + 2) - 2;
       int y = this.rowY + 2 + (ICON_SIZE + 2) * row.get();
       if(index.incrementAndGet() >= this.maxIconPerRow) {

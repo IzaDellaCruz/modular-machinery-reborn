@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.entity;
 
+import com.google.common.collect.Sets;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.machine.SoundManagerEntity;
 import es.degrassi.mmreborn.api.controller.ComponentMapper;
@@ -48,6 +49,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -62,11 +64,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static es.degrassi.mmreborn.ModularMachineryReborn.CONTROLLERS;
 
@@ -83,6 +87,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   private ResourceLocation id = DynamicMachine.DUMMY.getRegistryName();
   private MachineStatus status = MachineStatus.IDLE;
   private Component errorMessage = Component.empty();
+  private final ComponentList errorInfo = new ComponentList();
   private final ComponentManager componentManager;
   private final MachineProcessor processor;
   private int lastFocus;
@@ -108,6 +113,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
       this.componentManager.getFoundComponentsList().forEach(component -> component.onStatusChanged(this.status, status, message));
       this.status = status;
       this.errorMessage = message;
+      clearInfoErrors();
       setCraftingStatus(craftingByMachine(status));
       setChanged();
       if (this.getLevel() instanceof ServerLevel sl) {
@@ -307,6 +313,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
     if (this.getLevel() == null)
       return;
+    getErrorInfo().getStuffToSync(container);
     processor.getStuffToSync(container);
     componentManager.getStuffToSync(container);
     RegistryAccess registries = this.getLevel().registryAccess();
@@ -392,6 +399,59 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
           patternLock.unlock();
         });
       }
+    }
+  }
+
+  public void addErrorInfo(Component translatable) {
+    errorInfo.add(translatable);
+  }
+
+  public void clearInfoErrors() {
+    errorInfo.clear();
+  }
+
+  public class ComponentList implements ISyncableStuff {
+    private final Set<Component> components;
+    private Component unified;
+    protected ComponentList() {
+      this.components = Sets.newHashSet();
+    }
+
+    @Override
+    public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
+      var component = components
+          .stream()
+          .collect(Component::empty, MutableComponent::append, MutableComponent::append);
+      var registries = getLevel().registryAccess();
+      if (components.isEmpty()) {
+        component = null;
+      }
+      MutableComponent finalComponent = component;
+      container.accept(StringSyncable.create(
+          () -> finalComponent == null ? "" : Component.Serializer.toJson(finalComponent, registries),
+          c -> unified = c.isEmpty() ? null : Component.Serializer.fromJson(c, registries)
+      ));
+    }
+
+    public void add(Component component) {
+      this.components.add(component);
+    }
+
+    public void clear() {
+      this.components.clear();
+      this.unified = null;
+    }
+
+    public Stream<Component> stream() {
+      return components.stream();
+    }
+
+    public boolean isEmpty() {
+      return unified == null && components.isEmpty();
+    }
+
+    public Component get() {
+      return Optional.ofNullable(unified).orElse(Component.empty());
     }
   }
 }

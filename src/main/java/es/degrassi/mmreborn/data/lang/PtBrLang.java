@@ -478,6 +478,7 @@ public final class PtBrLang extends Lang {
     add(gui("controller.structure"), "Estrutura Encontrada: %s");
     add(gui("controller.structure.none"), "Nenhum");
     add(gui("controller.status"), "Status: ");
+    add(gui("controller.error.info"), "Error Info: ");
     add(gui("controller.status.redstone_stopped"), "Máquina parada por sinal de redstone");
     add(gui("controller.status.paused"), "Pausado");
     add(gui("controller.status.missing_structure"), "Faltando estrutura");

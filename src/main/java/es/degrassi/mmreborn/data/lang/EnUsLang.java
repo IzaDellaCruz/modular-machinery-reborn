@@ -481,6 +481,7 @@ public final class EnUsLang extends Lang {
     add(gui("controller.structure"), "Structure Found: %s");
     add(gui("controller.structure.none"), "None");
     add(gui("controller.status"), "Status: ");
+    add(gui("controller.error.info"), "Error Info: ");
     add(gui("controller.status.redstone_stopped"), "Machine stopped by incoming redstone signal.");
     add(gui("controller.status.paused"), "Paused");
     add(gui("controller.status.missing_structure"), "Missing structure");
