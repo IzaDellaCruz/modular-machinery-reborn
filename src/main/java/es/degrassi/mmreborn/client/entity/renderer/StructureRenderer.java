@@ -44,13 +44,18 @@ public class StructureRenderer {
 
   public StructureRenderer(int time, Function<Direction, Map<BlockPos, BlockIngredient>> blocksGetter) {
     this.start = System.currentTimeMillis();
+    final int configTagTime = MMRConfig.get().blockTagCycleTime.get();
     AtomicInteger maxTime = new AtomicInteger(time);
     for (var direction : Direction.values()) {
       if (direction.getAxis().isVertical()) continue;
       this.blocksGetter.put(direction, blocksGetter.apply(direction));
       Map<BlockPos, BlockIngredient> map = this.blocksGetter.get(direction);
-      map.forEach((pos, ing) -> maxTime.set(Math.max(maxTime.get(), map.size() * MMRConfig.get().blockTagCycleTime.get())));
-      timers.put(map, new CycleTimer(() -> MMRConfig.get().blockTagCycleTime.get(), false));
+      map.forEach((pos, ing) -> {
+        int currentMax = maxTime.get();
+        int possibleMax = Math.max(currentMax, ing.getAll().size() * configTagTime);
+        if (possibleMax != currentMax) maxTime.set(possibleMax);
+      });
+      timers.put(map, new CycleTimer(() -> configTagTime, false));
     }
     this.time = maxTime.get();
   }

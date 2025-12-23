@@ -11,7 +11,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.DataResult;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
-import es.degrassi.mmreborn.common.util.MMRLogger;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.Holder;
@@ -76,7 +75,6 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
           Arrays.stream(arr)
               .map(string -> {
                 try {
-                  MMRLogger.INSTANCE.debug("string to parse in BlockIngredient: {}", string);
                   return BlockIngredient.of(string);
                 } catch (CommandSyntaxException e) {
                   throw new IllegalArgumentException(e);
