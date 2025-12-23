@@ -322,7 +322,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(registries), s -> craftingStatus = CraftingStatus.deserialize(s, registries)));
     container.accept(StringSyncable.create(() -> this.status.toString(), status -> this.status = MachineStatus.value(status)));
     container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.errorMessage, registries), errorMessage -> this.errorMessage = Component.Serializer.fromJson(errorMessage, registries)));
-    container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.structureError, registries), errorMessage -> this.structureError = Component.Serializer.fromJson(errorMessage, registries)));
   }
 
   public SoundType getInteractionSound() {
@@ -366,19 +365,6 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
       } catch (ExecutionException ignored) {}
   }
 
-  public void onStructureUnformed() {
-    if (getLevel() instanceof ServerLevel sl) {
-      formed = false;
-      setStatus(MachineStatus.MISSING_STRUCTURE);
-      componentManager.resetWithColor();
-      processor.reset();
-      var mwsd = MMRWorldSavedData.getOrCreate(sl);
-      mwsd.removeMapping(this);
-      mwsd.removeAsyncLogic(this);
-      mwsd.addAsyncLogic(this);
-    }
-  }
-
   private List<Component> getStructureErrors() {
     return getFoundMachine().getPattern().getMinBlocksPredicate().getErrors();
   }
@@ -391,11 +377,13 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     if (getLevel() instanceof ServerLevel sl) {
       this.formed = false;
       setStatus(MachineStatus.MISSING_STRUCTURE);
-      this.structureError = formatStructureErrors();
-      processor.reset();
+      addErrorInfo(formatStructureErrors());
       componentManager.resetWithColor();
-      MMRWorldSavedData.getOrCreate(sl).addAsyncLogic(this);
-      setChanged();
+      processor.reset();
+      var mwsd = MMRWorldSavedData.getOrCreate(sl);
+      mwsd.removeMapping(this);
+      mwsd.removeAsyncLogic(this);
+      mwsd.addAsyncLogic(this);
     }
   }
 
@@ -404,7 +392,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void asyncCheckPattern(long periodID) {
-    if (!formed && !Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) {
+    if (!formed && Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) {
       lastCheckTick = periodID;
       if (getLevel() instanceof ServerLevel sl) {
         sl.getServer().execute(() -> {

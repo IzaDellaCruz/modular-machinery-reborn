@@ -46,7 +46,6 @@ public class StructureBuilderJS {
     return this;
   }
 
-  @HideFromJS
   public StructureBuilderJS addMinMaxBlock(String block, int min, int max) {
     this.minBlocks.put(block, new MinBlocksPredicate.MinMax(min, max));
     return this;
@@ -72,6 +71,7 @@ public class StructureBuilderJS {
     return addMinMaxBlock(block, number, number);
   }
 
+  @HideFromJS
   public Structure build(List<ModifierReplacement> modifiers) {
     for (List<String> levels : pattern)
       builder.aisle(levels.toArray(new String[0]));

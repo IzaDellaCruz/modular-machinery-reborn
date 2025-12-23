@@ -11,7 +11,6 @@ import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
-import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.data.MMRTags;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;

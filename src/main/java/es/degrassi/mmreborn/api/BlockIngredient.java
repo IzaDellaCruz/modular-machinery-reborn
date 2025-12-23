@@ -41,9 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-// TODO: see how can i make this use separated ids for a tag/state
 public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWorld> {
   public static final BlockIngredient AIR = new BlockIngredient("air", false, PartialBlockState.AIR);
   public static final BlockIngredient ANY = new BlockIngredient("any", false, PartialBlockState.ANY);
@@ -57,23 +55,28 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
       StringReader reader = new StringReader(s);
       reader.skipWhitespace();
       boolean not = false;
+
+      if (!reader.getRemaining().contains("[") && reader.getRemaining().contains("]")) {
+        reader = new StringReader(reader.getRemaining().replaceAll("]", ""));
+      }
+
       if (reader.peek() == '!') {
         not = true;
         reader.skip();
       }
       if (reader.peek() == '[') {
         reader.skip();
-        if (reader.getRemaining().endsWith("]")) {
-          s = reader.getRemaining().substring(0, s.length() - 1);
-        } else {
-          s = reader.getRemaining();
-        }
+        s = reader.readStringUntil(']');
+      } else {
+        s = reader.getRemaining();
       }
+
       String[] arr = s.split(", ");
       return DataResult.success(
           Arrays.stream(arr)
               .map(string -> {
                 try {
+                  MMRLogger.INSTANCE.debug("string to parse in BlockIngredient: {}", string);
                   return BlockIngredient.of(string);
                 } catch (CommandSyntaxException e) {
                   throw new IllegalArgumentException(e);
@@ -81,7 +84,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
               })
               .reduce(new BlockIngredient("", not, Collections.emptyList(), Collections.emptyList()), BlockIngredient::merge)
       );
-    } catch(IllegalArgumentException e) {
+    } catch(IllegalArgumentException | CommandSyntaxException e) {
       return DataResult.error(e::getMessage);
     }
   }, BlockIngredient::getString, "BlockIngredient from string");
@@ -212,36 +215,36 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
 
   @Override
   public boolean test(BlockInWorld block) {
-    boolean isTag = !this.tags.isEmpty();
+    boolean isTag = !this.insertedTags.isEmpty();
     boolean partial = false;
     if (isTag) {
       if (this.not) {
-        partial = this.tags.stream().noneMatch(tag -> block.getState().is(tag));
+        partial = this.insertedTags.stream().noneMatch(tag -> block.getState().is(tag));
       } else {
-        partial = this.tags.stream().anyMatch(tag -> block.getState().is(tag));
+        partial = this.insertedTags.stream().anyMatch(tag -> block.getState().is(tag));
       }
     }
     if (this.not) {
-      return partial || this.uniqueStates.stream().noneMatch(state -> state.test(block));
+      return partial || this.insertedStates.stream().noneMatch(state -> state.test(block));
     } else {
-      return partial || this.uniqueStates.stream().anyMatch(state -> state.test(block));
+      return partial || this.insertedStates.stream().anyMatch(state -> state.test(block));
     }
   }
 
   public boolean test(Block block) {
-    boolean isTag = !this.tags.isEmpty();
+    boolean isTag = !this.insertedTags.isEmpty();
     boolean partial = false;
     if (isTag) {
       if (not) {
-        partial = this.tags.stream().noneMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
+        partial = this.insertedTags.stream().noneMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
       } else {
-        partial = this.tags.stream().anyMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
+        partial = this.insertedTags.stream().anyMatch(tag -> BuiltInRegistries.BLOCK.getTag(tag).map(named -> named.contains(Holder.direct(block))).orElse(false));
       }
     }
     if (this.not) {
-      return partial || this.uniqueStates.stream().noneMatch(state -> state.getBlockState().getBlock() == block);
+      return partial || this.insertedStates.stream().noneMatch(state -> state.getBlockState().getBlock() == block);
     } else {
-      return partial || this.uniqueStates.stream().anyMatch(state -> state.getBlockState().getBlock() == block);
+      return partial || this.insertedStates.stream().anyMatch(state -> state.getBlockState().getBlock() == block);
     }
   }
 
@@ -280,10 +283,6 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     );
   }
 
-  public Stream<PartialBlockState> uniqueStates() {
-    return insertedStates.stream();
-  }
-
   public List<Component> getNames() {
     List<Component> ingredients = Lists.newArrayList();
     ingredients.addAll(this.insertedTags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).map(Component::literal).toList());
@@ -318,19 +317,13 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     Set<String> ings = Sets.newHashSet();
     ings.addAll(this.insertedTags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).toList());
 
-    ings.addAll(
-        insertedStates.stream()
-            .map(PartialBlockState::toString)
-            .toList()
-    );
+    ings.addAll(insertedStates.stream().map(PartialBlockState::toString).toList());
 
-    List<String> ingredients = ings.stream().toList();
-
-    if (ingredients.size() == 1) {
-      return (this.not ? "!" : "") + ingredients.getFirst();
+    if (ings.size() == 1) {
+      return (this.not ? "!" : "") + ings.stream().toList().getFirst();
     }
 
-    return (this.not ? "!" : "") + ingredients;
+    return (this.not ? "!" : "") + ings;
   }
 
   @Override
@@ -384,6 +377,10 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
 
     reader.skipWhitespace();
 
+    if (!reader.getRemaining().contains("[") && reader.getRemaining().contains("]")) {
+      reader = new StringReader(reader.getRemaining().replaceAll("]", ""));
+    }
+
     boolean not = false;
 
     if (reader.peek() == '!') {
@@ -398,7 +395,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     }
 
     PartialBlockState state = PartialBlockState.of(reader.getRemaining());
-    return new BlockIngredient(state.getName().toString(), not, Collections.emptyList(), Collections.singletonList(state));
+    return new BlockIngredient(state.toString(), not, Collections.emptyList(), Collections.singletonList(state));
   }
 
   @Override
