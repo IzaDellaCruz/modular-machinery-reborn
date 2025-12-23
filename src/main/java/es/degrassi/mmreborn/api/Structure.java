@@ -11,6 +11,7 @@ import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.data.MMRTags;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
@@ -41,20 +42,21 @@ public class Structure {
       DefaultCodecs.CHARACTER.optionalFieldOf("machine_key", 'm').forGetter(Structure::getMachineKey),
       NamedCodec.STRING.listOf().listOf().fieldOf("pattern").forGetter(s -> s.pattern.asList()),
       NamedCodec.unboundedMap(DefaultCodecs.CHARACTER, BlockIngredient.CODEC, "Map<Character, Block>").fieldOf("keys").forGetter(s -> s.pattern.asMap()),
-      ModifierReplacement.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(s -> s.pattern.getModifiers())
+      ModifierReplacement.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(s -> s.pattern.getModifiers()),
+      MinBlocksPredicate.CODEC.optionalFieldOf("min_blocks", MinBlocksPredicate.EMPTY).forGetter(Structure::minBlocks)
   ).apply(structure, Structure::makeStructure), "Structure with modifiers");
 
-  public static final Structure EMPTY = new Structure('m', Map.of(), List.of(List.of("m")), Map.of(), List.of());
+  public static final Structure EMPTY = new Structure('m', Map.of(), List.of(List.of("m")), Map.of(), List.of(), MinBlocksPredicate.EMPTY);
   private static final RandomSource random = RandomSource.create(42L);
 
-  private static Structure makeStructure(Character machineKey, List<List<String>> pattern,
-                                         Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
+  private static Structure makeStructure(Character machineKey, List<List<String>> pattern, Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers,
+                                         MinBlocksPredicate minBlocks) {
     Structure.Builder builder = Structure.Builder.start(machineKey);
     for (List<String> levels : pattern)
       builder.aisle(levels.toArray(new String[0]));
     for (Map.Entry<Character, BlockIngredient> key : keys.entrySet())
       builder.where(key.getKey(), key.getValue());
-    return builder.build(pattern, keys, modifiers);
+    return builder.build(pattern, keys, modifiers, minBlocks);
   }
 
   public static void place(DynamicMachine machine, BlockPos controllerPos, Level level, boolean isCreative, ServerPlayer player, boolean withModifiers) {
@@ -76,7 +78,7 @@ public class Structure {
               state.equals(PartialBlockState.ANY) ||
               state.getBlockState().isAir()
       )) {
-        ingredient = new BlockIngredient(ingredient.getTags(), ingredient.getUniqueStates().stream().filter(state ->
+        ingredient = new BlockIngredient(ingredient.getId(), ingredient.insertedTags, ingredient.insertedStates.stream().filter(state ->
             !state.equals(PartialBlockState.AIR) &&
                 !state.equals(PartialBlockState.ANY) &&
                 !state.getBlockState().isAir()
@@ -86,7 +88,7 @@ public class Structure {
       worldPos.set(pos.getX() + controllerPos.getX(), pos.getY() + controllerPos.getY(), pos.getZ() + controllerPos.getZ());
       BlockInWorld info = new BlockInWorld(level, worldPos, false);
       BlockInWorld finalInfo = info;
-      if (!info.getState().isAir() && ingredient.getAll().stream().noneMatch(state -> state.test(finalInfo))) {
+      if (!info.getState().isAir() && !ingredient.test(finalInfo)) {
         if (isCreative) level.destroyBlock(worldPos, false);
         else {
           if (MMRConfig.get().shouldReplace.get()) {
@@ -198,17 +200,24 @@ public class Structure {
 
   private final Pattern pattern;
   private final Character machineKey;
+  private final MinBlocksPredicate minBlocksPredicate;
 
-  public Structure(Character machineKey, Map<BlockPos, BlockIngredient> blocks, List<List<String>> pattern,
-                   Map<Character, BlockIngredient> keys, List<ModifierReplacement> modifiers) {
+  public Structure(Character machineKey, Map<BlockPos, BlockIngredient> blocks, List<List<String>> pattern, Map<Character, BlockIngredient> keys,
+                   List<ModifierReplacement> modifiers, MinBlocksPredicate minBlocks) {
     this.pattern = new Pattern(blocks, pattern, keys, modifiers);
     this.machineKey = machineKey;
+    this.minBlocksPredicate = minBlocks;
   }
 
   public Structure(Character machineKey, Map<BlockPos, BlockIngredient> blocks, List<List<String>> pattern,
-                   Map<Character, BlockIngredient> keys) {
+                   Map<Character, BlockIngredient> keys, MinBlocksPredicate minBlocks) {
     this.pattern = new Pattern(blocks, pattern, keys);
     this.machineKey = machineKey;
+    this.minBlocksPredicate = minBlocks;
+  }
+
+  public MinBlocksPredicate minBlocks() {
+    return minBlocksPredicate;
   }
 
   public Map<BlockPos, BlockIngredient> getBlocks(Direction direction) {
@@ -220,12 +229,14 @@ public class Structure {
   }
 
   public boolean match(LevelReader world, BlockPos machinePos, Direction machineFacing) {
-    return pattern.match(world, machinePos, machineFacing);
+    minBlocksPredicate.reset();
+    return pattern.match(world, machinePos, machineFacing, minBlocksPredicate);
   }
 
   public JsonObject asJson() {
     JsonObject json = new JsonObject();
     json.add("pattern", pattern.asJson());
+    json.add("minBlocks", minBlocksPredicate.asJson());
     return json;
   }
 
@@ -299,7 +310,8 @@ public class Structure {
     }
 
     public Structure build(List<List<String>> pattern, Map<Character, BlockIngredient> keys,
-                           List<ModifierReplacement> modifiers) {
+                           List<ModifierReplacement> modifiers,
+                           MinBlocksPredicate minBlocks) {
       this.checkMissingPredicates();
       BlockPos machinePos = this.getMachinePos();
       Map<BlockPos, BlockIngredient> blocks = Maps.newHashMap();
@@ -310,7 +322,7 @@ public class Structure {
           }
         }
       }
-      return new Structure(machineKey, blocks, pattern, keys, modifiers);
+      return new Structure(machineKey, blocks, pattern, keys, modifiers, minBlocks);
     }
 
     private BlockPos getMachinePos() {

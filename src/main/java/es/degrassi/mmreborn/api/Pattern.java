@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Pattern {
   private final List<List<String>> strings;
@@ -131,16 +132,24 @@ public class Pattern {
     return keys;
   }
 
-  public boolean match(LevelReader world, BlockPos machinePos, Direction machineFacing) {
+  public boolean match(LevelReader world, BlockPos machinePos, Direction machineFacing, MinBlocksPredicate predicate) {
     Map<BlockPos, BlockIngredient> blocks = get(machineFacing);
     BlockPos.MutableBlockPos worldPos = new BlockPos.MutableBlockPos();
     for (BlockPos pos : blocks.keySet()) {
       BlockIngredient ingredient = blocks.get(pos);
       worldPos.set(pos.getX() + machinePos.getX(), pos.getY() + machinePos.getY(), pos.getZ() + machinePos.getZ());
       BlockInWorld info = new BlockInWorld(world, worldPos, false);
-      if (!ingredient.test(info)) return false;
+      if (!predicate.test(ingredient, info)) return false;
     }
-    return true;
+    AtomicBoolean result = new AtomicBoolean(true);
+    predicate.getTests().forEach((ing, found) -> {
+      var minmax = predicate.minBlocks().get(ing);
+      if (!minmax.test(found)) {
+        result.set(false);
+        predicate.getErrors().add(minmax.errorMessage(found, ing.getNamesUnified()));
+      }
+    });
+    return result.get();
   }
 
   public JsonObject asJson() {

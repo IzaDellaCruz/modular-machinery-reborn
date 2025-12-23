@@ -239,6 +239,8 @@ dependencies {
   localRuntime "curse.maven:architectury-api-419699:5786327"
   localRuntime "curse.maven:kotlin-for-forge-351264:5978393"
   localRuntime("curse.maven:observable-509575:5733591")
+  // Spark profiling
+  localRuntime("curse.maven:spark-361579:6225208")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

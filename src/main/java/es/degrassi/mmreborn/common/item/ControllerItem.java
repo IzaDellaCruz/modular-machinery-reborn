@@ -55,7 +55,16 @@ public class ControllerItem extends ItemBlockMachineComponent {
     tooltipComponents.add(Component.translatable("modular_machinery_reborn.controller.tooltip.0"));
     tooltipComponents.add(Component.translatable("modular_machinery_reborn.controller.tooltip.1"));
     getMachine(stack).ifPresentOrElse(machine -> {
-      if (tooltipFlag.hasShiftDown()) {
+      if (tooltipFlag.hasAltDown()) {
+        machine.getPattern().getMinBlocksPredicate()
+            .minBlocks()
+            .forEach((key, value) -> {
+              tooltipComponents.add(Component.translatable(
+                  "modular_machinery_reborn.controller.required.block",
+                  key.getNamesUnified().append(value.guiText())
+              ).withStyle(ChatFormatting.GRAY));
+            });
+      } else if (tooltipFlag.hasShiftDown()) {
         tooltipComponents.add(Component.translatable("modular_machinery_reborn.controller.required").withStyle(ChatFormatting.GRAY));
         machine.getPattern()
             .getPattern()
@@ -98,6 +107,12 @@ public class ControllerItem extends ItemBlockMachineComponent {
               tooltipComponents.add(component);
             });
       } else {
+        tooltipComponents.add(
+            Component.empty()
+                .append(Component.translatable("modular_machinery_reborn.controller.alt").withStyle(ChatFormatting.YELLOW))
+                .append(" ")
+                .append(Component.translatable("modular_machinery_reborn.controller.alt.minmax").withStyle(ChatFormatting.GRAY))
+        );
         tooltipComponents.add(
             Component.empty()
                 .append(Component.translatable("modular_machinery_reborn.controller.shift").withStyle(ChatFormatting.YELLOW))

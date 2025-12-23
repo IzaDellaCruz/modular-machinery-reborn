@@ -322,6 +322,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(registries), s -> craftingStatus = CraftingStatus.deserialize(s, registries)));
     container.accept(StringSyncable.create(() -> this.status.toString(), status -> this.status = MachineStatus.value(status)));
     container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.errorMessage, registries), errorMessage -> this.errorMessage = Component.Serializer.fromJson(errorMessage, registries)));
+    container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.structureError, registries), errorMessage -> this.structureError = Component.Serializer.fromJson(errorMessage, registries)));
   }
 
   public SoundType getInteractionSound() {
@@ -375,6 +376,26 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
       mwsd.removeMapping(this);
       mwsd.removeAsyncLogic(this);
       mwsd.addAsyncLogic(this);
+    }
+  }
+
+  private List<Component> getStructureErrors() {
+    return getFoundMachine().getPattern().getMinBlocksPredicate().getErrors();
+  }
+
+  public Component formatStructureErrors() {
+    return getStructureErrors().stream().reduce(Component.empty(), MutableComponent::append, MutableComponent::append);
+  }
+
+  public void onStructureUnformed() {
+    if (getLevel() instanceof ServerLevel sl) {
+      this.formed = false;
+      setStatus(MachineStatus.MISSING_STRUCTURE);
+      this.structureError = formatStructureErrors();
+      processor.reset();
+      componentManager.resetWithColor();
+      MMRWorldSavedData.getOrCreate(sl).addAsyncLogic(this);
+      setChanged();
     }
   }
 

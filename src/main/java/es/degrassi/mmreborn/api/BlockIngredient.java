@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.api;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
@@ -35,19 +36,21 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO: see how can i make this use separated ids for a tag/state
 public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWorld> {
-  public static final BlockIngredient AIR = new BlockIngredient(false, PartialBlockState.AIR);
-  public static final BlockIngredient ANY = new BlockIngredient(false, PartialBlockState.ANY);
-  public static final BlockIngredient MACHINE = new BlockIngredient(false, PartialBlockState.MACHINE);
-  public static final BlockIngredient NOT_MACHINE = new BlockIngredient(true, PartialBlockState.MACHINE);
-  public static final BlockIngredient STRUCTURE_CHECKER = new BlockIngredient(false, PartialBlockState.STRUCTURE_CHECKER);
-  public static final BlockIngredient NOT_STRUCTURE_CHECKER = new BlockIngredient(true, PartialBlockState.STRUCTURE_CHECKER);
+  public static final BlockIngredient AIR = new BlockIngredient("air", false, PartialBlockState.AIR);
+  public static final BlockIngredient ANY = new BlockIngredient("any", false, PartialBlockState.ANY);
+  public static final BlockIngredient MACHINE = new BlockIngredient("machine", false, PartialBlockState.MACHINE);
+  public static final BlockIngredient NOT_MACHINE = new BlockIngredient("not_machine", true, PartialBlockState.MACHINE);
+  public static final BlockIngredient STRUCTURE_CHECKER = new BlockIngredient("structure_creator", false, PartialBlockState.STRUCTURE_CHECKER);
+  public static final BlockIngredient NOT_STRUCTURE_CHECKER = new BlockIngredient("not_structure_creator", true, PartialBlockState.STRUCTURE_CHECKER);
 
   public static final NamedCodec<BlockIngredient> STRING_CODEC = NamedCodec.STRING.comapFlatMap(s -> {
     try {
@@ -76,7 +79,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
                   throw new IllegalArgumentException(e);
                 }
               })
-              .reduce(new BlockIngredient(not, Collections.emptyList(), Collections.emptyList()), BlockIngredient::merge)
+              .reduce(new BlockIngredient("", not, Collections.emptyList(), Collections.emptyList()), BlockIngredient::merge)
       );
     } catch(IllegalArgumentException e) {
       return DataResult.error(e::getMessage);
@@ -113,8 +116,10 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
           blockIngredientInstance.group(
               NamedCodec.BOOL.optionalFieldOf("not", false).forGetter(ingredient -> ingredient.not),
               ING_CODEC.fieldOf("ingredient").forGetter(Function.identity())
-          ).apply(blockIngredientInstance, (not, ingredient) -> new BlockIngredient(not, ingredient.getTags(),
-              ingredient.getUniqueStates())),
+          ).apply(
+              blockIngredientInstance,
+              (not, ingredient) -> new BlockIngredient(ingredient.id, not, ingredient.insertedTags, ingredient.insertedStates)
+          ),
       "Block ingredient"
   );
 
@@ -128,16 +133,20 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   private List<TagKey<Block>> tags = Lists.newArrayList();
   @Getter
   private final boolean not;
+  final List<TagKey<Block>> insertedTags;
+  final List<PartialBlockState> insertedStates;
 
   @Getter
-  private final List<PartialBlockState> uniqueStates;
+  private final String id;
 
-  public BlockIngredient(List<TagKey<Block>> tags, List<PartialBlockState> states) {
-    this(false, tags, states);
+  public BlockIngredient(String id, List<TagKey<Block>> tags, List<PartialBlockState> states) {
+    this(id, false, tags, states);
   }
 
-  public BlockIngredient(boolean not, List<TagKey<Block>> tags, List<PartialBlockState> states) {
+  public BlockIngredient(String id, boolean not, List<TagKey<Block>> tags, List<PartialBlockState> states) {
     List<PartialBlockState> statesCopy = Lists.newArrayList(states);
+    this.insertedStates = states;
+    this.insertedTags = tags;
     this.tags.addAll(tags);
     this.not = not;
     tags.forEach(tag ->
@@ -146,15 +155,19 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
             .toList())
     );
     this.partialBlockStates = Suppliers.memoize(() -> ImmutableList.copyOf(statesCopy));
-    this.uniqueStates = uniqueStates().toList();
+    this.id = id;
   }
 
-  public BlockIngredient(boolean not, PartialBlockState partialBlockState) {
-    this(not, Collections.emptyList(), Collections.singletonList(partialBlockState));
+  public BlockIngredient(String id, boolean not, PartialBlockState partialBlockState) {
+    this(id, not, Collections.emptyList(), Collections.singletonList(partialBlockState));
+  }
+
+  public BlockIngredient(String id, PartialBlockState partialBlockState) {
+    this(id, false, partialBlockState);
   }
 
   public BlockIngredient(PartialBlockState partialBlockState) {
-    this(false, partialBlockState);
+    this("", partialBlockState);
   }
 
   public static BlockIngredient create(Object o) throws IllegalArgumentException, CommandSyntaxException {
@@ -170,8 +183,8 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
             }
           })
           .reduce(
-              new BlockIngredient(false, Collections.emptyList(), Collections.emptyList()),
-            (curr, prev) -> prev.merge(curr)
+              new BlockIngredient("", false, Collections.emptyList(), Collections.emptyList()),
+              BlockIngredient::merge
           );
     } else if (!(o instanceof CharSequence s)) throw new IllegalArgumentException("Block ingredient must be a string or string[]");
     else return BlockIngredient.of(s);
@@ -179,12 +192,13 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
 
   public BlockIngredient copy() {
     return new BlockIngredient(
+        id,
         not,
-        tags.stream()
+        insertedTags.stream()
             .map(TagKey::location)
             .map(tag -> TagKey.create(BuiltInRegistries.BLOCK.key(), tag))
             .toList(),
-        partialBlockStates.get()
+        insertedStates
             .stream()
             .map(PartialBlockState::copy)
             .toList()
@@ -244,7 +258,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   }
 
   public List<ItemStack> getNonTagStacks(int amount) {
-    return getUniqueStates()
+    return insertedStates
         .stream()
         .map(PartialBlockState::getBlockState)
         .map(BlockState::getBlock)
@@ -256,7 +270,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
 
   public List<ItemStack> getTagStacks(int amount) {
     return Lists.newArrayList(
-        getTags()
+        insertedTags
             .stream()
             .flatMap(TagUtil::getBlocks)
             .map(Block::asItem)
@@ -267,17 +281,15 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   }
 
   public Stream<PartialBlockState> uniqueStates() {
-    return getAll()
-        .stream()
-        .filter(state -> tags.stream().noneMatch(tag -> state.getBlockState().is(tag)));
+    return insertedStates.stream();
   }
 
   public List<Component> getNames() {
     List<Component> ingredients = Lists.newArrayList();
-    ingredients.addAll(this.tags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).map(Component::literal).toList());
+    ingredients.addAll(this.insertedTags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).map(Component::literal).toList());
 
     ingredients.addAll(
-        getUniqueStates().stream()
+        insertedStates.stream()
             .map(PartialBlockState::getName)
             .toList()
     );
@@ -303,17 +315,19 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   }
 
   public String getString() {
-    List<String> ingredients = Lists.newArrayList();
-    ingredients.addAll(this.tags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).toList());
+    Set<String> ings = Sets.newHashSet();
+    ings.addAll(this.insertedTags.stream().map(TagKey::location).map(ResourceLocation::toString).map(s -> "#" + s).toList());
 
-    ingredients.addAll(
-        getUniqueStates().stream()
+    ings.addAll(
+        insertedStates.stream()
             .map(PartialBlockState::toString)
             .toList()
     );
 
+    List<String> ingredients = ings.stream().toList();
+
     if (ingredients.size() == 1) {
-      return ingredients.getFirst();
+      return (this.not ? "!" : "") + ingredients.getFirst();
     }
 
     return (this.not ? "!" : "") + ingredients;
@@ -325,27 +339,30 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
   }
 
   public BlockIngredient copyWithRotation(Rotation rotation) {
-    return new BlockIngredient(not, tags, getAll().stream().map(state -> state.copyWithRotation(rotation)).toList());
+    return new BlockIngredient(id, not, insertedTags, insertedStates.stream().map(state -> state.copyWithRotation(rotation)).toList());
   }
 
   public BlockIngredient merge(BlockIngredient other) {
     if (other == null) return AIR.merge(this);
-    List<PartialBlockState> ingredients = Lists.newArrayList();
-    ingredients.addAll(getAll());
-    ingredients.addAll(other.getAll());
-    List<TagKey<Block>> tags = Lists.newArrayList();
-    tags.addAll(this.tags);
-    tags.addAll(other.tags);
-    return new BlockIngredient(other.not || not, tags, ingredients);
+    Set<PartialBlockState> ingredients = Sets.newHashSet();
+    ingredients.addAll(insertedStates);
+    ingredients.addAll(other.insertedStates);
+    Set<TagKey<Block>> tags = Sets.newHashSet();
+    tags.addAll(this.insertedTags);
+    tags.addAll(other.insertedTags);
+    var i = id;
+    if (!i.isEmpty() && !other.id.isEmpty()) i += ",";
+    i += other.id;
+    return new BlockIngredient(i, other.not || not, tags.stream().toList(), ingredients.stream().toList());
   }
 
   @Override
   public JsonObject asJson() {
     JsonObject json = new JsonObject();
     json.addProperty("not", not);
-    json.addProperty("tags", tags.toString());
+    json.addProperty("tags", insertedTags.toString());
     JsonArray array = new JsonArray();
-    this.uniqueStates.forEach(state -> array.add(state.toString()));
+    insertedStates.forEach(state -> array.add(state.toString()));
     json.add("states", array);
     return json;
   }
@@ -354,10 +371,10 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     CompoundTag tag = new CompoundTag();
     ListTag tagList = new ListTag();
     tag.putBoolean("not", not);
-    tags.forEach(t -> tagList.add(StringTag.valueOf(t.toString())));
+    insertedTags.forEach(t -> tagList.add(StringTag.valueOf(t.toString())));
     tag.put("tags", tagList);
     ListTag states = new ListTag();
-    getAll().forEach(state -> states.add(StringTag.valueOf(state.toString())));
+    insertedStates.forEach(state -> states.add(StringTag.valueOf(state.toString())));
     tag.put("states", states);
     return tag;
   }
@@ -377,21 +394,21 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
     if (reader.peek() == '#') {
       reader.skip();
       TagKey<Block> tag = TagKey.create(Registries.BLOCK, ResourceLocation.parse(reader.getRemaining()));
-      return new BlockIngredient(not, Collections.singletonList(tag), Collections.emptyList());
+      return new BlockIngredient("#" + tag.location(), not, Collections.singletonList(tag), Collections.emptyList());
     }
 
     PartialBlockState state = PartialBlockState.of(reader.getRemaining());
-    return new BlockIngredient(not, Collections.emptyList(), Collections.singletonList(state));
+    return new BlockIngredient(state.getName().toString(), not, Collections.emptyList(), Collections.singletonList(state));
   }
 
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof BlockIngredient that)) return false;
-    return this.not == that.not && Objects.equals(partialBlockStates, that.partialBlockStates) && Objects.equals(tags, that.tags);
+    return this.not == that.not && Objects.equals(insertedStates, that.insertedStates) && Objects.equals(insertedTags, that.insertedTags);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(not, partialBlockStates, tags);
+    return Objects.hash(not, insertedStates, insertedTags);
   }
 }
