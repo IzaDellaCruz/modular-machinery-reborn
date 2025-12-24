@@ -36,7 +36,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class StructureCreatorItem extends Item {
 
   private static final NamedCodec<List<List<String>>> PATTERN_CODEC = NamedCodec.STRING.listOf().listOf();
-  private static final NamedCodec<Map<Character, BlockIngredient>> KEYS_CODEC = NamedCodec.unboundedMap(DefaultCodecs.CHARACTER, BlockIngredient.CODEC, "Map<Character, Block>");
+  private static final NamedCodec<Map<Character, BlockIngredient>> KEYS_CODEC = NamedCodec.unboundedMap(DefaultCodecs.CHARACTER, BlockIngredient.STRING_CODEC, "Map<Character, Block>");
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
   public StructureCreatorItem(Properties properties) {
@@ -61,33 +60,34 @@ public class StructureCreatorItem extends Item {
     return true;
   }
 
+  private InteractionResult sidedSuccess(boolean isClientSide) {
+    return InteractionResult.sidedSuccess(isClientSide);
+  }
+
   @Override
   public InteractionResult useOn(UseOnContext context) {
-    if (context.getPlayer() == null)
+    Player player = context.getPlayer();
+    if (player == null)
       return InteractionResult.FAIL;
     BlockPos pos = context.getClickedPos();
     BlockState state = context.getLevel().getBlockState(pos);
     ItemStack stack = context.getItemInHand();
+    boolean isClientSide = context.getLevel().isClientSide;
 
     StructureCreatorItemMode currentMode = getCurrentMode(stack);
 
     if (currentMode.isSingle()) {
-      if (state.getBlock() instanceof BlockController) {
-        if (!context.getLevel().isClientSide())
-          finishStructure(stack, pos, state.getValue(BlockStateProperties.HORIZONTAL_FACING), (ServerPlayer) context.getPlayer());
-        return InteractionResult.SUCCESS;
+      if (state.getBlock() instanceof BlockController block) {
+        if (!isClientSide) finishStructure(stack, pos, block.getFacing(state), (ServerPlayer) player);
       } else if (!getSelectedBlocks(stack).contains(pos)) {
         addSelectedBlock(stack, pos);
-        return InteractionResult.SUCCESS;
       } else if (getSelectedBlocks(stack).contains(pos)) {
         removeSelectedBlock(stack, pos);
-        return InteractionResult.SUCCESS;
       }
+      return sidedSuccess(isClientSide);
     } else if (currentMode.isBox()) {
-      if (state.getBlock() instanceof BlockController) {
-        if (!context.getLevel().isClientSide())
-          finishStructure(stack, pos, state.getValue(BlockStateProperties.HORIZONTAL_FACING), (ServerPlayer) context.getPlayer());
-        return InteractionResult.SUCCESS;
+      if (state.getBlock() instanceof BlockController block) {
+        if (!isClientSide) finishStructure(stack, pos, block.getFacing(state), (ServerPlayer) player);
       } else {
         if (isFirst(stack)) {
           selectFirst(stack, pos);
@@ -97,6 +97,7 @@ public class StructureCreatorItem extends Item {
           setFirst(stack);
         }
       }
+      return sidedSuccess(isClientSide);
     }
 
 
@@ -156,7 +157,7 @@ public class StructureCreatorItem extends Item {
   }
 
   public static void nextMode(ItemStack stack) {
-    stack.update(DataComponentRegistration.STRUCTURE_CREATOR_MODE, StructureCreatorItemMode.SINGLE, StructureCreatorItemMode::next);
+    stack.update(DataComponentRegistration.STRUCTURE_CREATOR_MODE, getCurrentMode(stack), StructureCreatorItemMode::next);
   }
 
   public static boolean isFirst(ItemStack stack) {

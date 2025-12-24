@@ -23,7 +23,7 @@ public abstract class KeyMappings {
       KeyConflictContext.IN_GAME,
       InputConstants.Type.KEYSYM,
       GLFW.GLFW_KEY_MINUS,
-      "key.categories" + ModularMachineryReborn.MODID
+      "key.categories." + ModularMachineryReborn.MODID
   ));
 
   @SubscribeEvent

@@ -138,7 +138,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
 
   @Override
   public BlockState rotate(BlockState state, Rotation rotation) {
-    return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+    return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(getFacing(state)));
   }
 
   @Override
@@ -199,5 +199,9 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
         .filter(blockEntity -> blockEntity instanceof MachineControllerEntity)
         .map(tile -> ((MachineControllerEntity) tile).getInteractionSound())
         .orElse(super.getSoundType(state));
+  }
+
+  public Direction getFacing(BlockState state) {
+    return state.getValue(BlockStateProperties.HORIZONTAL_FACING);
   }
 }
