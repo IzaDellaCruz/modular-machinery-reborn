@@ -99,7 +99,7 @@ public final class MinBlocksPredicate implements BiPredicate<BlockIngredient, Bl
   }
 
   public record MinMax(int min, int max) implements Predicate<Integer> {
-    private static final int minValue = 0;
+    private static final int minValue = Integer.MIN_VALUE;
     private static final int maxValue = Integer.MAX_VALUE;
     public static final NamedCodec<MinMax> CODEC = NamedCodec.record(instance -> instance.group(
         NamedCodec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("min", minValue).forGetter(MinMax::min),
@@ -107,11 +107,11 @@ public final class MinBlocksPredicate implements BiPredicate<BlockIngredient, Bl
     ).apply(instance, MinMax::new), "MinMax");
 
     public static MinMax max(int max) {
-      return new MinMax(0, max);
+      return new MinMax(minValue, max);
     }
 
     public static MinMax min(int min) {
-      return new MinMax(min, Integer.MAX_VALUE);
+      return new MinMax(min, maxValue);
     }
 
     public boolean test(Integer toTest) {
