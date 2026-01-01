@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -156,8 +157,8 @@ public class StructureCreatorItem extends Item {
     return Optional.ofNullable(stack.get(DataComponentRegistration.STRUCTURE_CREATOR_MODE)).orElse(StructureCreatorItemMode.SINGLE);
   }
 
-  public static void nextMode(ItemStack stack) {
-    stack.update(DataComponentRegistration.STRUCTURE_CREATOR_MODE, getCurrentMode(stack), StructureCreatorItemMode::next);
+  public static StructureCreatorItemMode nextMode(ItemStack stack) {
+    return Objects.requireNonNull(stack.update(DataComponentRegistration.STRUCTURE_CREATOR_MODE, getCurrentMode(stack), StructureCreatorItemMode::next));
   }
 
   public static boolean isFirst(ItemStack stack) {

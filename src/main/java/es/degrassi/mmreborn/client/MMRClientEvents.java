@@ -36,10 +36,10 @@ public abstract class MMRClientEvents {
       ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
       if (!stack.is(ItemRegistration.STRUCTURE_CREATOR_ITEM.get())) return;
       StructureCreatorItemMode first = StructureCreatorItem.getCurrentMode(stack);
-      StructureCreatorItem.nextMode(stack);
-      StructureCreatorItemMode second = StructureCreatorItem.getCurrentMode(stack);
+      StructureCreatorItemMode second = StructureCreatorItem.nextMode(stack);
       player.sendSystemMessage(Component.translatable("modular_machinery_reborn.structure_creator.mode.change",
         first.component().withStyle(ChatFormatting.RED), second.component().withStyle(ChatFormatting.GREEN)));
+      player.getInventory().setChanged();
     }
   }
 }

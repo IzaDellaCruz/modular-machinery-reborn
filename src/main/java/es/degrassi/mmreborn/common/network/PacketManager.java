@@ -15,7 +15,7 @@ import es.degrassi.mmreborn.common.network.server.SMachineUpdatePacket;
 import es.degrassi.mmreborn.common.network.server.SOpenFilePacket;
 import es.degrassi.mmreborn.common.network.server.SRemoveControllerRenderer;
 import es.degrassi.mmreborn.common.network.server.SStopSoundInstancePacket;
-import es.degrassi.mmreborn.common.network.server.SSyncMachinesPacket;
+import es.degrassi.mmreborn.common.network.server.SSyncMachinePacket;
 import es.degrassi.mmreborn.common.network.server.SSyncPauseStatePacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateContainerPacket;
 import es.degrassi.mmreborn.common.network.server.SUpdateCraftingStatusPacket;
@@ -52,7 +52,7 @@ public class PacketManager {
     registrar.playToClient(SUpdateCraftingStatusPacket.TYPE, SUpdateCraftingStatusPacket.CODEC, SUpdateCraftingStatusPacket::handle);
     registrar.playToClient(SUpdateMachineColorPacket.TYPE, SUpdateMachineColorPacket.CODEC, SUpdateMachineColorPacket::handle);
     registrar.playToClient(SUpdateMachineTexturePacket.TYPE, SUpdateMachineTexturePacket.CODEC, SUpdateMachineTexturePacket::handle);
-    registrar.playToClient(SSyncMachinesPacket.TYPE, SSyncMachinesPacket.CODEC, SSyncMachinesPacket::handle);
+    registrar.playToClient(SSyncMachinePacket.TYPE, SSyncMachinePacket.CODEC, SSyncMachinePacket::handle);
     registrar.playToClient(SSyncPauseStatePacket.TYPE, SSyncPauseStatePacket.CODEC, SSyncPauseStatePacket::handle);
     registrar.playToClient(SAddControllerRenderer.TYPE, SAddControllerRenderer.CODEC, SAddControllerRenderer::handle);
     registrar.playToClient(SRemoveControllerRenderer.TYPE, SRemoveControllerRenderer.CODEC, SRemoveControllerRenderer::handle);

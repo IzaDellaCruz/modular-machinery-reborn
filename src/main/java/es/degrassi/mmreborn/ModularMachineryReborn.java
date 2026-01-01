@@ -32,6 +32,7 @@ import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
+import es.degrassi.mmreborn.common.network.server.SSyncMachinePacket;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -42,7 +43,6 @@ import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.MachineJsonReloadListener;
 import es.degrassi.mmreborn.common.manager.crafting.ProcessorType;
 import es.degrassi.mmreborn.common.network.server.SLootTablesPacket;
-import es.degrassi.mmreborn.common.network.server.SSyncMachinesPacket;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.DataRegistration;
 import es.degrassi.mmreborn.common.registration.EmptyRequirementTypeRegistration;
@@ -185,7 +185,8 @@ public class ModularMachineryReborn {
   }
 
   public void syncData(ServerPlayer player) {
-    PacketDistributor.sendToPlayer(player, new SSyncMachinesPacket(MACHINES));
+    //PacketDistributor.sendToPlayer(player, new SSyncMachinesPacket(MACHINES));
+    MACHINES.forEach((id, machine) -> PacketDistributor.sendToPlayer(player, new SSyncMachinePacket(machine)));
     PacketDistributor.sendToPlayer(player, new SLootTablesPacket(LootTableHelper.getLoots()));
   }
 
