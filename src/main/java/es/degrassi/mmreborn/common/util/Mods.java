@@ -21,4 +21,8 @@ public interface Mods {
   static boolean isJEIorEMILoaded() {
     return isEMILoaded() || isJEILoaded();
   }
+
+  static boolean isLDLibLoaded() {
+    return ModList.get().isLoaded("ldlib2");
+  }
 }

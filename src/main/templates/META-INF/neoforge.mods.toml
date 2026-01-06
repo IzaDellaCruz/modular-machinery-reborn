@@ -80,3 +80,10 @@ type="optional"
 versionRange="[${almostunified_version},)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="ldlib2"
+type="optional"
+versionRange="[${ldlib2_version},)"
+ordering="AFTER"
+side="BOTH"

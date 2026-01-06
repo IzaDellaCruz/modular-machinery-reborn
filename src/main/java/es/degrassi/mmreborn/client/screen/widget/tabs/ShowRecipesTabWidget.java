@@ -1,6 +1,5 @@
 package es.degrassi.mmreborn.client.screen.widget.tabs;
 
-import dev.emi.emi.api.EmiApi;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.common.integration.emi.MMREmiPlugin;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
@@ -18,8 +17,7 @@ public class ShowRecipesTabWidget extends TopTabWidget {
   public ShowRecipesTabWidget(@Nullable ItemOrIconButton icon, DynamicMachine machine) {
     super(0, 0, icon, (mouseX, mouseY, button) -> {
       if (Mods.isEMILoaded()) {
-        if (MMREmiPlugin.categories.containsKey(machine))
-          EmiApi.displayRecipeCategory(MMREmiPlugin.categories.get(machine));
+        MMREmiPlugin.openCategories(machine);
       }
     });
   }

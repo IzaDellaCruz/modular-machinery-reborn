@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.integration.emi;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
+import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
@@ -20,11 +21,15 @@ import es.degrassi.mmreborn.client.screen.widget.tabs.ITabGroupScreen;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.integration.almostunified.AlmostUnifiedAdapter;
 import es.degrassi.mmreborn.common.integration.emi.recipe.MMREmiRecipe;
+import es.degrassi.mmreborn.common.integration.emi.recipe.MMRMultiblockCategory;
+import es.degrassi.mmreborn.common.integration.emi.recipe.MMRMultiblockEmiRecipe;
+import es.degrassi.mmreborn.common.integration.xei.MultiblockRecipe;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
+import es.degrassi.mmreborn.common.util.Mods;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -37,6 +42,11 @@ import java.util.Map;
 @EmiEntrypoint
 public class MMREmiPlugin implements EmiPlugin {
   public static final Map<DynamicMachine, EmiRecipeCategory> categories = Maps.newHashMap();
+
+  public static void openCategories(DynamicMachine machine) {
+    EmiApi.displayUses(EmiStack.of(ControllerItem.makeMachineItem(machine.getRegistryName())));
+  }
+
   @Override
   public void register(EmiRegistry registry) {
     EmiStack controller = EmiStack.of(ItemRegistration.CONTROLLER);
@@ -71,6 +81,13 @@ public class MMREmiPlugin implements EmiPlugin {
           .forEach(recipe -> registry.addDeferredRecipes(x -> x.accept(new MMREmiRecipe(category, recipe))));
       registry.addRecipeDecorator(category, new IndicatorDecorator());
       //registry.addRecipeHandler(ContainerRegistration.CONTROLLER.get(), new MMREmiRecipeHandler(machine));
+      if (Mods.isLDLibLoaded()) {
+        MMRMultiblockCategory multiblockCategory = new MMRMultiblockCategory(machine, stack);
+        registry.addCategory(multiblockCategory);
+        registry.addWorkstation(multiblockCategory, EmiStack.of(ItemRegistration.BLUEPRINT.get()));
+        registry.addWorkstation(multiblockCategory, stack);
+        registry.addRecipe(new MMRMultiblockEmiRecipe(new MultiblockRecipe(machine), multiblockCategory));
+      }
     });
 
     registry.addExclusionArea(ControllerScreen.class, (screen, consumer) -> {

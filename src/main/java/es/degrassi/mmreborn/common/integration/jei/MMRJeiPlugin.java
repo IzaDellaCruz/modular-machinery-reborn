@@ -11,17 +11,20 @@ import es.degrassi.mmreborn.client.screen.widget.tabs.ITabGroupScreen;
 import es.degrassi.mmreborn.client.screen.widget.tabs.TabGroupWidget;
 import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.integration.almostunified.AlmostUnifiedAdapter;
+import es.degrassi.mmreborn.common.integration.jei.category.MMRMultiblockRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.CustomIngredientTypes;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.DummyIngredientRenderer;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.IntegerIngredientHelper;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.LongIngredientHelper;
 import es.degrassi.mmreborn.common.integration.jei.ingredient.VoidIngredientHelper;
+import es.degrassi.mmreborn.common.integration.xei.MultiblockRecipe;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.common.registration.RecipeRegistration;
+import es.degrassi.mmreborn.common.util.Mods;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -53,7 +56,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -67,6 +69,7 @@ import java.util.stream.Collectors;
 public class MMRJeiPlugin implements IModPlugin {
   public static final ResourceLocation PLUGIN_ID = ModularMachineryReborn.rl("jei_plugin");
   private static final Map<ResourceLocation, MMRRecipeCategory> recipeCategories = Maps.newHashMap();
+  private static final Map<ResourceLocation, MMRMultiblockRecipeCategory> multiblockCategories = Maps.newHashMap();
   public static IJeiHelpers jeiHelpers;
 
   @Nullable
@@ -74,8 +77,17 @@ public class MMRJeiPlugin implements IModPlugin {
     return recipeCategories.get(machine.getRegistryName());
   }
 
+  @Nullable
+  private static MMRMultiblockRecipeCategory getMultiblockCategory(DynamicMachine machine) {
+    return multiblockCategories.get(machine.getRegistryName());
+  }
+
   public static Optional<MMRRecipeCategory> getCategory(ResourceLocation machine) {
     return Optional.ofNullable(recipeCategories.get(machine));
+  }
+
+  private static Optional<MMRMultiblockRecipeCategory> getMultiblockCategory(ResourceLocation machine) {
+    return Optional.ofNullable(multiblockCategories.get(machine));
   }
 
   @Override
@@ -197,11 +209,17 @@ public class MMRJeiPlugin implements IModPlugin {
   public void registerCategories(IRecipeCategoryRegistration registration) {
     if (jeiHelpers == null) jeiHelpers = registration.getJeiHelpers();
     recipeCategories.clear();
+    multiblockCategories.clear();
     for (DynamicMachine machine : ModularMachineryReborn.MACHINES.values()) {
       if (machine == null || machine == DynamicMachine.DUMMY) continue;
       MMRRecipeCategory recipe = new MMRRecipeCategory(machine);
-      recipeCategories.put(machine.getRegistryName(), recipe);
       registration.addRecipeCategories(recipe);
+      recipeCategories.put(machine.getRegistryName(), recipe);
+      if (Mods.isLDLibLoaded()) {
+        MMRMultiblockRecipeCategory multiblockCategory = new MMRMultiblockRecipeCategory(machine);
+        registration.addRecipeCategories(multiblockCategory);
+        multiblockCategories.put(machine.getRegistryName(), multiblockCategory);
+      }
     }
   }
 
@@ -213,6 +231,9 @@ public class MMRJeiPlugin implements IModPlugin {
       ItemStack stack = new ItemStack(ItemRegistration.CONTROLLER.get());
       stack.set(DataComponentRegistration.MACHINE_DATA, machine.getRegistryName());
       registration.addRecipeCatalysts(getCategory(machine).getRecipeType(), ItemRegistration.BLUEPRINT.get().getDefaultInstance(), stack);
+      if (Mods.isLDLibLoaded()) {
+        registration.addRecipeCatalysts(getMultiblockCategory(machine).getRecipeType(), ItemRegistration.BLUEPRINT.get().getDefaultInstance(), stack);
+      }
     }
   }
 
@@ -232,6 +253,15 @@ public class MMRJeiPlugin implements IModPlugin {
             .addRecipes(cat.getRecipeType(), recipes)
         )
     );
+
+    if (Mods.isLDLibLoaded()) {
+      for (DynamicMachine machine : ModularMachineryReborn.MACHINES.values()) {
+        getMultiblockCategory(machine.getRegistryName())
+            .ifPresent(cat -> registration
+              .addRecipes(cat.getRecipeType(), List.of(new MultiblockRecipe(machine)))
+            );
+      }
+    }
   }
 
   @Override
@@ -257,7 +287,7 @@ public class MMRJeiPlugin implements IModPlugin {
   }
 
   @Override
-  public @NotNull ResourceLocation getPluginUid() {
+  public ResourceLocation getPluginUid() {
     return PLUGIN_ID;
   }
 

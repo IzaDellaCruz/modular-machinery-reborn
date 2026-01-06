@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.Structure;
 import es.degrassi.mmreborn.api.codec.DefaultCodecs;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
@@ -17,8 +18,11 @@ import es.degrassi.mmreborn.common.util.sound.AmbientSound;
 import es.degrassi.mmreborn.common.util.sound.Sounds;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
 
 import javax.annotation.Nonnull;
@@ -26,7 +30,10 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -140,5 +147,24 @@ public class DynamicMachine {
   @Override
   public String toString() {
     return asJson().toString();
+  }
+
+  public List<List<ItemStack>> getStacks() {
+    return getPattern()
+        .getPattern()
+        .asList()
+        .stream()
+        .flatMap(List::stream)
+        .flatMap(s -> s.chars().mapToObj(c -> (char) c))
+        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+        .entrySet()
+        .stream()
+        .map(entry -> {
+          BlockIngredient ingredient = getPattern().getPattern().asMap().get(entry.getKey());
+          if (ingredient == null) return null;
+          return ingredient.getStacks(entry.getValue().intValue());
+        })
+        .filter(Objects::nonNull)
+        .toList();
   }
 }

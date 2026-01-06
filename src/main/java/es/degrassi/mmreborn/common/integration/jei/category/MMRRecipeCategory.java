@@ -56,6 +56,9 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   protected int rowY;
   protected int maxIconPerRow;
 
+  @Getter
+  protected final RecipeType<MachineRecipe> recipeType;
+
   public MMRRecipeCategory(DynamicMachine machine) {
     this.machine = machine;
     this.title = machine.getLocalizedName();
@@ -76,6 +79,7 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
         return info;
       }
     });
+    this.recipeType = new RecipeType<>(machine.getRegistryName(), MachineRecipe.class);
   }
 
   public void updateMachine(DynamicMachine machine) {
@@ -87,11 +91,6 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   @SuppressWarnings("removal")
   public IDrawable getBackground() {
     return background;
-  }
-
-  @Override
-  public RecipeType<MachineRecipe> getRecipeType() {
-    return RecipeType.create(machine.getRegistryName().getNamespace(), machine.getRegistryName().getPath(), MachineRecipe.class);
   }
 
   @Override
