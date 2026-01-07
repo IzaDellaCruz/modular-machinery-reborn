@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.common.entity.base;
 
 import es.degrassi.mmreborn.common.machine.IOType;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
@@ -9,8 +9,8 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import java.util.List;
 
 public interface CapabilityInventoryEntity<T> extends ItemDroppeable {
-  default IOInventory createCapabilityInventory() {
-    return new IOInventory(
+  default ItemHandler createCapabilityInventory() {
+    return new ItemHandler(
         getMode().isInput() ? new int[]{ 0 } : new int[]{},
         getMode().isOutput() ? new int[]{ 0 } : new int[]{},
         stack -> stack.getCapability(getCapability()) != null,
@@ -26,7 +26,7 @@ public interface CapabilityInventoryEntity<T> extends ItemDroppeable {
 
   ItemCapability<T, Void> getCapability();
 
-  IOInventory getCapabilityInventory();
+  ItemHandler getCapabilityInventory();
 
   void tickInventory();
 

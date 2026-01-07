@@ -28,9 +28,9 @@ import es.degrassi.mmreborn.common.integration.emi.EmiIngredientRegistry;
 import es.degrassi.mmreborn.common.integration.emi.EmiStackRegistry;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.EmptyRequirementTypeRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.LootTableHelper;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -137,15 +137,15 @@ public class MMREmiClientIntegration {
     );
   }
 
-  private EmiIngredient emiIngredientFromItemRequirement(RecipeRequirement<ItemComponent, RequirementItem, IOInventory> requirement) {
+  private EmiIngredient emiIngredientFromItemRequirement(RecipeRequirement<ItemComponent, RequirementItem, ItemHandler> requirement) {
     return EmiIngredient.of(requirement.requirement().ingredient.ingredient(), requirement.requirement().ingredient.count());
   }
 
-  private EmiIngredient emiIngredientFromDurabilityRequirement(RecipeRequirement<DurabilityComponent, RequirementDurability, IOInventory> requirement) {
+  private EmiIngredient emiIngredientFromDurabilityRequirement(RecipeRequirement<DurabilityComponent, RequirementDurability, ItemHandler> requirement) {
     return EmiIngredient.of(ingredientFromDurabilityRequirement(requirement.requirement().ingredient), requirement.requirement().getAmount());
   }
 
-  private EmiIngredient emiIngredientFromDurabilityPerTickRequirement(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, IOInventory> requirement) {
+  private EmiIngredient emiIngredientFromDurabilityPerTickRequirement(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, ItemHandler> requirement) {
     return EmiIngredient.of(ingredientFromDurabilityRequirement(requirement.requirement().ingredient), requirement.requirement().getAmount());
   }
 
@@ -158,7 +158,7 @@ public class MMREmiClientIntegration {
     return Ingredient.of(items.stream());
   }
 
-  private List<EmiStack> emiStackFromItemRequirement(RecipeRequirement<ItemComponent, RequirementItem, IOInventory> requirement) {
+  private List<EmiStack> emiStackFromItemRequirement(RecipeRequirement<ItemComponent, RequirementItem, ItemHandler> requirement) {
     List<EmiStack> stacks = Lists.newArrayList();
     for (Ingredient.Value value : requirement.requirement().getIngredient().ingredient().values) {
       if (value instanceof Ingredient.TagValue(TagKey<Item> tag)) {
@@ -172,7 +172,7 @@ public class MMREmiClientIntegration {
     return stacks;
   }
 
-  private List<EmiStack> emiStackFromDurabilityRequirement(RecipeRequirement<DurabilityComponent, RequirementDurability, IOInventory> requirement) {
+  private List<EmiStack> emiStackFromDurabilityRequirement(RecipeRequirement<DurabilityComponent, RequirementDurability, ItemHandler> requirement) {
     List<EmiStack> stacks = Lists.newArrayList();
     for (Ingredient.Value value : requirement.requirement().getIngredient().values) {
       if (value instanceof Ingredient.TagValue(TagKey<Item> tag)) {
@@ -186,7 +186,7 @@ public class MMREmiClientIntegration {
     return stacks.stream().unordered().toList();
   }
 
-  private List<EmiStack> emiStackFromDurabilityPerTickRequirement(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, IOInventory> requirement) {
+  private List<EmiStack> emiStackFromDurabilityPerTickRequirement(RecipeRequirement<DurabilityComponent, RequirementDurabilityPerTick, ItemHandler> requirement) {
     List<EmiStack> stacks = Lists.newArrayList();
     for (Ingredient.Value value : requirement.requirement().getIngredient().values) {
       if (value instanceof Ingredient.TagValue(TagKey<Item> tag)) {

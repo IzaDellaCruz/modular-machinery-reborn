@@ -6,7 +6,7 @@ import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementLootTable;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.LootTableHelper;
 import es.degrassi.mmreborn.common.util.LootTableHelper.LootData;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class JeiLootTableComponent extends JeiComponent<ResourceLocation, RecipeRequirement<ItemComponent,
-    RequirementLootTable, IOInventory>> {
-  public JeiLootTableComponent(RecipeRequirement<ItemComponent, RequirementLootTable, IOInventory> requirement) {
+    RequirementLootTable, ItemHandler>> {
+  public JeiLootTableComponent(RecipeRequirement<ItemComponent, RequirementLootTable, ItemHandler> requirement) {
     super(requirement, 36, 0);
   }
 

@@ -14,12 +14,15 @@ import es.degrassi.mmreborn.client.util.GuiUtils;
 import es.degrassi.mmreborn.common.entity.FluidInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FluidOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.FluidTankEntity;
+import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
 import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,6 +34,7 @@ import java.util.List;
 @Getter
 public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankEntity> implements IGuiWrapper, ITabGroupScreen {
   private TabGroupWidget tabs;
+  private final List<FluidTankWidget> tanks = Lists.newArrayList();
 
   public FluidHatchScreen(FluidHatchContainer pMenu, Inventory pPlayerInventory, Component pTitle) {
     super(pMenu, pPlayerInventory, pTitle, false);
@@ -50,6 +54,12 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
     else tabs.addTab(new AutoOutputTabWidget<>((FluidOutputHatchEntity)this.entity));
 
     addRenderableWidget(tabs);
+
+    int startX = 15, width = 20;
+    for (HybridTank tank : entity.getTank().getInventory()) {
+      tanks.add(addRenderableWidget(new FluidTankWidget(tank, startX + leftPos, 10 + topPos)));
+      startX += width;
+    }
   }
 
   @Override
@@ -61,37 +71,17 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
   protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
     // render image background:
     super.renderBg(guiGraphics, partialTick, mouseX, mouseY);
-    FluidStack content = entity.getTank().getFluid();
-    guiGraphics.pose().pushPose();
-    FluidRenderer.renderFluid(guiGraphics.pose(), leftPos + 15, topPos + 10, 20, 61, content, entity.getTank().getCapacity());
-    guiGraphics.pose().popPose();
+    /*guiGraphics.pose().pushPose();
+    guiGraphics.pose().translate(leftPos, topPos, 0);
+    tanks.forEach(tank -> tank.renderWidget(guiGraphics, mouseX, mouseY, partialTick));
+    guiGraphics.pose().popPose();*/
     renderSlots(guiGraphics);
   }
 
   @Override
   protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     super.renderTooltip(guiGraphics, x, y);
-
-    int offsetX = (this.width - this.getXSize()) / 2;
-    int offsetZ = (this.height - this.getYSize()) / 2;
-
-    if(x >= 15 + offsetX && x <= 35 + offsetX && y >= 10 + offsetZ && y <= 71 + offsetZ) {
-        List<Component> text = Lists.newArrayList();
-
-        FluidStack content = entity.getTank().getFluid();
-        int amt;
-        if (content.getAmount() <= 0) {
-          text.add(Component.translatable("tooltip.fluidhatch.empty"));
-          amt = 0;
-        } else {
-          text.add(content.getHoverName());
-          amt = content.getAmount();
-        }
-        text.add(Component.translatable("tooltip.fluidhatch.tank", String.valueOf(amt), String.valueOf(entity.getTank().getCapacity())));
-
-        Font font = Minecraft.getInstance().font;
-        guiGraphics.renderTooltip(font, text.stream().map(Component::getVisualOrderText).toList(), x, y);
-    }
+    tanks.forEach(tank -> tank.renderTooltip(guiGraphics, x, y));
   }
 
   @Override
@@ -135,5 +125,42 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
   @Override
   public boolean charTyped(char c, int keyCode) {
     return GuiUtils.checkChildrenChar(children(), c, keyCode, (child, ch, k) -> child instanceof GuiElement && child.charTyped(ch, k)) || super.charTyped(c, keyCode);
+  }
+
+  private static class FluidTankWidget extends AbstractWidget {
+    private final HybridTank tank;
+    public FluidTankWidget(HybridTank tank, int x, int y) {
+      super(x, y, 20, 61, Component.empty());
+      this.tank = tank;
+    }
+
+    @Override
+    protected void renderWidget(GuiGraphics guiGraphics, int x, int y, float v) {
+      FluidRenderer.renderFluid(guiGraphics.pose(), this.getX(), this.getY(), width, height, tank.getValue(), tank.getCapacity());
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+
+    }
+
+    public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
+      if (!isMouseOver(x, y)) return;
+      List<Component> text = Lists.newArrayList();
+
+      FluidStack content = tank.getValue();
+      int amt;
+      if (content.getAmount() <= 0) {
+        text.add(Component.translatable("tooltip.fluidhatch.empty"));
+        amt = 0;
+      } else {
+        text.add(content.getHoverName());
+        amt = content.getAmount();
+      }
+      text.add(Component.translatable("tooltip.fluidhatch.tank", String.valueOf(amt), String.valueOf(tank.getCapacity())));
+
+      Font font = Minecraft.getInstance().font;
+      guiGraphics.renderTooltip(font, text.stream().map(Component::getVisualOrderText).toList(), x, y);
+    }
   }
 }

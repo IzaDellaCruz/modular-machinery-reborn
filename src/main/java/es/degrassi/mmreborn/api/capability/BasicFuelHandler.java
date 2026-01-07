@@ -1,9 +1,8 @@
 package es.degrassi.mmreborn.api.capability;
 
 import es.degrassi.experiencelib.api.capability.IContentsListener;
-import es.degrassi.mmreborn.common.util.IOInventory;
-import es.degrassi.mmreborn.common.util.ItemSlot;
-import es.degrassi.mmreborn.common.util.MMRLogger;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
+import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.world.item.ItemStack;
@@ -15,10 +14,10 @@ public class BasicFuelHandler implements IFuelHandler {
   private long fuel;
   private long maxFuel;
 
-  private final IOInventory inventory;
+  private final ItemHandler inventory;
   private IContentsListener listener;
 
-  public BasicFuelHandler(IOInventory inventory) {
+  public BasicFuelHandler(ItemHandler inventory) {
     this.inventory = inventory;
   }
 

@@ -1,17 +1,13 @@
-package es.degrassi.mmreborn.common.util;
+package es.degrassi.mmreborn.common.manager.handler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import lombok.Getter;
-import lombok.Setter;
+import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -19,11 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,89 +23,39 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-public class IOInventory implements IItemHandlerModifiable, Container, ISyncableStuff {
-  @Getter
-  private final List<ItemSlot> inputs = new ArrayList<>();
-  @Getter
-  private final List<ItemSlot> outputs = new ArrayList<>();
-  @Getter
-  private final List<ItemSlot> inventory = Lists.newArrayList();
-  private int[] inSlots = new int[0], outSlots = new int[0], miscSlots = new int[0];
+public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements IItemHandlerModifiable, Container, ISyncableStuff {
+  private int[] miscSlots = new int[0];
 
-  @Setter
-  private IOInventoryChangedListener listener = null;
-  public List<Direction> accessibleSides = new ArrayList<>();
-
-  @Getter
-  @Setter
-  private Level level;
-
-  @Getter
-  private final Predicate<ItemStack> defaultFilter;
-
-  @Getter
-  private int slotLimit;
-
-  private IOInventory(int slotLimit) {
-    this.slotLimit = slotLimit;
-    this.accessibleSides = Arrays.asList(Direction.values());
-    this.defaultFilter = stack -> true;
+  private ItemHandler(int slotLimit) {
+    super(slotLimit);
   }
 
-  public IOInventory(int[] inSlots, int[] outSlots, int slotLimit) {
-    this(inSlots, outSlots, slotLimit, Direction.values());
+  public ItemHandler(int[] inSlots, int[] outSlots, int slotLimit) {
+    super(inSlots, outSlots, slotLimit);
   }
 
-  public IOInventory(int[] inSlots, int[] outSlots, int slotLimit, Direction... accessibleFrom) {
-    this.inSlots = inSlots;
-    this.outSlots = outSlots;
-    this.slotLimit = slotLimit;
-    this.defaultFilter = stack -> true;
-    this.inventory.addAll(generateInventory());
-    this.accessibleSides = Arrays.asList(accessibleFrom);
+  public ItemHandler(int[] inSlots, int[] outSlots, int slotLimit, Direction... accessibleFrom) {
+    super(inSlots, outSlots, slotLimit, accessibleFrom);
   }
 
-  public IOInventory(int[] inSlots, int[] outSlots, Predicate<ItemStack> filter, int slotLimit, Direction... accessibleFrom) {
-    this.inSlots = inSlots;
-    this.outSlots = outSlots;
-    this.defaultFilter = filter;
-    this.slotLimit = slotLimit;
-    this.inventory.addAll(generateInventory(filter));
-    this.accessibleSides = Arrays.asList(accessibleFrom);
+  public ItemHandler(int[] inSlots, int[] outSlots, Predicate<ItemStack> filter, int slotLimit, Direction... accessibleFrom) {
+    super(inSlots, outSlots, filter, slotLimit, accessibleFrom);
   }
-
-  @Override
-  public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    this.inventory.forEach(component -> component.getStuffToSync(container));
-  }
-
-  public List<ItemStack> getAllInputStacks() {
-    return this.inputs.stream().map(slot -> slot.getStackInSlot(0)).toList();
-  }
-
-  public List<ItemStack> getAllOutputStacks() {
-    return this.outputs.stream().map(slot -> slot.getStackInSlot(0)).toList();
-  }
-
-  public List<ItemStack> getAllStacks() {
-    return this.inventory.stream().map(slot -> slot.getStackInSlot(0)).toList();
-  }
-
-  public IOInventory setMiscSlots(int... miscSlots) {
+  
+  public ItemHandler setMiscSlots(int... miscSlots) {
     this.miscSlots = miscSlots;
     for (Integer slot : miscSlots) {
-      this.inventory.add(new ItemSlot(slot, this, 64, 64, 0, item -> true));
+      this.getInventory().add(new ItemSlot(slot, this, 64, 64, 0, item -> true));
     }
     return this;
   }
 
   @Override
-  public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-    inventory.stream().filter(s -> s.getSlot() == slot)
+  public void setStackInSlot(int slot, ItemStack stack) {
+    getInventory().stream().filter(s -> s.getSlot() == slot)
         .findFirst()
         .ifPresent(s -> {
           s.setItemStack(stack);
@@ -122,28 +64,17 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   @Override
-  public int getSlots() {
-    return inventory.size();
-  }
-
-  @Override
   public int getSlotLimit(int slot) {
-    return slotLimit;
+    return getSlotLimit();
   }
 
   public int getStackLimit(int slot, ItemStack stack) {
     return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
   }
 
-  public void setFilter(int slot, Predicate<ItemStack> filter) {
-    this.inventory.stream()
-        .filter(s -> s.getSlot() == slot)
-        .forEach(s -> s.setFilter(filter));
-  }
-
   @Override
   public boolean isItemValid(int slot, ItemStack stack) {
-    return inventory.stream()
+    return getInventory().stream()
         .filter(s -> s.getSlot() == slot)
         .findFirst()
         .map(s -> s.isItemValid(0, stack))
@@ -151,12 +82,11 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   @Override
-  @Nonnull
   public ItemStack getStackInSlot(int slot) {
-    return Optional.ofNullable(inventory.get(slot)).map(ItemSlot::getItemStack).orElse(ItemStack.EMPTY);
+    return Optional.ofNullable(getInventory().get(slot)).map(ItemSlot::getItemStack).orElse(ItemStack.EMPTY);
   }
 
-  public ItemStack insertItem(@Nonnull ItemStack stack, boolean simulate) {
+  public ItemStack insertItem(ItemStack stack, boolean simulate) {
     ItemStack toInsert = stack.copy();
     for (int i = 0; i < getSlots(); i++) {
       toInsert = insertItem(i, toInsert.copy(), simulate);
@@ -165,7 +95,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     return toInsert;
   }
 
-  public ItemStack extractItem(@Nonnull ItemStack stack, boolean simulate) {
+  public ItemStack extractItem(ItemStack stack, boolean simulate) {
     int toExtract = stack.getCount();
     for (int i = 0; i < getSlots(); i++) {
       if (getItem(i).isEmpty() || !ItemStack.isSameItemSameComponents(getItem(i), stack))
@@ -177,15 +107,13 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   @Override
-  @Nonnull
-  public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-    return inventory.get(slot).insertItem(0, stack, simulate);
+  public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+    return getInventory().get(slot).insertItem(0, stack, simulate);
   }
 
   @Override
-  @Nonnull
   public ItemStack extractItem(int slot, int amount, boolean simulate) {
-    return inventory.get(slot).extractItem(0, amount, simulate);
+    return getInventory().get(slot).extractItem(0, amount, simulate);
   }
 
   @Override
@@ -216,19 +144,6 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   @Override
-  public void setChanged() {
-    if (listener != null) {
-      listener.onChange();
-    }
-  }
-
-  public void setChanged(int slot, ItemStack stack) {
-    if (listener != null) {
-      listener.onChange(slot, stack);
-    }
-  }
-
-  @Override
   public boolean stillValid(Player player) {
     return true;
   }
@@ -239,26 +154,21 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
       removeItemNoUpdate(j);
   }
 
-  @Override
-  public boolean isEmpty() {
-    return inventory.stream().map(ItemSlot::getItemStack).allMatch(ItemStack::isEmpty);
-  }
-
   public int getDurabilityAmount(ItemStack stack) {
-    return this.inputs.stream().filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
+    return this.getInputs().stream().filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .mapToInt(component -> component.getItemStack().getMaxDamage() - component.getItemStack().getDamageValue())
         .sum();
   }
 
   public int getSpaceForDurability(ItemStack stack) {
-    return this.inputs.stream().filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
+    return this.getInputs().stream().filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .mapToInt(component -> component.getItemStack().getDamageValue())
         .sum();
   }
 
   public void repairItem(ItemStack stack, int amount) {
     AtomicInteger toRepair = new AtomicInteger(amount);
-    this.inputs.stream()
+    this.getInputs().stream()
         .filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .forEach(component -> {
           int maxRepair = Math.min(component.getItemStack().getDamageValue(), toRepair.get());
@@ -270,7 +180,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   public void removeDurability(ItemStack input, int amount) {
     AtomicInteger toRemove = new AtomicInteger(amount);
-    this.inputs.stream()
+    this.getInputs().stream()
         .filter(component -> isSameItem(component.getItemStack(), input) && component.getItemStack().isDamageableItem())
         .forEach(component -> {
           int maxRemove = Math.min(component.getItemStack().getMaxDamage() - component.getItemStack().getDamageValue(), toRemove.get());
@@ -297,63 +207,16 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
         .allMatch(component -> component.type() == DataComponents.DAMAGE || (toTest.has(component.type()) && Objects.equals(toTest.get(component.type()), component.value())));
   }
 
-  public CompoundTag writeNBT(HolderLookup.Provider pRegistries) {
-    CompoundTag tag = new CompoundTag();
-    tag.putIntArray("inSlots", this.inSlots);
-    tag.putIntArray("outSlots", this.outSlots);
-    tag.putIntArray("miscSlots", this.miscSlots);
-    tag.putInt("slotLimit", slotLimit);
-
-    ListTag components = new ListTag();
-    this.inventory.forEach((value) -> components.add(value.serializeNBT(pRegistries)));
-    tag.put("items", components);
-    return tag;
-  }
-
-  public void readNBT(CompoundTag tag, HolderLookup.Provider pRegistries) {
-    this.inSlots = tag.getIntArray("inSlots");
-    this.outSlots = tag.getIntArray("outSlots");
-    this.miscSlots = tag.getIntArray("miscSlots");
-    this.slotLimit = tag.getInt("slotLimit");
-
-    if (tag.contains("items")) {
-      ListTag components = tag.getList("items", Tag.TAG_COMPOUND);
-      components.stream()
-          .filter(t -> t instanceof CompoundTag)
-          .map(t -> (CompoundTag) t)
-          .forEach(componentNBT -> {
-            if (componentNBT.contains("slot")) {
-              this.inventory.stream()
-                  .filter(inv -> inv.getSlot() == componentNBT.getInt("slot"))
-                  .findFirst()
-                  .ifPresentOrElse(
-                      inv -> inv.deserialize(pRegistries, componentNBT),
-                      () -> this.inventory.add(new ItemSlot(this, defaultFilter, componentNBT, pRegistries))
-                  );
-            }
-          });
-      this.inputs.clear();
-      this.outputs.clear();
-      this.inputs.addAll(this.inventory.stream().filter(ItemSlot::isInput).toList());
-      this.outputs.addAll(this.inventory.stream().filter(ItemSlot::isOutput).toList());
-      this.setChanged();
-    }
-  }
-
-  private List<ItemSlot> generateInventory() {
-    return generateInventory(item -> true);
-  }
-
-  private List<ItemSlot> generateInventory(Predicate<ItemStack> filter) {
+  protected List<ItemSlot> generateInventory(Predicate<ItemStack> filter) {
     List<ItemSlot> inventory = new ArrayList<>();
     for (Integer slot : inSlots) {
       ItemSlot itemSlot = new ItemSlot(slot, this, getSlotLimit(slot), getSlotLimit(slot), 0, filter);
-      this.inputs.add(itemSlot);
+      this.getInputs().add(itemSlot);
       inventory.add(itemSlot);
     }
     for (Integer slot : outSlots) {
       ItemSlot itemSlot = new ItemSlot(slot, this, getSlotLimit(slot), 0, getSlotLimit(slot), filter);
-      this.outputs.add(itemSlot);
+      this.getOutputs().add(itemSlot);
       inventory.add(itemSlot);
     }
     return inventory;
@@ -378,10 +241,10 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   }
 
-  public static IOInventory mergeBuild(IOInventory... inventories) {
-    IOInventory merged = new IOInventory(64);
+  public static ItemHandler mergeBuild(ItemHandler... inventories) {
+    ItemHandler merged = new ItemHandler(64);
     int slotOffset = 0;
-    Map<Integer, IOInventory> slotLimitIndex = Maps.newHashMap();
+    Map<Integer, ItemHandler> slotLimitIndex = Maps.newHashMap();
     List<Integer> inSlots = Lists.newArrayList();
     List<Integer> outSlots = Lists.newArrayList();
     List<Integer> miscSlots = Lists.newArrayList();
@@ -389,10 +252,10 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     List<ItemSlot> inputs = Lists.newArrayList();
     List<ItemSlot> outputs = Lists.newArrayList();
     int stackLimit = 0;
-    for (IOInventory inventory : inventories) {
-      stackLimit += inventory.slotLimit;
-      for (ItemSlot key : inventory.inventory) {
-        merged.inventory.add(key.getSlot() + slotOffset, key);
+    for (ItemHandler inventory : inventories) {
+      stackLimit += inventory.getSlotLimit();
+      for (ItemSlot key : inventory.getInventory()) {
+        merged.getInventory().add(key.getSlot() + slotOffset, key);
       }
       int finalSlotOffset = slotOffset;
       Arrays.stream(inventory.inSlots).map(in -> in + finalSlotOffset).forEach(inSlots::add);
@@ -403,10 +266,10 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
           return side;
         return null;
       }).filter(Objects::nonNull).toList();
-      slotOffset += inventory.inventory.size();
+      slotOffset += inventory.getInventory().size();
       slotLimitIndex.put(slotOffset, inventory);
-      inputs.addAll(inventory.inputs);
-      outputs.addAll(inventory.outputs);
+      inputs.addAll(inventory.getInputs());
+      outputs.addAll(inventory.getOutputs());
     }
     merged.accessibleSides = sides;
     var builder = IntStream.builder();
@@ -418,13 +281,13 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
     builder = IntStream.builder();
     miscSlots.forEach(builder::add);
     merged.miscSlots = builder.build().toArray();
-    merged.inputs.addAll(inputs);
-    merged.outputs.addAll(outputs);
+    merged.getInputs().addAll(inputs);
+    merged.getOutputs().addAll(outputs);
     merged.slotLimit = stackLimit;
     merged.setListener((slot, stack) ->
         slotLimitIndex.forEach((slotLimit, inventory) -> {
           if (slotLimit < slot)
-            inventory.listener.onChange(slot - slotLimit, stack);
+            inventory.getListener().onChange(slot - slotLimit, stack);
         })
     );
     return merged;
@@ -452,7 +315,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   public void removeFromInputs(ItemStack stack, int amount) {
     AtomicInteger toRemove = new AtomicInteger(amount);
-    this.inputs.stream()
+    this.getInputs().stream()
         .filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
         .forEach(component -> {
           int maxExtract = Math.min(component.getItemStack().getCount(), toRemove.get());
@@ -464,7 +327,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
 
   public void addToOutputs(ItemStack stack, int amount) {
     AtomicInteger toAdd = new AtomicInteger(amount);
-    this.outputs.stream()
+    this.getOutputs().stream()
         .filter(component -> canPlaceOutput(component, stack))
         .forEach(component -> {
           int maxInsert = toAdd.get() - component.insertItemBypassLimit(stack, true).getCount();
@@ -474,7 +337,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
         });
   }
 
-  public boolean canPlaceOutput(@NotNull ItemSlot component, ItemStack stack) {
+  public boolean canPlaceOutput(ItemSlot component, ItemStack stack) {
     //Check component filter and variant
     if (!component.isItemValid(0, stack))
       return false;
@@ -492,7 +355,7 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   public int getSpaceForItem(ItemStack stack) {
-    return this.outputs.stream().filter(component -> canPlaceOutput(component, stack))
+    return this.getOutputs().stream().filter(component -> canPlaceOutput(component, stack))
         .mapToInt(component -> {
           if (component.getItemStack().isEmpty())
             return Math.min(component.getCapacity(), stack.getMaxStackSize());
@@ -503,17 +366,26 @@ public class IOInventory implements IItemHandlerModifiable, Container, ISyncable
   }
 
   public int getItemAmount(ItemStack stack) {
-    Predicate<ItemSlot> slotPredicate = component -> true;
-    return this.inputs.stream().filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack) && slotPredicate.test(component))
+    return this.getInputs().stream().filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
         .mapToInt(component -> component.getItemStack().getCount())
         .sum();
   }
 
-  public interface IOInventoryChangedListener extends InventoryUpdateListener {
-    void onChange(int slot, @NotNull ItemStack stack);
+  @Override
+  public CompoundTag writeNBT(HolderLookup.Provider pRegistries) {
+    var tag = super.writeNBT(pRegistries);
+    tag.putIntArray("miscSlots", this.miscSlots);
+    return tag;
+  }
 
-    @Override
-    default void onChange() {
-    }
+  @Override
+  public void readNBT(CompoundTag tag, HolderLookup.Provider pRegistries) {
+    super.readNBT(tag, pRegistries);
+    this.miscSlots = tag.getIntArray("miscSlots");
+  }
+
+  @Override
+  protected ItemSlot createSlot(HolderLookup.Provider pRegistries, CompoundTag componentNBT) {
+    return new ItemSlot(this, getDefaultFilter(), componentNBT, pRegistries);
   }
 }

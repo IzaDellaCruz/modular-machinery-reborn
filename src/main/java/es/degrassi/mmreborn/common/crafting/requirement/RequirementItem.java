@@ -14,9 +14,9 @@ import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.integration.almostunified.AlmostUnifiedAdapter;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.Mods;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 @Getter
-public class RequirementItem implements IRequirement<ItemComponent, IOInventory> {
+public class RequirementItem implements IRequirement<ItemComponent, ItemHandler> {
   public static final NamedCodec<RequirementItem> CODEC = NamedCodec.record(instance -> instance.group(
           DefaultCodecs.SIZED_INGREDIENT_WITH_NBT.fieldOf("sizedIngredient").forGetter(req -> req.ingredient),
           NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
@@ -102,12 +102,12 @@ public class RequirementItem implements IRequirement<ItemComponent, IOInventory>
   }
 
   @Override
-  public RequirementType<RequirementItem, ItemComponent, IOInventory> getType() {
+  public RequirementType<RequirementItem, ItemComponent, ItemHandler> getType() {
     return RequirementTypeRegistration.ITEM.get();
   }
 
   @Override
-  public ComponentType<IOInventory> getComponentType() {
+  public ComponentType<ItemHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_ITEM.get();
   }
 

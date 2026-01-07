@@ -9,7 +9,7 @@ import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
 import es.degrassi.mmreborn.common.integration.jei.category.drawable.DrawableWrappedText;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.Utils;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class JeiItemComponent extends JeiComponent<ItemStack, RecipeRequirement<ItemComponent, RequirementItem, IOInventory>> {
-  public JeiItemComponent(RecipeRequirement<ItemComponent, RequirementItem, IOInventory> requirement) {
+public class JeiItemComponent extends JeiComponent<ItemStack, RecipeRequirement<ItemComponent, RequirementItem, ItemHandler>> {
+  public JeiItemComponent(RecipeRequirement<ItemComponent, RequirementItem, ItemHandler> requirement) {
     super(requirement, 36, 0);
   }
 

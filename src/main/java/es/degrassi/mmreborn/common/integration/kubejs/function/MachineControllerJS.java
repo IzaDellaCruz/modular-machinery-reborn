@@ -8,19 +8,20 @@ import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.util.Chunkloader;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
-import es.degrassi.mmreborn.common.util.IOInventory;
-import es.degrassi.mmreborn.common.util.ItemSlot;
+import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import es.degrassi.mmreborn.common.util.TaskDelayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.crafting.SingleFluidIngredient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -156,7 +157,8 @@ public class MachineControllerJS {
         .filter(c -> c instanceof FluidComponent)
         .map(c -> (FluidComponent) c)
         .filter(c -> c.getIOType().equals(mode))
-        .map(c -> c.getContainerProvider().getFluid())
+        .map(c -> Arrays.asList(c.getContainerProvider().getFluids().getStacks()))
+        .flatMap(List::stream)
         .toList();
   }
 
@@ -178,7 +180,7 @@ public class MachineControllerJS {
         .filter(c -> c instanceof FluidComponent)
         .map(c -> (FluidComponent) c)
         .filter(c -> c.getIOType().equals(mode))
-        .filter(c -> FluidStack.isSameFluidSameComponents(c.getContainerProvider().getFluid(), fluid))
+        .filter(c -> c.getContainerProvider().contains(SingleFluidIngredient.of(fluid)))
         .mapToInt(c -> c.getContainerProvider().getCapacity())
         .sum();
   }
@@ -190,7 +192,6 @@ public class MachineControllerJS {
    * @return fluid added
    */
   public int addFluid(FluidStack stack) {
-    AtomicReference<FluidStack> fluid = new AtomicReference<>(stack);
     AtomicInteger filled = new AtomicInteger(0);
     this.internal.getComponentManager()
         .getFoundComponentsList()
@@ -198,13 +199,18 @@ public class MachineControllerJS {
         .filter(c -> c instanceof FluidComponent)
         .map(c -> (FluidComponent) c)
         .filter(c -> !c.getIOType().isInput())
-        .filter(c -> c.getContainerProvider().isEmpty() || FluidStack.isSameFluidSameComponents(c.getContainerProvider().getFluid(), stack))
-        .forEach(c -> {
-          if (fluid.get().isEmpty()) return;
-          if (fluid.get().getAmount() <= 0) return;
-          int inserted = c.getContainerProvider().fill(fluid.get(), IFluidHandler.FluidAction.EXECUTE);
-          fluid.get().shrink(inserted);
-          filled.getAndAdd(inserted);
+        .reduce(FluidComponent::merge)
+        .ifPresent(c -> {
+          AtomicInteger toAdd = new AtomicInteger(stack.getAmount());
+          c.getContainerProvider().getOutputs().stream()
+              .filter(component -> c.getContainerProvider().canPlaceOutput(component, stack))
+              .forEach(component -> {
+                int maxInsert = toAdd.get() - component.insertFluidBypassLimit(stack, true).getAmount();
+                toAdd.addAndGet(-maxInsert);
+                filled.addAndGet(maxInsert);
+                component.insertFluidBypassLimit(stack.copyWithAmount(maxInsert), false);
+                component.setChanged();
+              });
         });
 
     return filled.get();
@@ -216,8 +222,7 @@ public class MachineControllerJS {
    * @return fluid extracted
    */
   public FluidStack removeFluid(FluidStack stack) {
-    AtomicReference<FluidStack> fluid = new AtomicReference<>(stack);
-    AtomicReference<FluidStack> extracted = new AtomicReference<>(FluidStack.EMPTY);
+    AtomicInteger extracted = new AtomicInteger();
 
     this.internal.getComponentManager()
         .getFoundComponentsList()
@@ -225,20 +230,18 @@ public class MachineControllerJS {
         .filter(c -> c instanceof FluidComponent)
         .map(c -> (FluidComponent) c)
         .filter(c -> c.getIOType().isInput())
-        .filter(c -> FluidStack.isSameFluidSameComponents(c.getContainerProvider().getFluid(), stack))
-        .forEach(c -> {
-          if (fluid.get().isEmpty()) return;
-          if (c.getContainerProvider().isEmpty()) return;
-          FluidStack drained = c.getContainerProvider().drain(fluid.get(), IFluidHandler.FluidAction.EXECUTE);
-          fluid.get().shrink(drained.getAmount());
-          if (extracted.get().isEmpty())
-            extracted.set(drained);
-          else {
-            extracted.get().grow(drained.getAmount());
-          }
+        .reduce(FluidComponent::merge)
+        .ifPresent(c -> {
+          var handler = c.getContainerProvider();
+          AtomicInteger toRemove = new AtomicInteger(stack.getAmount());
+          if (toRemove.get() <= 0) return;
+          int maxExtract = Math.min(handler.getFluidAmount(stack), toRemove.get());
+          toRemove.addAndGet(-maxExtract);
+          extracted.addAndGet(maxExtract);
+          handler.removeFromInputs(stack, maxExtract);
         });
 
-    return extracted.get();
+    return stack.copyWithAmount(extracted.get());
   }
 
   /** ITEM STUFF **/
@@ -251,7 +254,7 @@ public class MachineControllerJS {
         .map(c -> (ItemComponent) c)
         .filter(c -> c.getIOType().equals(mode))
         .map(ItemComponent::getContainerProvider)
-        .map(IOInventory::getInventory)
+        .map(ItemHandler::getInventory)
         .map(c -> c.stream().map(ItemSlot::getItemStack).toList())
         .flatMap(List::stream)
         .toList();

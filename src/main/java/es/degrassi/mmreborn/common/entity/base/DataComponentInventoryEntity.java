@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.common.entity.base;
 
 import es.degrassi.mmreborn.common.machine.IOType;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public interface DataComponentInventoryEntity<T> extends ItemDroppeable {
-  default IOInventory createDataComponentInventory() {
-    return new IOInventory(
+  default ItemHandler createDataComponentInventory() {
+    return new ItemHandler(
         getMode().isInput() ? new int[]{ 0 } : new int[]{},
         getMode().isOutput() ? new int[]{ 0 } : new int[]{},
         stack -> stack.get(getDataComponent()) != null,
@@ -27,7 +27,7 @@ public interface DataComponentInventoryEntity<T> extends ItemDroppeable {
 
   DataComponentType<? extends T> getDataComponent();
 
-  IOInventory getDataComponentInventory();
+  ItemHandler getDataComponentInventory();
 
   void tickInventory();
 

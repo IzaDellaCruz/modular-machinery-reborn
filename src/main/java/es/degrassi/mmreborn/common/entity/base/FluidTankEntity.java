@@ -13,10 +13,12 @@ import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
+import es.degrassi.mmreborn.common.network.server.component.SUpdateFluidComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
-import es.degrassi.mmreborn.common.util.HybridTank;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,7 +54,7 @@ import java.util.function.Consumer;
 @Setter
 public abstract class FluidTankEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<FluidComponent>, ControllerAccessible,
     TextureableMachineEntity, CapabilityInventoryEntity<IFluidHandlerItem>, ITickEntity, IServerTickEntity, ISyncableStuff, IAutoEntity<IFluidHandler> {
-  private HybridTank tank;
+  private FluidHandler tank;
   private IOType ioType;
   private FluidHatchSize hatchSize;
   private BlockPos controllerPos;
@@ -63,7 +65,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
 
   @Getter
-  private final IOInventory capabilityInventory;
+  private final ItemHandler capabilityInventory;
 
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick;
@@ -79,7 +81,11 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.overlayTexture = defaultOverlayTexture;
     this.capabilityInventory = createCapabilityInventory();
 
-    this.tank.setListener(() -> {
+    this.tank.setListener((slot, value) -> {
+      if(!getLevel().isClientSide()) {
+        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) getLevel(), new ChunkPos(getBlockPos()),
+            new SUpdateFluidComponentPacket(slot, value, getBlockPos()));
+      }
       getControllerPosSet().forEach(p -> {
         if (getLevel() == null) return;
         if (getLevel().isClientSide()) return;
@@ -111,7 +117,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
       Optional.ofNullable(slot.getItemStack().getCapability(getCapability())).ifPresent(cap -> {
         if (ioType == IOType.NONE) return;
         if (ioType.isInput()) {
-          if (this.getTank().getFluidAmount() >= this.getTank().getCapacity()) return;
+          if (getTank().isFull()) return;
           if (slot.getItemStack().getItem() instanceof BucketItem bucket) {
             if (bucket.content.isSame(Fluids.EMPTY)) return;
             FluidStack fluid = new FluidStack(bucket.content, 1000);
@@ -126,7 +132,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
             getTank().fill(simulatedCap.copyWithAmount(simulatedInsert), IFluidHandler.FluidAction.EXECUTE);
           }
         } else if (ioType.isOutput()) {
-          if (this.getTank().getFluidAmount() == 0) return;
+          if (this.getTank().isEmpty()) return;
           if (slot.getItemStack().getItem() instanceof BucketItem bucket) {
             if (!bucket.content.isSame(Fluids.EMPTY)) return;
             FluidStack simulatedExtract = getTank().drain(1000, IFluidHandler.FluidAction.SIMULATE);
@@ -170,9 +176,9 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     super.loadAdditional(compound, provider);
     this.ioType = IOType.getByString(compound.getString("ioType"));
     this.hatchSize = FluidHatchSize.value(compound.getString("size"));
-    HybridTank newTank = hatchSize.buildTank(this, ioType == IOType.INPUT, ioType == IOType.OUTPUT);
+    FluidHandler newTank = hatchSize.buildTank(this, ioType == IOType.INPUT, ioType == IOType.OUTPUT);
     CompoundTag tankTag = compound.getCompound("tank");
-    newTank.readFromNBT(provider, tankTag);
+    newTank.readNBT(tankTag, provider);
     this.tank = newTank;
     this.capabilityInventory.deserialize(compound.getCompound("capInventory"), provider);
     if (compound.contains("controllerPos")) {
@@ -183,7 +189,11 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
 
-    this.tank.setListener(() -> {
+    this.tank.setListener((slot, value) -> {
+      if(!getLevel().isClientSide()) {
+        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) getLevel(), new ChunkPos(getBlockPos()),
+            new SUpdateFluidComponentPacket(slot, value, getBlockPos()));
+      }
       getControllerPosSet().forEach(p -> {
         if (getLevel() == null) return;
         if (getLevel().isClientSide()) return;
@@ -205,9 +215,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     }
     compound.putString("ioType", ioType.getSerializedName());
     compound.putString("size", this.hatchSize.getSerializedName());
-    CompoundTag tankTag = new CompoundTag();
-    this.tank.writeToNBT(provider, tankTag);
-    compound.put("tank", tankTag);
+    compound.put("tank", this.tank.writeNBT(provider));
     compound.put("capInventory", this.capabilityInventory.writeNBT(provider));
     if (controllerPos != null)
       compound.putLong("controllerPos", controllerPos.asLong());
@@ -228,7 +236,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
   }
 
   @Override
-  public HatchTextureData getTextureData(@NotNull String mode) {
+  public HatchTextureData getTextureData(String mode) {
     return MachineComponentEntity.super.getTextureData(mode).derive(
         "bg_all",
         baseTexture,

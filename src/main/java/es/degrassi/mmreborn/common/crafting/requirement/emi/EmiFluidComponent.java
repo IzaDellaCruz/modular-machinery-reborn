@@ -10,7 +10,7 @@ import es.degrassi.mmreborn.client.requirement.FluidRendering;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluid;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
-import es.degrassi.mmreborn.common.util.HybridTank;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -22,14 +22,14 @@ import java.util.List;
 
 @Getter
 public class EmiFluidComponent extends EmiComponent<FluidStack,
-    RecipeRequirement<FluidComponent, RequirementFluid, HybridTank>> implements SlotTooltip,
+    RecipeRequirement<FluidComponent, RequirementFluid, FluidHandler>> implements SlotTooltip,
     FluidRendering, ChanceRendering {
   private EmiRecipe recipe;
   private int width = 16;
   private int height = 16;
   private int fluid;
 
-  public EmiFluidComponent(RecipeRequirement<FluidComponent, RequirementFluid, HybridTank> requirement) {
+  public EmiFluidComponent(RecipeRequirement<FluidComponent, RequirementFluid, FluidHandler> requirement) {
     super(requirement, 0, 0);
   }
 
@@ -65,7 +65,7 @@ public class EmiFluidComponent extends EmiComponent<FluidStack,
     List<Component> tooltip = new LinkedList<>();
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(Component.translatable("modular_machinery_reborn.jei.ingredient.fluid." + mode,
-        String.valueOf(requirement.requirement().getIngredient().ingredient()),
+        ingredients().get(fluid).getHoverName(),
         requirement.requirement().getIngredient().amount()));
     addChanceTooltips(tooltip);
     return tooltip;

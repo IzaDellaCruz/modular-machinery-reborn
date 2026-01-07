@@ -4,25 +4,25 @@ import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
-public class DurabilityComponent extends MachineComponent<IOInventory> {
-  private final IOInventory handler;
+public class DurabilityComponent extends MachineComponent<ItemHandler> {
+  private final ItemHandler handler;
 
-  public DurabilityComponent(IOInventory handler) {
+  public DurabilityComponent(ItemHandler handler) {
     super(IOType.INPUT);
     this.handler = handler;
   }
 
   @Override
-  public ComponentType<IOInventory> getComponentType() {
+  public ComponentType<ItemHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_DURABILITY.get();
   }
 
   @Override
-  public IOInventory getContainerProvider() {
+  public ItemHandler getContainerProvider() {
     return handler;
   }
 
@@ -35,8 +35,8 @@ public class DurabilityComponent extends MachineComponent<IOInventory> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<IOInventory>> C merge(C c) {
+  public <C extends MachineComponent<ItemHandler>> C merge(C c) {
     DurabilityComponent comp = (DurabilityComponent) c;
-    return (C) new DurabilityComponent(IOInventory.mergeBuild(handler, comp.handler));
+    return (C) new DurabilityComponent(ItemHandler.mergeBuild(handler, comp.handler));
   }
 }

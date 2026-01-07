@@ -1,9 +1,10 @@
-package es.degrassi.mmreborn.common.util;
+package es.degrassi.mmreborn.common.manager.handler.slot;
 
 import com.mojang.datafixers.util.Pair;
+import es.degrassi.mmreborn.api.handler.FilteredSlot;
 import es.degrassi.mmreborn.api.network.ISyncable;
-import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.api.network.syncable.ItemStackSyncable;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup;
@@ -17,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
+public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack> {
   @Getter
   private final int capacity;
   private final int maxInput;
@@ -28,11 +29,11 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
   private ItemStack stack = ItemStack.EMPTY;
   private boolean bypassLimit = false;
   @Getter
-  private final IOInventory manager;
+  private final ItemHandler manager;
   @Getter
   private final int slot;
 
-  public ItemSlot(int slot, IOInventory manager, int capacity, int maxInput, int maxOutput,
+  public ItemSlot(int slot, ItemHandler manager, int capacity, int maxInput, int maxOutput,
                   Predicate<ItemStack> filter) {
     this.capacity = capacity;
     this.maxInput = maxInput;
@@ -42,7 +43,7 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
     this.slot = slot;
   }
 
-  public ItemSlot(IOInventory manager, Predicate<ItemStack> filter, CompoundTag nbt, HolderLookup.Provider registries) {
+  public ItemSlot(ItemHandler manager, Predicate<ItemStack> filter, CompoundTag nbt, HolderLookup.Provider registries) {
     this.manager = manager;
     this.filter = filter;
     if (nbt.contains("item"))
@@ -231,5 +232,10 @@ public class ItemSlot implements IItemHandlerModifiable, ISyncableStuff {
   
   public void setChanged() {
     getManager().setChanged(slot, stack);
+  }
+
+  @Override
+  public ItemStack getValue() {
+    return stack;
   }
 }

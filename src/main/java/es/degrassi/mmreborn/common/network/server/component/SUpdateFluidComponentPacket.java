@@ -4,12 +4,13 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.entity.base.FluidTankEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SUpdateFluidComponentPacket(FluidStack fluid, BlockPos pos) implements CustomPacketPayload {
+public record SUpdateFluidComponentPacket(int slot, FluidStack fluid, BlockPos pos) implements CustomPacketPayload {
 
   public static final Type<SUpdateFluidComponentPacket> TYPE = new Type<>(ModularMachineryReborn.rl("update_fluid"));
   @Override
@@ -18,6 +19,8 @@ public record SUpdateFluidComponentPacket(FluidStack fluid, BlockPos pos) implem
   }
 
   public static final StreamCodec<RegistryFriendlyByteBuf, SUpdateFluidComponentPacket> CODEC = StreamCodec.composite(
+    ByteBufCodecs.INT,
+    SUpdateFluidComponentPacket::slot,
     FluidStack.OPTIONAL_STREAM_CODEC,
     SUpdateFluidComponentPacket::fluid,
     BlockPos.STREAM_CODEC,
@@ -29,7 +32,7 @@ public record SUpdateFluidComponentPacket(FluidStack fluid, BlockPos pos) implem
     if (context.flow().isClientbound())
       context.enqueueWork(() -> {
         if (context.player().level().getBlockEntity(packet.pos) instanceof FluidTankEntity entity) {
-          entity.getTank().setFluid(packet.fluid);
+          entity.getTank().setFluid(packet.slot, packet.fluid);
         }
       });
   }

@@ -10,17 +10,17 @@ import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.HybridTank;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class RequirementFluid implements IRequirement<FluidComponent, HybridTank> {
+public class RequirementFluid implements IRequirement<FluidComponent, FluidHandler> {
   public static final NamedMapCodec<RequirementFluid> CODEC = NamedCodec.record(instance -> instance.group(
       NamedCodec.of(SizedFluidIngredient.FLAT_CODEC).fieldOf("fluid").forGetter(req -> req.ingredient),
       NamedCodec.enumCodec(IOType.class).fieldOf("mode").forGetter(IRequirement::getMode),
@@ -39,29 +39,33 @@ public class RequirementFluid implements IRequirement<FluidComponent, HybridTank
   }
 
   @Override
-  public RequirementType<RequirementFluid, FluidComponent, HybridTank> getType() {
+  public RequirementType<RequirementFluid, FluidComponent, FluidHandler> getType() {
     return RequirementTypeRegistration.FLUID.get();
   }
 
   @Override
-  public ComponentType<HybridTank> getComponentType() {
+  public ComponentType<FluidHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_FLUID.get();
   }
 
   @Override
   public boolean test(FluidComponent component, ICraftingContext context) {
-    HybridTank handler = component.getContainerProvider();
+    FluidHandler handler = component.getContainerProvider();
     return switch (getMode()) {
       case INPUT -> {
         int amount = (int) context.getIntegerModifiedValue(this.ingredient.amount(), this);
-        yield this.ingredient.test(handler.getFluid()) && amount <= handler.getFluidAmount();
+        yield handler.getIngredientAmount(this.ingredient.ingredient()) >= amount;
       }
       case OUTPUT -> {
         int amount = (int) context.getIntegerModifiedValue(this.ingredient.amount(), this);
-        yield (handler.isEmpty() || this.ingredient.test(handler.getFluid())) && amount <= handler.getSpace();
+        yield handler.getSpaceForFluid(this.output()) >= amount;
       }
       case NONE -> true;
     };
+  }
+
+  private FluidStack output() {
+    return this.ingredient.getFluids()[0];
   }
 
   @Override
@@ -74,29 +78,30 @@ public class RequirementFluid implements IRequirement<FluidComponent, HybridTank
 
   private CraftingResult processInput(FluidComponent component, ICraftingContext context) {
     int amount = (int) context.getIntegerModifiedValue(this.ingredient.amount(), this);
-    int maxExtract = component.getContainerProvider().getFluidAmount();
+    int maxExtract = component.getContainerProvider().getFluidAmount(ingredient.ingredient());
 
     if (maxExtract >= amount) {
       component.removeFromInputs(this.ingredient.ingredient(), amount);
       return CraftingResult.success();
     }
 
-    return errorInput(amount, component.getContainerProvider().getFluid(), component.getContainerProvider().getFluidAmount());
+    return errorInput(amount, component.getContainerProvider().getFluids(),
+        component.getContainerProvider().getFluidAmount(ingredient.ingredient()));
   }
 
-  private CraftingResult errorInput(int amount, FluidStack found, int amountFound) {
+  private CraftingResult errorInput(int amount, FluidIngredient found, int amountFound) {
     return CraftingResult.error(Component.translatable(
         "craftcheck.failure.fluid.input",
         amount, ingredient.toString(),
-        amountFound, found.getHoverName()
+        amountFound, found.toString()
     ));
   }
 
-  private CraftingResult errorOutput(FluidStack found) {
+  private CraftingResult errorOutput(FluidIngredient found) {
     return CraftingResult.error(Component.translatable(
         "craftcheck.failure.fluid.output.fluid",
         ingredient.toString(),
-        found.getHoverName()
+        found.toString()
     ));
   }
 
@@ -109,14 +114,13 @@ public class RequirementFluid implements IRequirement<FluidComponent, HybridTank
   }
 
   private CraftingResult processOutput(FluidComponent component, ICraftingContext context) {
-    HybridTank handler = component.getContainerProvider();
-    var output = ingredient.getFluids()[0];
-    if (!handler.isEmpty() && !ingredient.test(handler.getFluid()))
-      return errorOutput(handler.getFluid());
+    FluidHandler handler = component.getContainerProvider();
+    if (!handler.isEmpty() && !handler.contains(ingredient.ingredient()))
+      return errorOutput(handler.getFluids());
     int amount = (int) context.getIntegerModifiedValue(this.ingredient.amount(), this);
-    int canFill = handler.getSpace();
+    int canFill = handler.getSpaceForFluid(output());
     if (canFill >= amount) {
-      component.addToOutputs(output.copyWithAmount(amount));
+      component.addToOutputs(output().copyWithAmount(amount));
       return CraftingResult.success();
     }
     return errorOutput(canFill, amount);
@@ -131,7 +135,7 @@ public class RequirementFluid implements IRequirement<FluidComponent, HybridTank
   }
 
   @Override
-  public @NotNull Component getMissingComponentErrorMessage(IOType ioType) {
+  public Component getMissingComponentErrorMessage(IOType ioType) {
     return Component.translatable(String.format("component.missing.fluid.%s", ioType.name().toLowerCase()));
   }
 
@@ -142,6 +146,6 @@ public class RequirementFluid implements IRequirement<FluidComponent, HybridTank
     } else {
       if (m.getContainerProvider().isEmpty()) return true;
     }
-    return ingredient.test(m.getContainerProvider().getFluid());
+    return m.getContainerProvider().contains(ingredient.ingredient());
   }
 }

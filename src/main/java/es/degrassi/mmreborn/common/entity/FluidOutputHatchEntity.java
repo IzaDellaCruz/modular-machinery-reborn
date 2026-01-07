@@ -24,7 +24,7 @@ public class FluidOutputHatchEntity extends FluidTankEntity implements IAutoOutp
 
   public void tickAutoOutput() {
     if (!shouldAutoOutput) return;
-    for (Direction side : Direction.values()) {
+    for (Direction side : getTank().accessibleSides) {
       if (getTank().isEmpty()) return;
       IFluidHandler neighbour = getNeighbour(Capabilities.FluidHandler.BLOCK, side);
       if(neighbour == null)

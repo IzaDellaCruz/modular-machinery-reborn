@@ -57,10 +57,11 @@ import es.degrassi.mmreborn.common.machine.component.RedstoneComponent;
 import es.degrassi.mmreborn.common.machine.component.StructureComponent;
 import es.degrassi.mmreborn.common.machine.component.TimeComponent;
 import es.degrassi.mmreborn.common.machine.component.WeatherComponent;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.Chunkloader;
-import es.degrassi.mmreborn.common.util.HybridTank;
+import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.IntRange;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -80,22 +81,22 @@ public class RequirementTypeRegistration {
   public static final Registry<RequirementType<? extends IRequirement<?, ?>, ?, ?>> REQUIREMENTS_REGISTRY =
       MACHINE_REQUIREMENTS.makeRegistry(builder -> {});
 
-  public static final Supplier<RequirementType<RequirementItem, ItemComponent, IOInventory>> ITEM =
+  public static final Supplier<RequirementType<RequirementItem, ItemComponent, ItemHandler>> ITEM =
       MACHINE_REQUIREMENTS.register(rootLC("item"),
       () -> RequirementType.inventory(RequirementItem.CODEC));
   public static final Supplier<RequirementType<RequirementEmpty, EmptyComponent, Void>> EMPTY =
       MACHINE_REQUIREMENTS.register(rootLC("empty"),
       () -> RequirementType.inventory(RequirementEmpty.CODEC));
-  public static final Supplier<RequirementType<RequirementDurability, DurabilityComponent, IOInventory>> DURABILITY =
+  public static final Supplier<RequirementType<RequirementDurability, DurabilityComponent, ItemHandler>> DURABILITY =
       MACHINE_REQUIREMENTS.register(rootLC("durability"),
       () -> RequirementType.inventory(RequirementDurability.CODEC));
-  public static final Supplier<RequirementType<RequirementDurabilityPerTick, DurabilityComponent, IOInventory>> DURABILITY_PER_TICK =
+  public static final Supplier<RequirementType<RequirementDurabilityPerTick, DurabilityComponent, ItemHandler>> DURABILITY_PER_TICK =
       MACHINE_REQUIREMENTS.register(rootLC("durability_per_tick"),
       () -> RequirementType.inventory(RequirementDurabilityPerTick.CODEC));
-  public static final Supplier<RequirementType<RequirementFluid, FluidComponent, HybridTank>> FLUID =
+  public static final Supplier<RequirementType<RequirementFluid, FluidComponent, FluidHandler>> FLUID =
       MACHINE_REQUIREMENTS.register(rootLC("fluid"),
       () -> RequirementType.inventory(RequirementFluid.CODEC));
-  public static final Supplier<RequirementType<RequirementFluidPerTick, FluidComponent, HybridTank>> FLUID_PER_TICK =
+  public static final Supplier<RequirementType<RequirementFluidPerTick, FluidComponent, FluidHandler>> FLUID_PER_TICK =
       MACHINE_REQUIREMENTS.register(rootLC("fluid_per_tick"),
       () -> RequirementType.inventory(RequirementFluidPerTick.CODEC));
   public static final Supplier<RequirementType<RequirementEnergyPerTick, EnergyComponent, IEnergyHandler>> ENERGY_PER_TICK =
@@ -125,7 +126,7 @@ public class RequirementTypeRegistration {
   public static final Supplier<RequirementType<RequirementChunkload, ChunkloadComponent, Chunkloader>> CHUNKLOAD =
       MACHINE_REQUIREMENTS.register(rootLC("chunkload"),
       () -> RequirementType.world(RequirementChunkload.CODEC));
-  public static final Supplier<RequirementType<RequirementLootTable, ItemComponent, IOInventory>> LOOT_TABLE =
+  public static final Supplier<RequirementType<RequirementLootTable, ItemComponent, ItemHandler>> LOOT_TABLE =
       MACHINE_REQUIREMENTS.register(rootLC("loot_table"),
       () -> RequirementType.inventory(RequirementLootTable.CODEC));
   public static final Supplier<RequirementType<RequirementExperience, ExperienceComponent, IExperienceHandler>> EXPERIENCE =

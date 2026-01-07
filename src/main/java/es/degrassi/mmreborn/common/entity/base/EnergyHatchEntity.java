@@ -13,11 +13,11 @@ import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.EnergyComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateEnergyComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.MiscUtils;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
@@ -68,7 +68,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   private ResourceLocation defaultOverlayTexture;
 
   @Getter
-  private final IOInventory capabilityInventory;
+  private final ItemHandler capabilityInventory;
 
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick;

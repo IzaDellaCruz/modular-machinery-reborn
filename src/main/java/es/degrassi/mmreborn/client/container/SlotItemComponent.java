@@ -1,6 +1,6 @@
 package es.degrassi.mmreborn.client.container;
 
-import es.degrassi.mmreborn.common.util.ItemSlot;
+import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import lombok.Getter;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;

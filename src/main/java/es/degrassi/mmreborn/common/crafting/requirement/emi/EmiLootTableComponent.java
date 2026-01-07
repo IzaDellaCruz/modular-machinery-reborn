@@ -9,7 +9,7 @@ import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
 import es.degrassi.mmreborn.client.requirement.ItemRendering;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementLootTable;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.LootTableHelper;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class EmiLootTableComponent extends EmiComponent<ResourceLocation,
-    RecipeRequirement<ItemComponent, RequirementLootTable, IOInventory>> implements SlotTooltip,
+    RecipeRequirement<ItemComponent, RequirementLootTable, ItemHandler>> implements SlotTooltip,
     ItemRendering {
   private int item;
   @Getter
@@ -33,7 +33,7 @@ public class EmiLootTableComponent extends EmiComponent<ResourceLocation,
   private EmiRecipe recipe;
   private final List<ItemStack> loots;
 
-  public EmiLootTableComponent(RecipeRequirement<ItemComponent, RequirementLootTable, IOInventory> requirement) {
+  public EmiLootTableComponent(RecipeRequirement<ItemComponent, RequirementLootTable, ItemHandler> requirement) {
     super(requirement, 36, 0);
     List<LootTableHelper.LootData> loots = LootTableHelper.getLootsForTable(requirement.requirement().getLootTable());
     this.loots = Lists.newArrayList(loots.stream().map(LootTableHelper.LootData::stack).toList());

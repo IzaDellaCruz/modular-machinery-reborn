@@ -4,9 +4,9 @@ import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.entity.base.IAutoInputEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.machine.IOType;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
-import es.degrassi.mmreborn.common.util.ItemSlot;
+import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,18 +28,18 @@ public class ItemInputBusEntity extends TileItemBus implements IAutoInputEntity 
   }
 
   @Override
-  public IOInventory buildInventory(int slots, int stackSize) {
+  public ItemHandler buildInventory(int slots, int stackSize) {
     int[] inSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], stackSize, Direction.values());
+    return new ItemHandler(inSlots, new int[0], stackSize, Direction.values());
   }
 
   @Override
   public void tickAutoInput() {
     if (!shouldAutoInput) return;
-    for (Direction side : Direction.values()) {
+    for (Direction side : inventory.accessibleSides) {
       var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
       if (neighbour == null) continue;
 

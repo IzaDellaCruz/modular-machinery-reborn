@@ -17,12 +17,13 @@ import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.TileInventory;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.DurabilityComponent;
+import es.degrassi.mmreborn.common.manager.handler.AbstractHandler;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponentPacket;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
-import es.degrassi.mmreborn.common.util.ItemSlot;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
+import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -67,7 +68,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
     this.size = size;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_durabilityhatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
-    this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
+    this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
       public void onChange(int slot, @NotNull ItemStack stack) {
         getControllerPosSet().forEach(p -> {
@@ -98,12 +99,12 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
   }
 
   @Override
-  public IOInventory buildInventory(int slots, int stackSize) {
+  public ItemHandler buildInventory(int slots, int stackSize) {
     int[] inSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       inSlots[i] = i;
     }
-    return new IOInventory(inSlots, new int[0], ItemStack::isDamageableItem, 1, Direction.values());
+    return new ItemHandler(inSlots, new int[0], ItemStack::isDamageableItem, 1, Direction.values());
   }
 
   @Nullable
@@ -125,7 +126,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
 
-    this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
+    this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
       public void onChange(int slot, @NotNull ItemStack stack) {
         getControllerPosSet().forEach(p -> {
@@ -233,7 +234,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
   @Override
   public void tickAutoInput() {
     if (!shouldAutoInput) return;
-    for (Direction side : Direction.values()) {
+    for (Direction side : inventory.accessibleSides) {
       var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
       if (neighbour == null) continue;
 

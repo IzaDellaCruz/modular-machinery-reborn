@@ -5,8 +5,8 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -201,7 +201,7 @@ public class FillRecipeC2SPacket implements CustomPacketPayload {
     }
   }
 
-  private static int grabMatching(Player player, IOInventory inventory, List<Slot> slots,
+  private static int grabMatching(Player player, ItemHandler inventory, List<Slot> slots,
                                   List<ItemStack> rubble,
                                   List<Slot> crafting,
                                   ItemStack stack) {

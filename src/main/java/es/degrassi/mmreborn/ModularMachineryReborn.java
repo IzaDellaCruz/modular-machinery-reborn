@@ -232,32 +232,32 @@ public class ModularMachineryReborn {
     event.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK,
         EntityRegistration.ITEM_INPUT_BUS.get(),
-        (be, side) -> be.getInventory()
+        (be, side) -> be.getInventory().accessibleSides.contains(side) ? be.getInventory() : null
     );
     event.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK,
         EntityRegistration.ITEM_OUTPUT_BUS.get(),
-        (be, side) -> be.getInventory()
+        (be, side) -> be.getInventory().accessibleSides.contains(side) ? be.getInventory() : null
     );
     event.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK,
         EntityRegistration.ITEM_DURABILITY_HATCH.get(),
-        (be, side) -> be.getInventory()
+        (be, side) -> be.getInventory().accessibleSides.contains(side) ? be.getInventory() : null
     );
     event.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK,
         EntityRegistration.FUEL_TANK.get(),
-        (be, side) -> be.getInventory()
+        (be, side) -> be.getInventory().accessibleSides.contains(side) ? be.getInventory() : null
     );
     event.registerBlockEntity(
         Capabilities.FluidHandler.BLOCK,
         EntityRegistration.FLUID_INPUT_HATCH.get(),
-        (be, side) -> be.getTank()
+        (be, side) -> be.getTank().accessibleSides.contains(side) ? be.getTank() : null
     );
     event.registerBlockEntity(
         Capabilities.FluidHandler.BLOCK,
         EntityRegistration.FLUID_OUTPUT_HATCH.get(),
-        (be, side) -> be.getTank()
+        (be, side) -> be.getTank().accessibleSides.contains(side) ? be.getTank() : null
     );
     event.registerBlockEntity(
         Capabilities.EnergyStorage.BLOCK,

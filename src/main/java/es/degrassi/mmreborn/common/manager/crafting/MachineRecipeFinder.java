@@ -43,7 +43,7 @@ public class MachineRecipeFinder {
         .getAllRecipesFor(RecipeRegistration.RECIPE_TYPE.get())
         .stream()
         .filter(recipe -> recipe.value().getOwningMachineIdentifier().equals(tile.getId()))
-        .sorted(Comparators::compareRecipes)
+        .sorted(Comparators::compare)
         .map(RecipeChecker::new)
         .toList()
         .reversed();

@@ -10,7 +10,7 @@ import es.degrassi.mmreborn.client.requirement.FluidRendering;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluidPerTick;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
-import es.degrassi.mmreborn.common.util.HybridTank;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -22,14 +22,14 @@ import java.util.List;
 
 @Getter
 public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeRequirement<FluidComponent,
-    RequirementFluidPerTick, HybridTank>> implements SlotTooltip,
+    RequirementFluidPerTick, FluidHandler>> implements SlotTooltip,
     FluidRendering, ChanceRendering {
   private EmiRecipe recipe;
   private int width = 16;
   private int height = 16;
   private int fluid;
 
-  public EmiFluidPerTickComponent(RecipeRequirement<FluidComponent, RequirementFluidPerTick, HybridTank> requirement) {
+  public EmiFluidPerTickComponent(RecipeRequirement<FluidComponent, RequirementFluidPerTick, FluidHandler> requirement) {
     super(requirement, 0, 0);
   }
 
@@ -65,7 +65,7 @@ public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeReq
     List<Component> tooltip = new LinkedList<>();
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(Component.translatable("modular_machinery_reborn.jei.ingredient.fluid." + mode,
-        String.valueOf(requirement.requirement().getIngredient().ingredient()),
+        ingredients().get(fluid).getHoverName(),
         requirement.requirement().getIngredient().amount()));
     tooltip.add(Component.translatable("modular_machinery_reborn.ingredient.perTick"));
     addChanceTooltips(tooltip);

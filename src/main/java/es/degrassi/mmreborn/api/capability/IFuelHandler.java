@@ -1,7 +1,7 @@
 package es.degrassi.mmreborn.api.capability;
 
 import es.degrassi.experiencelib.api.capability.IContentsListener;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
@@ -27,7 +27,7 @@ public interface IFuelHandler {
     nbt.putLong(MAX_FUEL_TAG, getMaxFuel());
   }
 
-  IOInventory getInventory();
+  ItemHandler getInventory();
 
   default void deserialize(CompoundTag nbt, HolderLookup.Provider registries) {
     if (nbt.contains(FUEL_TAG, CompoundTag.TAG_LONG))

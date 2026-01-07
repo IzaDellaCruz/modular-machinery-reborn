@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.ExperienceHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.FluidTankEntity;
 import es.degrassi.mmreborn.common.entity.base.TileInventory;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,7 +31,7 @@ public class RedstoneHelper {
         yield 0;
       }
       case FluidTankEntity ft -> {
-        FluidTank tank = ft.getTank();
+        FluidHandler tank = ft.getTank();
         float cap = tank.getCapacity();
         float cur = tank.getFluidAmount();
         yield Mth.clamp(Math.round(15F * (cur / cap)), 0, 15);

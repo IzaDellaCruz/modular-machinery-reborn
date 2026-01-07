@@ -5,7 +5,7 @@ import es.degrassi.mmreborn.common.entity.base.IAutoOutputEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,18 +27,18 @@ public class ItemOutputBusEntity extends TileItemBus implements IAutoOutputEntit
   }
 
   @Override
-  public IOInventory buildInventory(int slots, int stackSize) {
+  public ItemHandler buildInventory(int slots, int stackSize) {
     int[] outSlots = new int[slots];
     for (int i = 0; i < slots; i++) {
       outSlots[i] = i;
     }
-    return new IOInventory(new int[0], outSlots, stackSize, Direction.values());
+    return new ItemHandler(new int[0], outSlots, stackSize, Direction.values());
   }
 
   @Override
   public void tickAutoOutput() {
     if (!shouldAutoOutput) return;
-    for (Direction side : Direction.values()) {
+    for (Direction side : inventory.accessibleSides) {
       var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
       if (neighbour == null) continue;
 

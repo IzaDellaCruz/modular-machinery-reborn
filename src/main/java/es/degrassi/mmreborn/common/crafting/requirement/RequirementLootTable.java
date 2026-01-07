@@ -10,10 +10,10 @@ import es.degrassi.mmreborn.api.crafting.requirement.IRequirementList;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.Registration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.LootTableHelper;
 import lombok.Getter;
 import net.minecraft.core.registries.Registries;
@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class RequirementLootTable implements IRequirement<ItemComponent, IOInventory> {
+public class RequirementLootTable implements IRequirement<ItemComponent, ItemHandler> {
   public static final NamedCodec<RequirementLootTable> CODEC = NamedCodec.record(lootTableRequirementInstance ->
       lootTableRequirementInstance.group(
           DefaultCodecs.RESOURCE_LOCATION.fieldOf("table").forGetter(RequirementLootTable::getLootTable),
@@ -58,12 +58,12 @@ public class RequirementLootTable implements IRequirement<ItemComponent, IOInven
   }
 
   @Override
-  public RequirementType<RequirementLootTable, ItemComponent, IOInventory> getType() {
+  public RequirementType<RequirementLootTable, ItemComponent, ItemHandler> getType() {
     return RequirementTypeRegistration.LOOT_TABLE.get();
   }
 
   @Override
-  public ComponentType<IOInventory> getComponentType() {
+  public ComponentType<ItemHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_ITEM.get();
   }
 

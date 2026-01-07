@@ -21,7 +21,8 @@ public class ChunkloaderList {
   }
 
   public static Optional<ChunkloaderEntity> findInSameChunk(ChunkloaderEntity machine) {
-    return getLoadedMachines().stream()
+    return getLoadedMachines()
+        .stream()
         .filter(tile -> tile != machine && tile.getLevel() == machine.getLevel() && new ChunkPos(tile.getBlockPos()).equals(new ChunkPos(machine.getBlockPos())))
         .findFirst();
   }

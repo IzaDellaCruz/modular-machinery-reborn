@@ -8,10 +8,11 @@ import es.degrassi.mmreborn.api.capability.EntityHandler;
 import es.degrassi.mmreborn.api.capability.IFuelHandler;
 import es.degrassi.mmreborn.api.crafting.requirement.WeatherType;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
+import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.Chunkloader;
-import es.degrassi.mmreborn.common.util.HybridTank;
+import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import es.degrassi.mmreborn.common.util.IntRange;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -30,13 +31,13 @@ public class ComponentRegistration {
       DeferredRegister.create(ComponentType.REGISTRY_KEY, ModularMachineryReborn.MODID);
   public static final Registry<ComponentType<?>> COMPONENTS_REGISTRY = MACHINE_COMPONENTS.makeRegistry(builder -> {});
 
-  public static final Supplier<ComponentType<IOInventory>> COMPONENT_ITEM = MACHINE_COMPONENTS.register(rootLC("item"),
+  public static final Supplier<ComponentType<ItemHandler>> COMPONENT_ITEM = MACHINE_COMPONENTS.register(rootLC("item"),
       ComponentType::create);
-  public static final Supplier<ComponentType<IOInventory>> COMPONENT_DURABILITY= MACHINE_COMPONENTS.register(rootLC("durability"),
+  public static final Supplier<ComponentType<ItemHandler>> COMPONENT_DURABILITY= MACHINE_COMPONENTS.register(rootLC("durability"),
       ComponentType::create);
   public static final Supplier<ComponentType<Void>> COMPONENT_DURATION = MACHINE_COMPONENTS.register(rootLC("duration"),
       ComponentType::create);
-  public static final Supplier<ComponentType<HybridTank>> COMPONENT_FLUID = MACHINE_COMPONENTS.register(rootLC("fluid"),
+  public static final Supplier<ComponentType<FluidHandler>> COMPONENT_FLUID = MACHINE_COMPONENTS.register(rootLC("fluid"),
       ComponentType::create);
   public static final Supplier<ComponentType<IEnergyHandler>> COMPONENT_ENERGY = MACHINE_COMPONENTS.register(rootLC("energy"),
       ComponentType::create);

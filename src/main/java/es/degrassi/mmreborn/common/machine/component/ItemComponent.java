@@ -3,8 +3,8 @@ package es.degrassi.mmreborn.common.machine.component;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.ComponentRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -12,21 +12,21 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ItemComponent extends MachineComponent<IOInventory> {
-  private final IOInventory handler;
+public class ItemComponent extends MachineComponent<ItemHandler> {
+  private final ItemHandler handler;
 
-  public ItemComponent(IOInventory handler, IOType ioType) {
+  public ItemComponent(ItemHandler handler, IOType ioType) {
     super(ioType);
     this.handler = handler;
   }
 
   @Override
-  public ComponentType<IOInventory> getComponentType() {
+  public ComponentType<ItemHandler> getComponentType() {
     return ComponentRegistration.COMPONENT_ITEM.get();
   }
 
   @Override
-  public IOInventory getContainerProvider() {
+  public ItemHandler getContainerProvider() {
     return handler;
   }
 
@@ -67,10 +67,10 @@ public class ItemComponent extends MachineComponent<IOInventory> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <C extends MachineComponent<IOInventory>> C merge(C c) {
+  public <C extends MachineComponent<ItemHandler>> C merge(C c) {
     ItemComponent comp = (ItemComponent) c;
     return (C) new ItemComponent(
-        IOInventory.mergeBuild(handler, comp.handler),
+        ItemHandler.mergeBuild(handler, comp.handler),
         getIOType()
     );
   }

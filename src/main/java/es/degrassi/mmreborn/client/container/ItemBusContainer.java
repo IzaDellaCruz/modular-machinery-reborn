@@ -5,8 +5,8 @@ import es.degrassi.mmreborn.client.screen.widget.ISlotClickHandler;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.registration.ContainerRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -76,7 +76,7 @@ public class ItemBusContainer extends ContainerBase<TileItemBus> implements ISlo
     }
   }
 
-  protected void addInventorySlots(IOInventory itemHandler, ItemBusSize size, AtomicInteger atomicInteger) {
+  protected void addInventorySlots(ItemHandler itemHandler, ItemBusSize size, AtomicInteger atomicInteger) {
     int xOffset = ItemBusConfig.get().itemSlotXOffset.get();
     int yOffset = ItemBusConfig.get().itemSlotYOffset.get();
     int cols = size.cols;

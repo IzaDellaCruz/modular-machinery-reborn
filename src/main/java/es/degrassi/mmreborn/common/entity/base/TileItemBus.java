@@ -13,10 +13,11 @@ import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
+import es.degrassi.mmreborn.common.manager.handler.AbstractHandler;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
-import es.degrassi.mmreborn.common.util.IOInventory;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -59,7 +60,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
     this.ioType = ioType;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_" + ioType.getSerializedName() + "bus_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
-    this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
+    this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
       public void onChange(int slot, ItemStack stack) {
         getControllerPosSet().forEach(p -> {
@@ -105,7 +106,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
 
-    this.inventory.setListener(new IOInventory.IOInventoryChangedListener() {
+    this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
       public void onChange(int slot, ItemStack stack) {
         getControllerPosSet().forEach(p -> {

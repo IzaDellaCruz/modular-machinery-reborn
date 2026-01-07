@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +51,7 @@ public class BlockFluidHatch extends BlockMachineComponent implements BlockTickE
     BlockEntity te = level.getBlockEntity(pos);
     if (te instanceof FluidTankEntity fluidTank) {
       if (!stack.isEmpty() && FluidUtil.getFluidHandler(stack).isPresent()) {
-        FluidTank ft = fluidTank.getTank();
+        IFluidHandler ft = fluidTank.getTank();
         FluidUtil.interactWithFluidHandler(player, hand, ft);
         return ItemInteractionResult.sidedSuccess(level.isClientSide);
       }
