@@ -173,6 +173,7 @@
   "item.modular_machinery_reborn.blueprint": "Machine Blueprint",
   "item.modular_machinery_reborn.modularium": "Modularium",
   "item.modular_machinery_reborn.structure_creator": "Structure Creator",
+  "item.modular_machinery_reborn.wrench": "Wrench",
   "itemgroup.modular_machinery_reborn.group": "Modular Machinery Reborn",
   "key.categories.modular_machinery_reborn": "Modular Machinery Reborn",
   "key.modular_machinery_reborn.structure_mode_change": "Structure Creator Mode",
@@ -243,6 +244,14 @@
   "mmr.recipe.modifier.loot_table.MULTIPLICATION": " (x%s loot table luck of recipe)",
   "mmr.recipe.modifier.speed.ADDITION": " (%s the speed of processing the recipe)",
   "mmr.recipe.modifier.speed.MULTIPLICATION": " (x%s the speed of processing the recipe)",
+  "mmr.side.back": "Back",
+  "mmr.side.bottom": "Bottom",
+  "mmr.side.disabled": "Disabled",
+  "mmr.side.enabled": "Enabled",
+  "mmr.side.front": "Front",
+  "mmr.side.left": "Left",
+  "mmr.side.right": "Right",
+  "mmr.side.top": "Top",
   "mmr.structure.error.between": "Expected to be between %s and %s, but found %s (%s)",
   "mmr.structure.error.exact": "Expected %s, but found %s (%s)",
   "mmr.structure.error.max": "Expected at most %s, but found %s (%s)",
@@ -251,6 +260,7 @@
   "mmr.tooltip.auto_output": "Auto Output: %s",
   "mmr.tooltip.effect": "Giving effect in %s block(s) radius",
   "mmr.tooltip.effect.interdimensional": "Giving effect interdimensionally",
+  "mmr.tooltip.open_side_config": "Open Side Config",
   "mmr.tooltip.redstone.emit": "Emitting %s",
   "mmr.tooltip.redstone.receive": "Receiving %s",
   "mmr.waila.cores": [
@@ -267,6 +277,7 @@
       "text": " cores"
     }
   ],
+  "mmr.wrench.side_mode.change": "Changed side: %s from %s to %s",
   "modular_machinery_reborn.command.reload.machines": "Successfully reloaded modular machinery machines!",
   "modular_machinery_reborn.command.reload.recipes": "Successfully reloaded modular machinery recipes!",
   "modular_machinery_reborn.controller.alt": "[ALT]",

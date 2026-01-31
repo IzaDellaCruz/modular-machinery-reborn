@@ -15,7 +15,6 @@ import es.degrassi.mmreborn.client.util.GuiUtils;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
 import es.degrassi.mmreborn.common.entity.ItemOutputBusEntity;
 import es.degrassi.mmreborn.common.entity.base.TileItemBus;
-import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -31,7 +30,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> implements IGuiWrapper, ITabGroupScreen {
@@ -97,7 +95,7 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
 
     scroll.visitWidgets(this::addRenderableWidget);
 
-    tabs = TabGroupWidget.createLeft(getGuiLeft() - TextureSizeHelper.getWidth(AutoOutputTabWidget.TAB), getGuiTop());
+    tabs = TabGroupWidget.createRight(getGuiLeft() + imageWidth - 7, getGuiTop());
     if (this.entity.getIoType().isInput()) tabs.addTab(new AutoInputTabWidget<>((ItemInputBusEntity)this.entity));
     else tabs.addTab(new AutoOutputTabWidget<>((ItemOutputBusEntity)this.entity));
 
@@ -105,7 +103,7 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
   }
 
   @Override
-  public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+  public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
     int i = this.leftPos;
     int j = this.topPos;
     // Neo: replicate the super method's implementation to insert the event between background and widgets
@@ -230,7 +228,7 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     pose.popPose();
   }
 
-  protected void drawForegroundText(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+  protected void drawForegroundText(GuiGraphics guiGraphics, int mouseX, int mouseY) {
   }
 
   @Override
@@ -241,6 +239,11 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
     hasClicked = true;
+    for (var element : children()) {
+      if (element instanceof TabGroupWidget widget) {
+        if (widget.mouseClicked(mouseX, mouseY, button)) return true;
+      }
+    }
     // otherwise, we send it to the current element (this is the same as super.super [ContainerEventHandler#mouseClicked], but in reverse order)
     //TODO: Why do we do this in reverse order?
     GuiEventListener clickedChild = GuiUtils.findChild(children(), mouseX, mouseY, button, GuiEventListener::mouseClicked);
@@ -254,11 +257,6 @@ public class ItemBusScreen extends BaseScreen<ItemBusContainer, TileItemBus> imp
     } else {
       //If we can't find a child, allow clearing whatever focus we currently have
       clearFocus();
-    }
-    for (var element : children()) {
-      if (element instanceof TabGroupWidget widget && widget.isMouseOver(mouseX, mouseY)) {
-        widget.onClick(mouseX, mouseY, button);
-      }
     }
     return super.mouseClicked(mouseX, mouseY, button);
   }

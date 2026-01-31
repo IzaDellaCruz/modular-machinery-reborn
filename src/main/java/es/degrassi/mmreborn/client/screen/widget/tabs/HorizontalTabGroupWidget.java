@@ -39,7 +39,7 @@ public class HorizontalTabGroupWidget extends TabGroupWidget {
   }
 
   public HorizontalTabGroupWidget addTab(int xOffset, int yOffset, ItemOrIconButton icon, @Nullable TabWidget.OnClick action) {
-    TabWidget tab = new TabWidget(lastX.get() + xOffset, getY() + yOffset, icon, action);
+    TabWidget tab = new HorizontalTabWidget(lastX.get() + xOffset, getY() + yOffset, icon, action);
     lastX.getAndAdd(tab.getWidth() + xOffset);
     return addTab(tab);
   }
@@ -49,7 +49,7 @@ public class HorizontalTabGroupWidget extends TabGroupWidget {
   }
 
   public HorizontalTabGroupWidget addTab(int xOffset, int yOffset, ItemOrIconButton icon) {
-    TabWidget tab = new TabWidget(lastX.get() + xOffset, getY() + yOffset, icon);
+    TabWidget tab = new HorizontalTabWidget(lastX.get() + xOffset, getY() + yOffset, icon);
     lastX.getAndAdd(tab.getWidth() + xOffset);
     return addTab(tab);
   }

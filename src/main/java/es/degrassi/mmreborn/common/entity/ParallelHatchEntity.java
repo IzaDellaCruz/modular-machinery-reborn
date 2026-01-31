@@ -3,7 +3,6 @@ package es.degrassi.mmreborn.common.entity;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
-import es.degrassi.mmreborn.client.model.hatch.DefaultHatchBakedModel;
 import es.degrassi.mmreborn.common.block.prop.ParallelHatchSize;
 import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;

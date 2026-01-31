@@ -52,7 +52,7 @@ public class GuiSlotScroll extends GuiElement {
   }
 
   @Override
-  public void visitWidgets(@NotNull Consumer<AbstractWidget> consumer) {
+  public void visitWidgets(Consumer<AbstractWidget> consumer) {
     children().forEach(consumer);
   }
 
@@ -61,7 +61,7 @@ public class GuiSlotScroll extends GuiElement {
   }
 
   @Override
-  public void drawBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+  public void drawBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
     super.drawBackground(guiGraphics, mouseX, mouseY, partialTicks);
     List<SlotItemComponent> list = getSlotList();
     if (!list.isEmpty()) {
@@ -96,7 +96,7 @@ public class GuiSlotScroll extends GuiElement {
   }
 
   @Override
-  public void renderToolTip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+  public void renderToolTip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
     super.renderToolTip(guiGraphics, mouseX, mouseY);
     SlotItemComponent slot = getSlot(mouseX, mouseY);
     if (slot != null) {

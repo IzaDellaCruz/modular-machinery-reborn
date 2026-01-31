@@ -15,9 +15,12 @@ import es.degrassi.mmreborn.common.registration.ComponentRegistration;
 import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+
+import java.util.Arrays;
 
 @Getter
 public class RequirementFluid implements IRequirement<FluidComponent, FluidHandler> {
@@ -89,10 +92,17 @@ public class RequirementFluid implements IRequirement<FluidComponent, FluidHandl
         component.getContainerProvider().getFluidAmount(ingredient.ingredient()));
   }
 
+  private Component ingredients() {
+    return Arrays.stream(ingredient.ingredient().getStacks())
+        .map(FluidStack::getHoverName)
+        .collect(Component::empty, (a, b) -> a.append(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.or").append(b)), MutableComponent::append);
+  }
+
   private CraftingResult errorInput(int amount, FluidIngredient found, int amountFound) {
     return CraftingResult.error(Component.translatable(
         "craftcheck.failure.fluid.input",
-        amount, ingredient.toString(),
+        amount,
+        ingredients(),
         amountFound, found.toString()
     ));
   }
@@ -100,7 +110,7 @@ public class RequirementFluid implements IRequirement<FluidComponent, FluidHandl
   private CraftingResult errorOutput(FluidIngredient found) {
     return CraftingResult.error(Component.translatable(
         "craftcheck.failure.fluid.output.fluid",
-        ingredient.toString(),
+        ingredients(),
         found.toString()
     ));
   }

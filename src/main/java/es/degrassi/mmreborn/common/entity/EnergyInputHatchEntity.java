@@ -23,11 +23,12 @@ public class EnergyInputHatchEntity extends EnergyHatchEntity implements IAutoIn
 
   @Override
   public void tickAutoInput() {
-    if (!this.shouldAutoInput) return;
+    if (!getConfig().isEnabled()) return;
     long prevEnergy = this.energy;
 
     long transferCap = Math.min(this.size.transferLimit, this.getMaxEnergy() - this.energy);
     for (Direction face : Direction.values()) {
+      if (!getConfig().canAutoIO(face)) continue;
       if (transferCap > 0) {
         int transferred = attemptFETransfer(face, convertDownEnergy(transferCap));
         transferCap -= transferred;

@@ -22,10 +22,11 @@ public class ExperienceOutputHatchEntity extends ExperienceHatchEntity implement
 
   @Override
   public void tickAutoOutput() {
-    if (!this.shouldAutoOutput) return;
+    if (!this.getConfig().isEnabled()) return;
     long prevXp = this.getTank().getExperience();
 
     for (Direction face : Direction.values()) {
+      if (!getConfig().canAutoIO(face)) continue;
       var ce = getNeighbour(ExperienceLibCapabilities.EXPERIENCE.block(), face);
       if (ce == null) continue;
       attemptXPTransfer(getTank(), ce, Long.MAX_VALUE);

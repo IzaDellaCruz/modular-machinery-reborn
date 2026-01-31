@@ -15,7 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,39 +25,36 @@ import java.util.function.Predicate;
 
 @Getter
 @Setter
-public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
-
+public class HybridTank extends AbstractSlot<FluidStack, Integer> implements FilteredSlot<FluidStack>, IFluidHandler {
   private InventoryUpdateListener listener;
   @Getter
-  private final int slot;
-  private final int maxInput;
-  private final int maxOutput;
-  @Getter
   private final FluidHandler manager;
-  private boolean bypassLimit = false;
 
   public HybridTank(int slot, FluidHandler manager, int capacity, int maxInput, int maxOutput, Predicate<FluidStack> filter) {
-    super(capacity);
-    this.slot = slot;;
-    this.maxInput = maxInput;
-    this.maxOutput = maxOutput;
+    super(slot, FluidStack.EMPTY, capacity, maxInput, maxOutput, filter, v -> v > 0);
     this.manager = manager;
-    this.validator = filter;
   }
 
   public HybridTank(FluidHandler manager, Predicate<FluidStack> filter, CompoundTag nbt, HolderLookup.Provider registries) {
-    super(0);
+    super(
+        nbt.getInt("slot"),
+        getFromNBT(nbt, registries),
+        nbt.getInt("capacity"),
+        nbt.getInt("maxInput"),
+        nbt.getInt("maxOutput"),
+        filter,
+        v -> v > 0
+    );
     this.manager = manager;
-    this.validator = filter;
-    if (nbt.contains("fluid"))
-      fluid = FluidStack.parseOptional(registries, nbt.getCompound("fluid"));
-    this.slot = nbt.getInt("slot");
-    this.capacity = nbt.getInt("capacity");
-    this.maxInput = nbt.getInt("maxInput");
-    this.maxOutput = nbt.getInt("maxOutput");
   }
 
-  public FluidTank readFromNBT(HolderLookup.Provider registries, CompoundTag nbt) {
+  private static FluidStack getFromNBT(CompoundTag nbt, HolderLookup.Provider registries) {
+    if (nbt.contains("fluid"))
+      return FluidStack.parseOptional(registries, nbt.getCompound("fluid"));
+    return FluidStack.EMPTY;
+  }
+
+  public HybridTank readFromNBT(HolderLookup.Provider registries, CompoundTag nbt) {
     if (nbt.contains("fluid")) {
       var ops = registries.createSerializationContext(NbtOps.INSTANCE);
       var fluid = nbt.getCompound("fluid");
@@ -71,7 +68,7 @@ public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
       FluidStack.FLUID_NON_EMPTY_CODEC.decode(ops, id).result()
           .map(Pair::getFirst)
           .ifPresent(itemId -> {
-            this.fluid = new FluidStack(itemId, count, comps.get());
+            this.value = new FluidStack(itemId, count, comps.get());
           });
     }
     return this;
@@ -79,14 +76,13 @@ public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
 
   public CompoundTag writeToNBT(HolderLookup.Provider registries, CompoundTag nbt) {
     var ops = registries.createSerializationContext(NbtOps.INSTANCE);
-    if(!this.fluid.isEmpty()) {
+    if(!this.value.isEmpty()) {
       CompoundTag item = new CompoundTag();
-      FluidStack.FLUID_NON_EMPTY_CODEC.encodeStart(ops,
-          fluid.getFluidHolder()).result().ifPresent(id -> {
-        DataComponentPatch.CODEC.encodeStart(ops, this.fluid.getComponentsPatch()).result().ifPresent(components -> {
+      FluidStack.FLUID_NON_EMPTY_CODEC.encodeStart(ops, value.getFluidHolder()).result().ifPresent(id -> {
+        DataComponentPatch.CODEC.encodeStart(ops, this.value.getComponentsPatch()).result().ifPresent(components -> {
           item.put("id", id);
           item.put("components", components);
-          item.putInt("count", this.fluid.getAmount());
+          item.putInt("count", this.value.getAmount());
         });
       });
       nbt.put("fluid", item);
@@ -96,14 +92,6 @@ public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
     nbt.putInt("maxInput", maxInput);
     nbt.putInt("maxOutput", maxOutput);
     return nbt;
-  }
-
-  public boolean isInput() {
-    return maxInput > 0;
-  }
-
-  public boolean isOutput() {
-    return maxOutput > 0;
   }
 
   @Override
@@ -127,22 +115,20 @@ public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
     return builder.toString();
   }
 
-  @Override
   protected void onContentsChanged() {
-    super.onContentsChanged();
     if (listener != null)
       listener.onChange();
   }
 
   public void recipeExtract(long amount) {
     if (amount <= 0) return;
-    amount = Utils.clamp(amount, 0, this.fluid.getAmount());
+    amount = Utils.clamp(amount, 0, this.value.getAmount());
     drain((int)amount, FluidAction.EXECUTE);
   }
 
   public void recipeInsert(Fluid fluid, long amount, @Nullable CompoundTag nbt) {
     if (amount <= 0) return;
-    fill(new FluidStack(fluid, this.fluid.getAmount() + (int) amount), FluidAction.EXECUTE);
+    fill(new FluidStack(fluid, this.value.getAmount() + (int) amount), FluidAction.EXECUTE);
   }
 
   public int getIngredientAmount(FluidIngredient ingredient) {
@@ -154,22 +140,17 @@ public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
   }
 
   @Override
-  public void setFilter(Predicate<FluidStack> filter) {
-    this.validator = filter;
-  }
-
-  @Override
-  public FluidStack getValue() {
-    return getFluidInTank(0);
+  public boolean isEmpty() {
+    return value == null || value.isEmpty();
   }
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    container.accept(FluidStackSyncable.create(this::getValue, this::setFluid));
+    container.accept(FluidStackSyncable.create(this::getValue, this::setValue));
   }
 
   public void setChanged() {
-    getManager().setChanged(slot, fluid);
+    getManager().setChanged(slot, value);
   }
 
   public FluidStack insertFluidBypassLimit(FluidStack stack, boolean simulate) {
@@ -192,5 +173,97 @@ public class HybridTank extends FluidTank implements FilteredSlot<FluidStack> {
 
   public boolean isFull() {
     return getFluidAmount() >= getCapacity();
+  }
+
+  public FluidStack getFluid() {
+    return value;
+  }
+
+  public int getFluidAmount() {
+    return value.getAmount();
+  }
+
+  public boolean isFluidValid(FluidStack fluidStack) {
+    return filter.test(fluidStack);
+  }
+
+  @Override
+  public int getTanks() {
+    return 1;
+  }
+
+  @Override
+  public FluidStack getFluidInTank(int i) {
+    if (i > 0) return FluidStack.EMPTY;
+    return value;
+  }
+
+  @Override
+  public int getTankCapacity(int i) {
+    if (i > 0) return 0;
+    return capacity;
+  }
+
+  @Override
+  public boolean isFluidValid(int i, FluidStack fluidStack) {
+    if (i > 0) return false;
+    return filter.test(fluidStack);
+  }
+
+  @Override
+  public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
+    if (!resource.isEmpty() && this.isFluidValid(resource)) {
+      if (action.simulate()) {
+        if (this.value.isEmpty()) {
+          return Math.min(this.capacity, resource.getAmount());
+        } else {
+          return !FluidStack.isSameFluidSameComponents(this.value, resource) ? 0 : Math.min(this.capacity - this.value.getAmount(), resource.getAmount());
+        }
+      } else if (this.value.isEmpty()) {
+        this.value = resource.copyWithAmount(Math.min(this.capacity, resource.getAmount()));
+        this.onContentsChanged();
+        return this.value.getAmount();
+      } else if (!FluidStack.isSameFluidSameComponents(this.value, resource)) {
+        return 0;
+      } else {
+        int filled = this.capacity - this.value.getAmount();
+        if (resource.getAmount() < filled) {
+          this.value.grow(resource.getAmount());
+          filled = resource.getAmount();
+        } else {
+          this.value.setAmount(this.capacity);
+        }
+
+        if (filled > 0) {
+          this.onContentsChanged();
+        }
+
+        return filled;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
+    return !resource.isEmpty() && FluidStack.isSameFluidSameComponents(resource, this.value) ? this.drain(resource.getAmount(), action) : FluidStack.EMPTY;
+  }
+
+  @Override
+  public FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
+    int drained = Math.min(this.value.getAmount(), maxDrain);
+
+    FluidStack stack = this.value.copyWithAmount(drained);
+    if (action.execute() && drained > 0) {
+      this.value.shrink(drained);
+      this.onContentsChanged();
+    }
+
+    return stack;
+  }
+
+  public int getSpace() {
+    return Math.max(0, this.capacity - this.value.getAmount());
   }
 }

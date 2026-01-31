@@ -35,7 +35,7 @@ public class FuelTankScreen extends BaseScreen<FuelTankContainer, FuelTankEntity
     super.init();
     this.fuelWidget = new FuelWidget(16 + getGuiLeft(), 10 + 61/2 - 8 + getGuiTop(), getMenu().getEntity().getFuelHandler());
 
-    tabs = TabGroupWidget.createLeft(getGuiLeft() - TextureSizeHelper.getWidth(AutoOutputTabWidget.TAB), getGuiTop());
+    tabs = TabGroupWidget.createRight(getGuiLeft() + getXSize(), getGuiTop());
     tabs.addTab(new AutoInputTabWidget<>(this.entity));
 
     addRenderableWidget(tabs);

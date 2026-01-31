@@ -38,8 +38,9 @@ public class ItemInputBusEntity extends TileItemBus implements IAutoInputEntity 
 
   @Override
   public void tickAutoInput() {
-    if (!shouldAutoInput) return;
+    if (!getConfig().isEnabled()) return;
     for (Direction side : inventory.accessibleSides) {
+      if (!getConfig().canAutoIO(side)) continue;
       var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
       if (neighbour == null) continue;
 

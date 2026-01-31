@@ -3,15 +3,23 @@ package es.degrassi.mmreborn.api.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -312,4 +320,182 @@ public final class Blitter {
     BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
   }
 
+  public void blitWorld(
+      PoseStack poseStack,
+      MultiBufferSource bufferSource,
+      Direction face,
+      int packedOverlay
+  ) {
+    poseStack.pushPose();
+    // Use the standard block cutout / translucent render type
+    RenderType renderType = blending
+        ? RenderType.entityTranslucent(texture)
+        : RenderType.entityCutout(texture);
+
+    VertexConsumer consumer = bufferSource.getBuffer(renderType);
+
+    // UVs
+    float minU, minV, maxU, maxV;
+    if (srcRect == null) {
+      minU = minV = 0;
+      maxU = maxV = 1;
+    } else {
+      minU = srcRect.getX() / (float) referenceWidth;
+      minV = srcRect.getY() / (float) referenceHeight;
+      maxU = (srcRect.getX() + srcRect.getWidth()) / (float) referenceWidth;
+      maxV = (srcRect.getY() + srcRect.getHeight()) / (float) referenceHeight;
+    }
+
+    // UV transform
+    if (transform == TextureTransform.MIRROR_H) {
+      float tmp = minU;
+      minU = maxU;
+      maxU = tmp;
+    } else if (transform == TextureTransform.MIRROR_V) {
+      float tmp = minV;
+      minV = maxV;
+      maxV = tmp;
+    }
+
+    float size = 12f / 16f; // 6x6 icon
+    float margin = (1f - size) / 2f;
+    float x2 = margin + size;
+    float y2 = margin + size;
+
+    switch (face) {
+      case NORTH -> poseStack.translate(0, 0, -0.001);
+      case SOUTH -> poseStack.translate(0, 0, 0.001);
+      case WEST  -> poseStack.translate(-0.001, 0, 0);
+      case EAST  -> poseStack.translate(0.001, 0, 0);
+      case DOWN  -> poseStack.translate(0, -0.001, 0);
+      case UP    -> poseStack.translate(0, 0.001, 0);
+    }
+
+    poseStack.translate(0.5, 0.5, 0.5);
+
+    Vec3i n = face.getNormal();
+    float nx = n.getX();
+    float ny = n.getY();
+    float nz = n.getZ();
+    // rotate around face normal
+    switch (face) {
+      case UP, DOWN -> {
+        var player = Minecraft.getInstance().player;
+        if (player == null) break;
+        var playerFacing = player.getDirection();
+        float snappedYaw = switch (playerFacing) {
+          case NORTH -> 180f;
+          case WEST  -> 90f;
+          case EAST  -> -90f;
+          default -> 0f;
+        };
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(-snappedYaw));
+      }
+      default -> {}
+    }
+
+    poseStack.translate(-0.5, -0.5, -0.5);
+
+    PoseStack.Pose pose = poseStack.last();
+    Matrix4f mat = pose.pose();
+
+    switch (face) {
+      case NORTH, SOUTH, EAST, WEST -> {
+        float tmp = minV;
+        minV = maxV;
+        maxV = tmp;
+      }
+      case UP -> {
+        float tempU = minU;
+        minU = maxU;
+        maxU = tempU;
+        float tempV = minV;
+        minV = maxV;
+        maxV = tempV;
+      }
+      case DOWN -> {
+        float tmp = minU;
+        minU = maxU;
+        maxU = tmp;
+      }
+    }
+
+    // Emit quad per face
+    emitFaceQuad(
+        consumer, mat,
+        face,
+        margin, margin, x2, y2,
+        minU, minV, maxU, maxV,
+        nx, ny, nz,
+        packedOverlay
+    );
+    poseStack.popPose();
+  }
+
+  private void emitFaceQuad(
+      VertexConsumer vc,
+      Matrix4f mat,
+      Direction face,
+      float x1, float y1, float x2, float y2,
+      float u1, float v1, float u2, float v2,
+      float nx, float ny, float nz,
+      int packedOverlay
+  ) {
+    switch (face) {
+      case NORTH -> {
+        vertex(vc, mat, x1, y1, 0, u2, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, y1, 0, u1, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, y2, 0, u1, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x1, y2, 0, u2, v2, nx, ny, nz, packedOverlay);
+      }
+      case SOUTH -> {
+        vertex(vc, mat, x2, y1, 1, u2, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x1, y1, 1, u1, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x1, y2, 1, u1, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, y2, 1, u2, v2, nx, ny, nz, packedOverlay);
+      }
+      case WEST -> {
+        vertex(vc, mat, 0, y1, x2, u2, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, 0, y1, x1, u1, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, 0, y2, x1, u1, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, 0, y2, x2, u2, v2, nx, ny, nz, packedOverlay);
+      }
+      case EAST -> {
+        vertex(vc, mat, 1, y1, x1, u2, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, 1, y1, x2, u1, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, 1, y2, x2, u1, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, 1, y2, x1, u2, v2, nx, ny, nz, packedOverlay);
+      }
+      case UP -> {
+        vertex(vc, mat, x1, 1, y2, u1, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, 1, y2, u2, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, 1, y1, u2, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x1, 1, y1, u1, v1, nx, ny, nz, packedOverlay);
+      }
+      case DOWN -> {
+        vertex(vc, mat, x1, 0, y1, u1, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, 0, y1, u2, v1, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x2, 0, y2, u2, v2, nx, ny, nz, packedOverlay);
+        vertex(vc, mat, x1, 0, y2, u1, v2, nx, ny, nz, packedOverlay);
+      }
+    }
+  }
+
+  private void vertex(
+      VertexConsumer vc,
+      Matrix4f mat,
+      float x, float y, float z,
+      float u, float v,
+      float nx, float ny, float nz,
+      int packedOverlay
+  ) {
+    vc.addVertex(mat, x, y, z)
+        .setColor(r, g, b, a)
+        .setUv(u, v)
+        .setOverlay(packedOverlay)
+        .setLight(LightTexture.FULL_BRIGHT)
+        .setNormal(nx, ny, nz)
+    ;
+  }
 }

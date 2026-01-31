@@ -2,8 +2,7 @@ package es.degrassi.mmreborn.common.network;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.network.client.CBreakStructurePacket;
-import es.degrassi.mmreborn.common.network.client.CChangeAutoInputPacket;
-import es.degrassi.mmreborn.common.network.client.CChangeAutoOutputPacket;
+import es.degrassi.mmreborn.common.network.client.CChangeIOSideConfigPacket;
 import es.degrassi.mmreborn.common.network.client.CCoreButtonClickedPacked;
 import es.degrassi.mmreborn.common.network.client.CExperienceButtonClickedPacket;
 import es.degrassi.mmreborn.common.network.client.CPlaceStructurePacket;
@@ -67,8 +66,7 @@ public class PacketManager {
     registrar.playToServer(CExperienceButtonClickedPacket.TYPE, CExperienceButtonClickedPacket.CODEC, CExperienceButtonClickedPacket::handle);
     registrar.playToServer(CCoreButtonClickedPacked.TYPE, CCoreButtonClickedPacked.CODEC, CCoreButtonClickedPacked::handle);
     registrar.playToServer(CRedstoneButtonModeClickedPacket.TYPE, CRedstoneButtonModeClickedPacket.CODEC, CRedstoneButtonModeClickedPacket::handle);
-    registrar.playToServer(CChangeAutoOutputPacket.TYPE, CChangeAutoOutputPacket.CODEC, CChangeAutoOutputPacket::handle);
-    registrar.playToServer(CChangeAutoInputPacket.TYPE, CChangeAutoInputPacket.CODEC, CChangeAutoInputPacket::handle);
+    registrar.playToServer(CChangeIOSideConfigPacket.TYPE, CChangeIOSideConfigPacket.CODEC, CChangeIOSideConfigPacket::handle);
 
     // EMI packet
     if (Mods.isJEIorEMILoaded()) {

@@ -1,19 +1,8 @@
 package es.degrassi.mmreborn.client.screen.widget.tabs;
 
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Either;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ParametersAreNonnullByDefault

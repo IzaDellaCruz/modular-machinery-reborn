@@ -14,7 +14,6 @@ import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
 import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
-import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchBakedModel;
 import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
@@ -68,7 +67,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           .getPattern()
           .getBlocks(key.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING))
           .entrySet()
-          .stream()
+          .parallelStream()
           .filter(e -> !e.getValue().equals(BlockIngredient.MACHINE))
           .map(Map.Entry::getKey)
           .map(pos::offset)
@@ -107,7 +106,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
             Map<IOType, List<MachineComponent<?>>> foundComponentsValues = Maps.newHashMap();
             for (MachineComponent<?> comp :
                 getFoundComponentsList()
-                    .stream()
+                    .parallelStream()
                     .filter(c -> c.getComponentType().equals(key))
                     .toList()) {
                 foundComponentsValues.computeIfAbsent(comp.getIOType(), io -> Lists.newArrayList()).add(comp);
@@ -125,7 +124,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
                 .getPattern()
                 .getModifiers(controller.getFacing())
                 .get(key)
-                .stream()
+                .parallelStream()
                 .filter(modifier -> modifier.test(new BlockInWorld(
                     controller.getLevel(),
                     controller.getBlockPos().offset(key),
@@ -139,7 +138,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           @Override
           public @NotNull List<RecipeModifier<?, ?, ?>> load(RequirementType<?, ?, ?> key) {
             return getFoundModifiersList()
-                .stream()
+                .parallelStream()
                 .map(ModifierReplacement::getModifiers)
                 .flatMap(List::stream)
                 .filter(r -> r.getRequirementType().equals(key))
@@ -206,17 +205,14 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
           var key = pos.offset(-controllerPos.getX(), -controllerPos.getY(), -controllerPos.getZ());
           fM.refresh(key);
           fM.get(key)
-              .stream()
+              .parallelStream()
               .map(ModifierReplacement::getModifiers)
               .flatMap(List::stream)
               .map(RecipeModifier::getRequirementType)
               .forEach(toRefreshRequirement::add);
         } catch (ExecutionException ignored) {}
-        if (!(entity instanceof TextureableMachineEntity)) return;
-        var data = entity.getModelData();
-        if (!data.has(HatchBakedModel.TEXTURE_DATA)) return;
-        var state = oldState.setValue(BlockMachineComponent.CONNECT_TEXTURES,
-            data.get(HatchBakedModel.TEXTURE_DATA).hasDefaultTextures());
+        if (!(entity instanceof TextureableMachineEntity textureable)) return;
+        var state = oldState.setValue(BlockMachineComponent.CONNECT_TEXTURES, Optional.ofNullable(controller.getFoundMachine().getFormedTextures().get(textureable.getHatchType())).isEmpty());
         level.setBlockAndUpdate(pos, state);
       });
       toRefreshComponent.forEach(fCV::refresh);
@@ -229,7 +225,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   public final List<MachineComponent<?>> getFoundComponentsList() {
     return (List<MachineComponent<?>>) (Object) fC.asMap()
         .values()
-        .stream()
+        .parallelStream()
         .filter(Optional::isPresent)
         .map(Optional::get)
         .toList();
@@ -238,7 +234,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   public List<ModifierReplacement> getFoundModifiersList() {
     return fM.asMap()
         .values()
-        .stream()
+        .parallelStream()
         .flatMap(List::stream)
         .toList();
   }
@@ -290,15 +286,19 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<T>, T> Optional<C> getComponent(ComponentType<T> type, IOType mode) {
     try {
-      return fCV.get(type).get(mode)
-          .stream()
+      var components = fCV.get(type)
+          .get(mode)
+          .parallelStream()
           .map(c -> (C) c)
           .filter(Objects::nonNull)
           .sorted()
-          .reduce((c1, c2) -> {
-            if (c1.canMerge(c2)) return c1.merge(c2);
-            return c1;
-          });
+          .toList();
+      if (components.isEmpty()) return Optional.empty();
+      var merged = components.getFirst();
+      for (var next : components)
+        if (merged.canMerge(next))
+          merged = merged.merge(next);
+      return Optional.of(merged);
     } catch (ExecutionException ignored) {
       throw new ComponentNotFoundException(controller.getFoundMachine(), type);
     }

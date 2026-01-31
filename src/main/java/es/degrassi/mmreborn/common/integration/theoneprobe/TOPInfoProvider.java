@@ -72,14 +72,14 @@ public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProb
   }
 
   private void addAutoInfo(IAutoEntity<?> entity, IProbeInfo info) {
-    if (entity instanceof IAutoInputEntity auto) {
-      boolean autoInput = auto.isShouldAutoInput();
+    if (entity instanceof IAutoInputEntity) {
+      boolean autoInput = entity.shouldAuto();
       Component input = Component.translatable("mmr.tooltip.auto_input", Component.translatable("mmr.gui.tooltip.enabled." + autoInput).withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY);
       info.mcText(input);
     }
 
-    if (entity instanceof IAutoOutputEntity auto) {
-      boolean autoOutput = auto.isShouldAutoOutput();
+    if (entity instanceof IAutoOutputEntity) {
+      boolean autoOutput = entity.shouldAuto();
       Component output = Component.translatable("mmr.tooltip.auto_output", Component.translatable("mmr.gui.tooltip.enabled." + autoOutput).withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.GRAY);
       info.mcText(output);
     }

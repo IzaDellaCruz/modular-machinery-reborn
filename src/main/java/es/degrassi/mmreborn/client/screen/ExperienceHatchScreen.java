@@ -52,7 +52,7 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
   protected void init() {
     super.init();
 
-    tabs = TabGroupWidget.createLeft(getGuiLeft() - TextureSizeHelper.getWidth(AutoOutputTabWidget.TAB), getGuiTop());
+    tabs = TabGroupWidget.createRight(getGuiLeft() + getXSize(), getGuiTop());
     if (this.entity.getMode().isInput()) tabs.addTab(new AutoInputTabWidget<>((ExperienceInputHatchEntity)this.entity));
     else tabs.addTab(new AutoOutputTabWidget<>((ExperienceOutputHatchEntity)this.entity));
   }
@@ -101,7 +101,7 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
   }
 
   @Override
-  protected void renderTooltip(@NotNull GuiGraphics guiGraphics, int x, int y) {
+  protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     super.renderTooltip(guiGraphics, x, y);
 
     if (experienceWidget.isHovered()) {
@@ -118,6 +118,11 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
     hasClicked = true;
+    for (var element : children()) {
+      if (element instanceof TabGroupWidget widget) {
+        if (widget.mouseClicked(mouseX, mouseY, button)) return true;
+      }
+    }
     GuiEventListener clickedChild = GuiUtils.findChild(children(), mouseX, mouseY, button, GuiEventListener::mouseClicked);
 
     if (clickedChild != null) {
@@ -129,11 +134,6 @@ public class ExperienceHatchScreen extends BaseScreen<ExperienceHatchContainer, 
     } else {
       //If we can't find a child, allow clearing whatever focus we currently have
       clearFocus();
-    }
-    for (var element : children()) {
-      if (element instanceof TabGroupWidget widget && widget.isMouseOver(mouseX, mouseY)) {
-        widget.onClick(mouseX, mouseY, button);
-      }
     }
     return super.mouseClicked(mouseX, mouseY, button);
   }

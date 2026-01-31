@@ -23,11 +23,12 @@ public class EnergyOutputHatchEntity extends EnergyHatchEntity implements IAutoO
 
   @Override
   public void tickAutoOutput() {
-    if (!this.shouldAutoOutput) return;
+    if (!getConfig().isEnabled()) return;
     long prevEnergy = this.energy;
 
     long transferCap = Math.min(this.size.transferLimit, this.energy);
     for (Direction face : Direction.values()) {
+      if (!getConfig().canAutoIO(face)) continue;
       if (transferCap > 0) {
         int transferred = attemptFETransfer(face, convertDownEnergy(transferCap));
         transferCap -= transferred;

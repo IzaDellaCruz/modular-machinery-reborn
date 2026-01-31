@@ -22,7 +22,6 @@ import java.util.List;
 public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<EnergyComponent, RequirementEnergy, IEnergyHandler>> {
   private int width = 16;
   private int height = 52;
-  private int recipeTime;
 
   public JeiEnergyComponent(RecipeRequirement<EnergyComponent, RequirementEnergy, IEnergyHandler> requirement) {
     super(requirement, 18, 0);
@@ -53,8 +52,7 @@ public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<Ene
   }
 
   @Override
-  @SuppressWarnings("removal")
-  public @NotNull List<Component> getTooltip(@NotNull Long ingredient, @NotNull TooltipFlag tooltipFlag) {
+  public List<Component> getTooltip(@NotNull Long ingredient, @NotNull TooltipFlag tooltipFlag) {
     List<Component> tooltip = super.getTooltip(ingredient, tooltipFlag);
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(
@@ -68,7 +66,6 @@ public class JeiEnergyComponent extends JeiComponent<Long, RecipeRequirement<Ene
 
   @Override
   public void setRecipe(MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
-    this.recipeTime = recipe.getRecipeTotalTickTime();
     builder
         .addSlot(RecipeIngredientRole.RENDER_ONLY, getPosition().x(), getPosition().y())
         .setCustomRenderer(CustomIngredientTypes.LONG, this)

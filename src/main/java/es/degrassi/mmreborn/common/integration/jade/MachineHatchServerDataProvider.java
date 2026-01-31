@@ -52,14 +52,14 @@ public class MachineHatchServerDataProvider implements IServerDataProvider<Block
         tag.put("effect", effectTag);
       }
 
-      if (entity instanceof IAutoEntity<?>) {
+      if (entity instanceof IAutoEntity<?> auto1) {
         CompoundTag autoTag = new CompoundTag();
-        if (entity instanceof IAutoInputEntity auto) {
-          autoTag.putBoolean("input", auto.isShouldAutoInput());
+        if (entity instanceof IAutoInputEntity) {
+          autoTag.putBoolean("input", auto1.shouldAuto());
         }
 
-        if (entity instanceof IAutoOutputEntity auto) {
-          autoTag.putBoolean("output", auto.isShouldAutoOutput());
+        if (entity instanceof IAutoOutputEntity) {
+          autoTag.putBoolean("output", auto1.shouldAuto());
         }
         tag.put("auto", autoTag);
       }

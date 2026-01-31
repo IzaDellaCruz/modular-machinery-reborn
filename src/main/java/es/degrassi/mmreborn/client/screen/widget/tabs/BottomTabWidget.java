@@ -2,6 +2,8 @@ package es.degrassi.mmreborn.client.screen.widget.tabs;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
+import es.degrassi.mmreborn.common.util.TextureSizeHelper;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,5 +27,22 @@ public class BottomTabWidget extends HorizontalTabWidget {
   @Override
   public ResourceLocation getTabHovered() {
     return TAB_HOVERED;
+  }
+
+  @Override
+  public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    ResourceLocation tab = isHoveredOrFocused() ? getTabHovered() : getTab();
+    int x = getX();
+    int y = getY() + (isHoveredOrFocused() ? -2 : 0);
+    int width = TextureSizeHelper.getWidth(tab), height = TextureSizeHelper.getHeight(tab);
+    this.width = width;
+    this.height = height;
+    guiGraphics.blit(tab, x, y, 0, 0, width, height, width, height);
+    if (getIconButton() != null) {
+      getIconButton().setDisableBackground(true);
+      getIconButton().setPosition(5 + x, 5 + getY());
+      getIconButton().renderTooltip(false);
+      getIconButton().renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    }
   }
 }

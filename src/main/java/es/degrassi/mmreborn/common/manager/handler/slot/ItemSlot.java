@@ -1,12 +1,10 @@
 package es.degrassi.mmreborn.common.manager.handler.slot;
 
 import com.mojang.datafixers.util.Pair;
-import es.degrassi.mmreborn.api.handler.FilteredSlot;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.syncable.ItemStackSyncable;
 import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
@@ -18,40 +16,32 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack> {
-  @Getter
-  private final int capacity;
-  private final int maxInput;
-  private final int maxOutput;
-  @Setter
-  @Getter
-  private Predicate<ItemStack> filter;
-  private ItemStack stack = ItemStack.EMPTY;
-  private boolean bypassLimit = false;
+public class ItemSlot extends AbstractSlot<ItemStack, Integer> implements IItemHandlerModifiable {
   @Getter
   private final ItemHandler manager;
-  @Getter
-  private final int slot;
 
-  public ItemSlot(int slot, ItemHandler manager, int capacity, int maxInput, int maxOutput,
-                  Predicate<ItemStack> filter) {
-    this.capacity = capacity;
-    this.maxInput = maxInput;
-    this.maxOutput = maxOutput;
-    this.filter = filter;
+  public ItemSlot(int slot, ItemHandler manager, int capacity, int maxInput, int maxOutput, Predicate<ItemStack> filter) {
+    super(slot, ItemStack.EMPTY, capacity, maxInput, maxOutput, filter, maxIO -> maxIO > 0);
     this.manager = manager;
-    this.slot = slot;
   }
 
   public ItemSlot(ItemHandler manager, Predicate<ItemStack> filter, CompoundTag nbt, HolderLookup.Provider registries) {
+    super(
+        nbt.getInt("slot"),
+        getFromNBT(nbt, registries),
+        nbt.getInt("capacity"),
+        nbt.getInt("maxInput"),
+        nbt.getInt("maxOutput"),
+        filter,
+        maxIO -> maxIO > 0
+    );
     this.manager = manager;
-    this.filter = filter;
+  }
+
+  private static ItemStack getFromNBT(CompoundTag nbt, HolderLookup.Provider registries) {
     if (nbt.contains("item"))
-      stack = ItemStack.parseOptional(registries, nbt.getCompound("item"));
-    this.slot = nbt.getInt("slot");
-    this.capacity = nbt.getInt("capacity");
-    this.maxInput = nbt.getInt("maxInput");
-    this.maxOutput = nbt.getInt("maxOutput");
+      return ItemStack.parseOptional(registries, nbt.getCompound("item"));
+    return ItemStack.EMPTY;
   }
 
   public void deserialize(HolderLookup.Provider registries, CompoundTag nbt) {
@@ -68,7 +58,7 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
       ItemStack.ITEM_NON_AIR_CODEC.decode(ops, id).result()
           .map(Pair::getFirst)
           .ifPresent(itemId -> {
-            stack = new ItemStack(itemId, count, comps.get());
+            value = new ItemStack(itemId, count, comps.get());
           });
     }
   }
@@ -76,14 +66,14 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
   public CompoundTag serializeNBT(HolderLookup.Provider registries) {
     var nbt = new CompoundTag();
     var ops = registries.createSerializationContext(NbtOps.INSTANCE);
-    if(!this.stack.isEmpty()) {
+    if(!this.value.isEmpty()) {
       CompoundTag item = new CompoundTag();
       ItemStack.ITEM_NON_AIR_CODEC.encodeStart(ops,
-          stack.getItemHolder()).result().ifPresent(id -> {
-          DataComponentPatch.CODEC.encodeStart(ops, this.stack.getComponentsPatch()).result().ifPresent(components -> {
+          value.getItemHolder()).result().ifPresent(id -> {
+          DataComponentPatch.CODEC.encodeStart(ops, this.value.getComponentsPatch()).result().ifPresent(components -> {
             item.put("id", id);
             item.put("components", components);
-            item.putInt("count", this.stack.getCount());
+            item.putInt("count", this.value.getCount());
           });
       });
       nbt.put("item", item);
@@ -95,17 +85,9 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
     return nbt;
   }
 
-  public boolean isInput() {
-    return maxInput > 0;
-  }
-
-  public boolean isOutput() {
-    return maxOutput > 0;
-  }
-
   @Override
   public void setStackInSlot(int slot, ItemStack stack) {
-    this.stack = stack;
+    this.value = stack;
     this.setChanged();
   }
 
@@ -116,7 +98,7 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
 
   @Override
   public ItemStack getStackInSlot(int slot) {
-    return stack;
+    return value;
   }
 
   public ItemStack insertItemBypassLimit(ItemStack stack, boolean simulate) {
@@ -138,21 +120,21 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
   }
 
   public ItemStack getItemStack() {
-    return this.stack;
+    return this.value;
   }
 
   public void setItemStack(ItemStack stack) {
-    this.stack = stack;
+    this.value = stack;
     setChanged();
   }
 
   public boolean isEmpty() {
-    return this.stack == null || this.stack.isEmpty();
+    return this.value == null || this.value.isEmpty();
   }
 
   @Override
   public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-    if(stack.isEmpty() || !isItemValid(0, stack) || (!this.stack.isEmpty() && !ItemStack.isSameItemSameComponents(this.stack, stack)))
+    if(stack.isEmpty() || !isItemValid(0, stack) || (!this.value.isEmpty() && !ItemStack.isSameItemSameComponents(this.value, stack)))
       return stack;
 
     int amountToInsert = stack.getCount();
@@ -164,25 +146,25 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
     //Check the inserted stack max size, in case a mod like AE2 try to insert a stack of non-stackable items
     amountToInsert = stack.isStackable() ? amountToInsert : stack.getMaxStackSize();
     //Check the current stack limit (if not empty stack)
-    if(!this.stack.isEmpty())
-      amountToInsert = Math.min(amountToInsert, this.capacity - this.stack.getCount());
+    if(!this.value.isEmpty())
+      amountToInsert = Math.min(amountToInsert, this.value.getMaxStackSize() - this.value.getCount());
 
     //Check the slot capacity
-    amountToInsert = Math.min(amountToInsert, this.capacity - this.stack.getCount());
+    amountToInsert = Math.min(amountToInsert, this.capacity - this.value.getCount());
 
     //If nothing can be inserted return input
     if(amountToInsert <= 0)
       return stack;
 
     //If this slot is empty copy the input and insert the max amount
-    if(this.stack.isEmpty()) {
+    if(this.value.isEmpty()) {
       if(!simulate) {
-        this.stack = stack.copyWithCount(amountToInsert);
+        this.value = stack.copyWithCount(amountToInsert);
         setChanged();
       }
     } else {//If this slot is not empty simply grow the contained stack
       if(!simulate) {
-        this.stack.grow(amountToInsert);
+        this.value.grow(amountToInsert);
         setChanged();
       }
     }
@@ -196,7 +178,7 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
 
   @Override
   public ItemStack extractItem(int slot, int amount, boolean simulate) {
-    if(amount <= 0 || this.stack.isEmpty() || !this.canOutput())
+    if(amount <= 0 || this.value.isEmpty() || !this.canOutput())
       return ItemStack.EMPTY;
 
     //Check output limit
@@ -204,12 +186,12 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
       amount = Math.min(amount, this.maxOutput);
 
     //Check current stack size
-    amount = Math.min(amount, this.stack.getCount());
+    amount = Math.min(amount, this.value.getCount());
 
-    ItemStack extracted = this.stack.copyWithCount(amount);
+    ItemStack extracted = this.value.copyWithCount(amount);
 
     if(!simulate) {
-      this.stack.shrink(amount);
+      this.value.shrink(amount);
       setChanged();
     }
     return extracted;
@@ -227,15 +209,10 @@ public class ItemSlot implements IItemHandlerModifiable, FilteredSlot<ItemStack>
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    container.accept(ItemStackSyncable.create(() -> this.stack, stack -> this.stack = stack));
+    container.accept(ItemStackSyncable.create(() -> this.value, stack -> this.value = stack));
   }
   
   public void setChanged() {
-    getManager().setChanged(slot, stack);
-  }
-
-  @Override
-  public ItemStack getValue() {
-    return stack;
+    getManager().setChanged(slot, value);
   }
 }

@@ -7,15 +7,18 @@ import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@ParametersAreNonnullByDefault
 public abstract class TabGroupWidget extends AbstractWidget {
   @Getter
   protected final List<TabWidget> tabs = Lists.newArrayList();
@@ -60,6 +63,13 @@ public abstract class TabGroupWidget extends AbstractWidget {
   @Override
   protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
     tabs.forEach(tab -> tab.updateWidgetNarration(narrationElementOutput));
+  }
+
+  public void playDownSound(SoundManager handler) {}
+
+  @Override
+  public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    return getTabUnderMouse(mouseX, mouseY).map(tab -> tab.mouseClicked(mouseX, mouseY, button)).orElse(false);
   }
 
   @Override

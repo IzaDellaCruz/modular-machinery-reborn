@@ -85,7 +85,7 @@ public class TabWidget extends AbstractWidget {
 
   public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     if (getIconButton() != null) {
-      getIconButton().renderTooltip(guiGraphics, x, y);
+      getIconButton().renderTooltip(guiGraphics, x - getX(), y - getY());
     }
   }
 

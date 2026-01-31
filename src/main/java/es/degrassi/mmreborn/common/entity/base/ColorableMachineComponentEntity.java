@@ -1,16 +1,23 @@
 package es.degrassi.mmreborn.common.entity.base;
 
+import es.degrassi.mmreborn.api.IWrenchable;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
+import es.degrassi.mmreborn.api.capability.config.RelativeSide;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineColorPacket;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import lombok.Getter;
-import lombok.Setter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -21,14 +28,8 @@ import java.util.Set;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ColorableMachineComponentEntity extends BlockEntitySynchronized implements ColorableMachineEntity {
+public class ColorableMachineComponentEntity extends BlockEntitySynchronized implements ColorableMachineEntity, IWrenchable {
   private int definedColor = Config.machineColor;
-  @Getter
-  @Setter
-  protected boolean shouldAutoOutput;
-  @Getter
-  @Setter
-  protected boolean shouldAutoInput;
   @Getter
   protected final Set<BlockPos> controllerPosSet = new HashSet<>();
 
@@ -38,8 +39,16 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
 
   public ColorableMachineComponentEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState) {
     super(entityType, pos, blockState);
-    this.shouldAutoOutput = false;
-    this.shouldAutoInput = false;
+  }
+
+  public boolean shouldAuto() {
+    if (this instanceof ISideConfigComponent<?> entity && entity instanceof IAutoEntity<?> && entity.getConfig() instanceof IOSideConfig config) {
+      for (RelativeSide side : RelativeSide.values()) {
+        if (config.getSideMode(side).isEnabled())
+          return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -63,10 +72,6 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
   @Override
   protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
     super.loadAdditional(nbt, pRegistries);
-    if (this instanceof IAutoOutputEntity)
-      this.shouldAutoOutput = nbt.getBoolean("shouldAutoOutput");
-    if (this instanceof IAutoInputEntity)
-      this.shouldAutoInput = nbt.getBoolean("shouldAutoInput");
     if (nbt.contains("casingColor")) {
       definedColor = nbt.getInt("casingColor");
       return;
@@ -77,10 +82,6 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
   @Override
   protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider pRegistries) {
     super.saveAdditional(nbt, pRegistries);
-    if (this instanceof IAutoOutputEntity)
-      nbt.putBoolean("shouldAutoOutput", this.shouldAutoOutput);
-    if (this instanceof IAutoInputEntity)
-      nbt.putBoolean("shouldAutoInput", this.shouldAutoInput);
     nbt.putInt("casingColor", this.definedColor);
   }
 
@@ -102,5 +103,23 @@ public class ColorableMachineComponentEntity extends BlockEntitySynchronized imp
         getLevel().blockEvent(getBlockPos(), getBlockState().getBlock(), 1, 0);
       }
     }
+  }
+
+  @Override
+  public Result onWrenched(RelativeSide side, Player player) {
+    if (!(this instanceof ISideConfigComponent<?> configEntity)) return Result.NONE;
+    var oldMode = configEntity.getConfig().getSideMode(side);
+    configEntity.getConfig().setNext(side);
+    var newMode = configEntity.getConfig().getSideMode(side);
+    setChanged();
+    player.sendSystemMessage(
+        Component.translatable("mmr.wrench.side_mode.change",
+          side.getTranslationName().copy().withStyle(ChatFormatting.AQUA),
+          oldMode.title().copy().withStyle(ChatFormatting.RED),
+          newMode.title().copy().withStyle(ChatFormatting.GREEN)
+        )
+    );
+    getLevel().sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+    return Result.SUCCESS;
   }
 }

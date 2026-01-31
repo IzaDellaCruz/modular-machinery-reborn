@@ -15,7 +15,6 @@ import es.degrassi.mmreborn.common.entity.FluidInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.FluidOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.FluidTankEntity;
 import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
-import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -32,7 +31,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 
 @Getter
-public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankEntity> implements IGuiWrapper, ITabGroupScreen {
+public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankEntity> implements ITabGroupScreen {
   private TabGroupWidget tabs;
   private final List<FluidTankWidget> tanks = Lists.newArrayList();
 
@@ -49,7 +48,7 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
   protected void init() {
     super.init();
 
-    tabs = TabGroupWidget.createLeft(getGuiLeft() - TextureSizeHelper.getWidth(AutoOutputTabWidget.TAB), getGuiTop());
+    tabs = TabGroupWidget.createRight(getGuiLeft() + getXSize(), getGuiTop());
     if (this.entity.getIoType().isInput()) tabs.addTab(new AutoInputTabWidget<>((FluidInputHatchEntity)this.entity));
     else tabs.addTab(new AutoOutputTabWidget<>((FluidOutputHatchEntity)this.entity));
 
@@ -71,10 +70,6 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
   protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
     // render image background:
     super.renderBg(guiGraphics, partialTick, mouseX, mouseY);
-    /*guiGraphics.pose().pushPose();
-    guiGraphics.pose().translate(leftPos, topPos, 0);
-    tanks.forEach(tank -> tank.renderWidget(guiGraphics, mouseX, mouseY, partialTick));
-    guiGraphics.pose().popPose();*/
     renderSlots(guiGraphics);
   }
 
@@ -87,6 +82,11 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
     hasClicked = true;
+    for (var element : children()) {
+      if (element instanceof TabGroupWidget widget) {
+        if (widget.mouseClicked(mouseX, mouseY, button)) return true;
+      }
+    }
     GuiEventListener clickedChild = GuiUtils.findChild(children(), mouseX, mouseY, button, GuiEventListener::mouseClicked);
 
     if (clickedChild != null) {
@@ -98,11 +98,6 @@ public class FluidHatchScreen extends BaseScreen<FluidHatchContainer, FluidTankE
     } else {
       //If we can't find a child, allow clearing whatever focus we currently have
       clearFocus();
-    }
-    for (var element : children()) {
-      if (element instanceof TabGroupWidget widget && widget.isMouseOver(mouseX, mouseY)) {
-        widget.onClick(mouseX, mouseY, button);
-      }
     }
     return super.mouseClicked(mouseX, mouseY, button);
   }

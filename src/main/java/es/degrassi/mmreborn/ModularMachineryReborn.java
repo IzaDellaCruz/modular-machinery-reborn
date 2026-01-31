@@ -185,7 +185,6 @@ public class ModularMachineryReborn {
   }
 
   public void syncData(ServerPlayer player) {
-    //PacketDistributor.sendToPlayer(player, new SSyncMachinesPacket(MACHINES));
     MACHINES.forEach((id, machine) -> PacketDistributor.sendToPlayer(player, new SSyncMachinePacket(machine)));
     PacketDistributor.sendToPlayer(player, new SLootTablesPacket(LootTableHelper.getLoots()));
   }

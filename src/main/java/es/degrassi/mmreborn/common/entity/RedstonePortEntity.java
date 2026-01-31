@@ -55,7 +55,6 @@ public class RedstonePortEntity extends ColorableMachineComponentEntity implemen
   }
 
   @Override
-  @NotNull
   public RedstoneComponent provideComponent() {
     return new RedstoneComponent(this);
   }

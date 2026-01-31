@@ -2,10 +2,13 @@ package es.degrassi.mmreborn.common.entity;
 
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.capability.config.IOSideMode;
+import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
+import es.degrassi.mmreborn.api.network.syncable.IOSideConfigSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.ItemDurabilityHatchSize;
 import es.degrassi.mmreborn.common.entity.base.IAutoEntity;
@@ -26,6 +29,7 @@ import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.manager.handler.slot.ItemSlot;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -41,17 +45,19 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class DurabilityHatchEntity extends TileInventory implements MachineComponentEntity<DurabilityComponent>, ControllerAccessible, TextureableMachineEntity,
-    IAutoEntity<IItemHandler>, IAutoInputEntity, ISyncableStuff, ITickEntity, IServerTickEntity {
+    IAutoEntity<IItemHandler>, IAutoInputEntity, ISyncableStuff, ITickEntity, IServerTickEntity, ISideConfigComponent<IOSideMode> {
   @Setter
-  private BlockPos controllerPos;
+  @Nullable private BlockPos controllerPos;
   private ItemDurabilityHatchSize size;
 
   @Setter
@@ -63,14 +69,18 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
   private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
+  private final IOSideConfig config;
+
   public DurabilityHatchEntity(BlockPos pos, BlockState blockState, ItemDurabilityHatchSize size) {
     super(EntityRegistration.ITEM_DURABILITY_HATCH.get(), pos, blockState, size.getSlotCount());
     this.size = size;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_durabilityhatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
+    this.config = IOSideConfig.Template.DEFAULT_ALL_DISABLED.build(this);
+    this.config.setCallback(this::configChanged);
     this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
-      public void onChange(int slot, @NotNull ItemStack stack) {
+      public void onChange(int slot, ItemStack stack) {
         getControllerPosSet().forEach(p -> {
           if (getLevel() == null) return;
           if (getLevel().isClientSide()) return;
@@ -90,8 +100,6 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
         }
       }
     });
-
-    this.shouldAutoInput = true;
   }
 
   public DurabilityHatchEntity(BlockPos pos, BlockState blockState) {
@@ -125,10 +133,11 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
 
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
+    this.config.deserialize(compound.getCompound("config"));
 
     this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
-      public void onChange(int slot, @NotNull ItemStack stack) {
+      public void onChange(int slot, ItemStack stack) {
         getControllerPosSet().forEach(p -> {
           if (getLevel() == null) return;
           if (getLevel().isClientSide()) return;
@@ -161,6 +170,7 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
+    compound.put("config", this.config.serialize());
   }
 
   @Override
@@ -233,8 +243,9 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
 
   @Override
   public void tickAutoInput() {
-    if (!shouldAutoInput) return;
+    if (!getConfig().isEnabled()) return;
     for (Direction side : inventory.accessibleSides) {
+      if (!getConfig().canAutoIO(side)) continue;
       var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
       if (neighbour == null) continue;
 
@@ -260,6 +271,6 @@ public class DurabilityHatchEntity extends TileInventory implements MachineCompo
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    container.accept(BooleanSyncable.create(this::isShouldAutoInput, this::setShouldAutoInput));
+    container.accept(IOSideConfigSyncable.create(this::getConfig, this.config::set));
   }
 }

@@ -12,6 +12,9 @@ import java.util.Locale;
  * MachineTile and is synced automatically when changed.
  */
 public enum MachineStatus implements StringRepresentable {
+  /**
+   * The machine is searching for a valid multiblock structure.
+   */
   MISSING_STRUCTURE,
   /**
    * The machine search for a recipe it can process.

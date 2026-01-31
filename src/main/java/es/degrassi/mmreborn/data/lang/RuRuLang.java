@@ -71,6 +71,10 @@ public final class RuRuLang extends Lang {
 
   @Override
   protected void addJsonProps() {
+    addCores();
+  }
+
+  private void addCores() {
     JsonArray coreInfo = new JsonArray();
     JsonObject coreInfo0 = new JsonObject();
     coreInfo0.addProperty("text", "Выполняется: ");
@@ -168,6 +172,7 @@ public final class RuRuLang extends Lang {
     addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "Создатель мульти-структуры");
     addItem(ItemRegistration.BLUEPRINT, "Мульти-структуры чертеж");
     addItem(ItemRegistration.MODULARIUM, "Модулариум");
+    addItem(ItemRegistration.WRENCH, "Wrench");
   }
 
   @Override
@@ -346,6 +351,17 @@ public final class RuRuLang extends Lang {
 
     add(tooltip("effectdispenser.interdimensional"), "Gives effects interdimensionally");
     add(tooltip("effectdispenser.radius"), "Gives effects in a radius of %s blocks around this block");
+
+    add(mmr("side.enabled"), "Enabled");
+    add(mmr("side.disabled"), "Disabled");
+    add(mmr("side.top"), "Top");
+    add(mmr("side.front"), "Front");
+    add(mmr("side.back"), "Back");
+    add(mmr("side.left"), "Left");
+    add(mmr("side.right"), "Right");
+    add(mmr("side.bottom"), "Bottom");
+    add(mmr(tooltip("open_side_config")), "Open Side Config");
+    add(mmr("wrench.side_mode.change"), "Changed side: %s from %s to %s");
   }
 
   @Override

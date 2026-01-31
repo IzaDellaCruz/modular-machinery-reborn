@@ -13,7 +13,6 @@ import es.degrassi.mmreborn.client.util.GuiUtils;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
 import es.degrassi.mmreborn.common.entity.EnergyOutputHatchEntity;
 import es.degrassi.mmreborn.common.entity.base.EnergyHatchEntity;
-import es.degrassi.mmreborn.common.util.TextureSizeHelper;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -42,7 +41,7 @@ public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHa
   protected void init() {
     super.init();
 
-    tabs = TabGroupWidget.createLeft(getGuiLeft() - TextureSizeHelper.getWidth(AutoOutputTabWidget.TAB), getGuiTop());
+    tabs = TabGroupWidget.createRight(getGuiLeft() + getXSize(), getGuiTop());
     if (this.entity.getMode().isInput()) tabs.addTab(new AutoInputTabWidget<>((EnergyInputHatchEntity) this.entity));
     else tabs.addTab(new AutoOutputTabWidget<>((EnergyOutputHatchEntity) this.entity));
 
@@ -67,7 +66,7 @@ public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHa
   }
 
   @Override
-  protected void renderTooltip(@NotNull GuiGraphics guiGraphics, int x, int y) {
+  protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     super.renderTooltip(guiGraphics, x, y);
 
     int offsetX = (this.width - this.getXSize()) / 2;
@@ -90,6 +89,11 @@ public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHa
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
     hasClicked = true;
+    for (var element : children()) {
+      if (element instanceof TabGroupWidget widget) {
+        if (widget.mouseClicked(mouseX, mouseY, button)) return true;
+      }
+    }
     GuiEventListener clickedChild = GuiUtils.findChild(children(), mouseX, mouseY, button, GuiEventListener::mouseClicked);
 
     if (clickedChild != null) {
@@ -101,11 +105,6 @@ public class EnergyHatchScreen extends BaseScreen<EnergyHatchContainer, EnergyHa
     } else {
       //If we can't find a child, allow clearing whatever focus we currently have
       clearFocus();
-    }
-    for (var element : children()) {
-      if (element instanceof TabGroupWidget widget && widget.isMouseOver(mouseX, mouseY)) {
-        widget.onClick(mouseX, mouseY, button);
-      }
     }
     return super.mouseClicked(mouseX, mouseY, button);
   }

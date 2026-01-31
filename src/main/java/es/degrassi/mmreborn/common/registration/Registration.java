@@ -26,5 +26,6 @@ public class Registration {
     ContainerRegistration.register(bus);
     RecipeRegistration.register(bus);
     CreativeTabsRegistration.register(bus);
+    SoundRegistration.SOUND_REG.register(bus);
   }
 }

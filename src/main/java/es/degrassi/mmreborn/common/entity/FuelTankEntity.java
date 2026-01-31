@@ -4,10 +4,13 @@ import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.capability.BasicFuelHandler;
 import es.degrassi.mmreborn.api.capability.IFuelHandler;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.capability.config.IOSideMode;
+import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
+import es.degrassi.mmreborn.api.network.syncable.IOSideConfigSyncable;
 import es.degrassi.mmreborn.api.network.syncable.LongSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.FuelTankSize;
@@ -63,7 +66,7 @@ import java.util.function.Consumer;
 @MethodsReturnNonnullByDefault
 public class FuelTankEntity extends TileInventory implements MachineComponentEntity<FuelComponent>,
     ControllerAccessible, TextureableMachineEntity, ITickEntity, IServerTickEntity, ISyncableStuff, IAutoInputEntity,
-    IAutoEntity<IItemHandler> {
+    IAutoEntity<IItemHandler>, ISideConfigComponent<IOSideMode> {
   @Nullable
   private BlockPos controllerPos;
   private FuelTankSize size;
@@ -77,6 +80,8 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick, lastCheckFuelTick;
   private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
+
+  private final IOSideConfig config;
 
   private FuelTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FuelTankSize size) {
     super(type, pos, state, 1);
@@ -118,7 +123,8 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
       if (getController() != null)
         getController().getProcessor().setMachineInventoryChanged();
     });
-    this.shouldAutoInput = true;
+    this.config = IOSideConfig.Template.DEFAULT_ALL_DISABLED.build(this);
+    this.config.setCallback(this::configChanged);
   }
 
   public FuelTankEntity(BlockPos pos, BlockState state, FuelTankSize size) {
@@ -166,7 +172,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_fueltank_" + size.getSerializedName());
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
-
+    this.config.deserialize(compound.getCompound("config"));
     this.inventory.setListener(new AbstractHandler.HandlerUpdateListener<>() {
       @Override
       public void onChange(int slot, @NotNull ItemStack stack) {
@@ -205,6 +211,7 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
+    compound.put("config", this.config.serialize());
   }
   @Override
   public ModelData getModelData() {
@@ -285,13 +292,14 @@ public class FuelTankEntity extends TileInventory implements MachineComponentEnt
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
     container.accept(LongSyncable.create(getFuelHandler()::getFuel, getFuelHandler()::setFuel));
     container.accept(LongSyncable.create(getFuelHandler()::getMaxFuel, getFuelHandler()::setMaxFuel));
-    container.accept(BooleanSyncable.create(this::isShouldAutoInput, this::setShouldAutoInput));
+    container.accept(IOSideConfigSyncable.create(this::getConfig, this.config::set));
   }
 
   @Override
   public void tickAutoInput() {
-    if (!shouldAutoInput) return;
+    if (!getConfig().isEnabled()) return;
     for (Direction side : inventory.accessibleSides) {
+      if (!getConfig().canAutoIO(side)) continue;
       var neighbour = getNeighbour(Capabilities.ItemHandler.BLOCK, side);
       if (neighbour == null) continue;
 

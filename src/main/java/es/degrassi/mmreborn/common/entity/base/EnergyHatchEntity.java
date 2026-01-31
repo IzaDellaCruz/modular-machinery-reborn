@@ -2,10 +2,13 @@ package es.degrassi.mmreborn.common.entity.base;
 
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.capability.config.IOSideMode;
+import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
+import es.degrassi.mmreborn.api.network.syncable.IOSideConfigSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.EnergyHatchSize;
 import es.degrassi.mmreborn.common.entity.EnergyInputHatchEntity;
@@ -37,7 +40,6 @@ import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -47,13 +49,13 @@ import java.util.function.Consumer;
 
 public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity implements IEnergyHandler,
     MachineComponentEntity<EnergyComponent>, ControllerAccessible, TextureableMachineEntity, CapabilityInventoryEntity<IEnergyStorage>, ITickEntity, IServerTickEntity,
-    ISyncableStuff, IAutoEntity<IEnergyStorage> {
+    ISyncableStuff, IAutoEntity<IEnergyStorage>, ISideConfigComponent<IOSideMode> {
 
   protected long energy = 0;
   protected EnergyHatchSize size;
   protected IOType ioType;
   @Getter
-  private BlockPos controllerPos;
+  @Nullable private BlockPos controllerPos;
 
   private boolean canExtract = false;
   private boolean canInsert = false;
@@ -79,16 +81,20 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   @Getter
   private final Map<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
+  @Getter
+  private final IOSideConfig config;
+
   protected EnergyHatchEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, EnergyHatchSize size,
-                          IOType ioType) {
+                              IOType ioType) {
     super(type, pos, state);
     this.size = size;
     this.ioType = ioType;
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_energy" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
     this.capabilityInventory = createCapabilityInventory();
-    this.shouldAutoOutput = ioType.isOutput();
-    this.shouldAutoInput = ioType.isInput();
+    this.config = IOSideConfig.Template.DEFAULT_ALL_DISABLED.build(this);
+    this.config.setCallback(this::configChanged);
+    invalidateCapabilities();
   }
 
   @Override
@@ -237,8 +243,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
     this.capabilityInventory.deserialize(compound.getCompound("inventory"), pRegistries);
-    this.shouldAutoOutput = this.ioType.isOutput() && this.shouldAutoOutput;
-    this.shouldAutoInput = ioType.isInput() && shouldAutoInput;
+    this.config.deserialize(compound.getCompound("config"));
   }
 
   @Override
@@ -258,6 +263,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
     compound.put("inventory", this.capabilityInventory.writeNBT(pRegistries));
+    compound.put("config", this.config.serialize());
   }
 
   @Override
@@ -299,7 +305,7 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
   }
 
   @Override
-  public HatchTextureData getTextureData(@NotNull String mode) {
+  public HatchTextureData getTextureData(String mode) {
     return MachineComponentEntity.super.getTextureData(mode).derive(
         "bg_all",
         baseTexture,
@@ -381,7 +387,6 @@ public abstract class EnergyHatchEntity extends ColorableMachineComponentEntity 
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
-    container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
+    container.accept(IOSideConfigSyncable.create(this::getConfig, this.config::set));
   }
 }

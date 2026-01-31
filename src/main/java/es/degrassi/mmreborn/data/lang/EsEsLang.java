@@ -37,6 +37,10 @@ public final class EsEsLang extends Lang {
 
   @Override
   protected void addJsonProps() {
+    addCores();
+  }
+
+  private void addCores() {
     JsonArray coreInfo = new JsonArray();
     JsonObject coreInfo0 = new JsonObject();
     coreInfo0.addProperty("text", "Running: ");
@@ -167,6 +171,7 @@ public final class EsEsLang extends Lang {
     addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "Creador de estructuras");
     addItem(ItemRegistration.BLUEPRINT, "Machine Blueprint");
     addItem(ItemRegistration.MODULARIUM, "Modularium");
+    addItem(ItemRegistration.WRENCH, "Wrench");
   }
 
   @Override
@@ -345,6 +350,17 @@ public final class EsEsLang extends Lang {
 
     add(tooltip("effectdispenser.interdimensional"), "Gives effects interdimensionally");
     add(tooltip("effectdispenser.radius"), "Gives effects in a radius of %s blocks around this block");
+
+    add(mmr("side.enabled"), "Activado");
+    add(mmr("side.disabled"), "Desactivado");
+    add(mmr("side.top"), "Arriba");
+    add(mmr("side.front"), "Frontal");
+    add(mmr("side.back"), "Detrás");
+    add(mmr("side.left"), "Izquierda");
+    add(mmr("side.right"), "Derecha");
+    add(mmr("side.bottom"), "Abajo");
+    add(mmr(tooltip("open_side_config")), "Abrir Configuración de Lados");
+    add(mmr("wrench.side_mode.change"), "Changed side: %s from %s to %s");
   }
 
   @Override

@@ -15,7 +15,6 @@ public interface FilteredSlot<VALUE> extends ISyncableStuff {
 
   boolean isEmpty();
 
-
   boolean isInput();
 
   boolean isOutput();

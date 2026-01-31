@@ -22,9 +22,10 @@ public class ExperienceInputHatchEntity extends ExperienceHatchEntity implements
 
   @Override
   public void tickAutoInput() {
-    if (!this.shouldAutoInput) return;
+    if (!this.getConfig().isEnabled()) return;
     long prevXp = this.getTank().getExperience();
     for (Direction face : Direction.values()) {
+      if (!getConfig().canAutoIO(face)) continue;
       var ce = getNeighbour(ExperienceLibCapabilities.EXPERIENCE.block(), face);
       if (ce == null) continue;
       attemptXPTransfer(ce, getTank(), Long.MAX_VALUE);

@@ -16,14 +16,12 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -54,11 +52,6 @@ public class StructureCheckerEntity extends ColorableMachineComponentEntity impl
   public DynamicMachine getBoundMachine() {
     if (getController() == null) return null;
     return getController().getFoundMachine();
-  }
-
-  public Direction getControllerFacing() {
-    if (getController() == null) return Direction.NORTH;
-    return getController().getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
   }
 
   @Override

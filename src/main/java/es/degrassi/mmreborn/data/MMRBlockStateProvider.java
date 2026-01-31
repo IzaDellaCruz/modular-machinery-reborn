@@ -28,8 +28,8 @@ public class MMRBlockStateProvider extends BaseMMRBlockStateProvider {
     addDefaultModels();
     itemModels().basicItem(ItemRegistration.MODULARIUM.asItem());
     itemModels().basicItem(ItemRegistration.BLUEPRINT.asItem());
+    itemModels().basicItem(ItemRegistration.WRENCH.asItem());
     basicItem(ItemRegistration.STRUCTURE_CREATOR_ITEM.asItem(), mcLoc("item/stick"));
-    basicItem(modLoc("constructtool"), modLoc("item/wrench"));
 
     addController(BlockRegistration.CONTROLLER.get(), false, modLoc("block/overlay_controller"));
 

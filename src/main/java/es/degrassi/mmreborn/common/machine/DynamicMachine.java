@@ -18,10 +18,8 @@ import es.degrassi.mmreborn.common.util.sound.AmbientSound;
 import es.degrassi.mmreborn.common.util.sound.Sounds;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
 
@@ -78,7 +76,7 @@ public class DynamicMachine {
   private final Map<MachineStatus, Sounds> sounds;
   private final Map<MachineHatchType, Pair<Boolean, Pair<Optional<ResourceLocation>, Optional<ResourceLocation>>>> formedTextures;
 
-  public DynamicMachine(@Nonnull ResourceLocation registryName, Map<MachineStatus, Sounds> sounds,
+  public DynamicMachine(ResourceLocation registryName, Map<MachineStatus, Sounds> sounds,
                         Map<MachineHatchType,
                             Pair<Boolean, Pair<Optional<ResourceLocation>, Optional<ResourceLocation>>>> formedTextures) {
     this.registryName = registryName;
@@ -101,7 +99,7 @@ public class DynamicMachine {
 
   @Nullable
   public AmbientSound getAmbientSound(MachineStatus status) {
-    return Optional.ofNullable(sounds.get(status)).map(Sounds::ambientSound).orElse(null);
+    return Optional.ofNullable(sounds.get(status)).map(Sounds::ambientSound).orElse(AmbientSound.DEFAULT);
   }
 
   public SoundType getInteractionSound(MachineStatus status) {

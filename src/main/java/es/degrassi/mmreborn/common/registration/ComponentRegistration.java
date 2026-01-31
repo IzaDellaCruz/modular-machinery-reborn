@@ -11,7 +11,6 @@ import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
 import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.Chunkloader;
-import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
 import es.degrassi.mmreborn.common.util.IEnergyHandler;
 import es.degrassi.mmreborn.common.util.IntRange;
 import net.minecraft.core.Registry;

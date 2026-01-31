@@ -27,7 +27,7 @@ public abstract class Lang {
   private final Map<String, String> data = new TreeMap<>();
   private final Map<String, JsonElement> jsonData = new TreeMap<>();
 
-  public static @Nullable Lang fromLocale(@NotNull String locale) {
+  public static @Nullable Lang fromLocale(String locale) {
     return switch(locale) {
       case "en_us" -> new EnUsLang();
       case "es_es" -> new EsEsLang();

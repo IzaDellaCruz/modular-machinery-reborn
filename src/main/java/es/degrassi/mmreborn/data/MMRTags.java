@@ -9,6 +9,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +25,7 @@ public class MMRTags {
   }
 
   public static List<Pair<TagKey<?>, String>> getAllTags() {
-    return Tag.tags;
+    return Tag.tags.stream().filter(pair -> pair.getFirst().location().getNamespace().equals(ModularMachineryReborn.MODID)).toList();
   }
 
   private static class Tag<T> {
@@ -85,6 +86,8 @@ public class MMRTags {
   }
 
   public static class Items extends Tag<Item> {
+    public static final TagKey<Item> WRENCH = Tags.Items.TOOLS_WRENCH;
+
     public static final TagKey<Item> ENERGY = new Items(false, "energyhatch", "Energy Hatches").get();
     public static final TagKey<Item> ENERGY_INPUT = new Items(false, "energyinputhatch", "Energy Input Hatches").get();
     public static final TagKey<Item> ENERGY_OUTPUT = new Items(false, "energyoutputhatch", "Energy Output Hatches").get();

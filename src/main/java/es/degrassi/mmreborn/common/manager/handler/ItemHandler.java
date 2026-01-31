@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements IItemHandlerModifiable, Container, ISyncableStuff {
+public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements IItemHandlerModifiable, Container {
   private int[] miscSlots = new int[0];
 
   private ItemHandler(int slotLimit) {

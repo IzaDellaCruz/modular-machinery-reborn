@@ -25,8 +25,9 @@ public class FluidInputHatchEntity extends FluidTankEntity implements IAutoInput
   }
 
   public void tickAutoInput() {
-    if (!shouldAutoInput) return;
+    if (!this.getConfig().isEnabled()) return;
     for (Direction side : getTank().accessibleSides) {
+      if (!getConfig().canAutoIO(side)) continue;
       IFluidHandler neighbour = getNeighbour(Capabilities.FluidHandler.BLOCK, side);
       if(neighbour == null)
         continue;

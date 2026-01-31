@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.client;
 import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.client.entity.renderer.ControllerRenderer;
+import es.degrassi.mmreborn.client.entity.renderer.IWrenchableRenderer;
 import es.degrassi.mmreborn.client.entity.renderer.StructureCheckerRenderer;
 import es.degrassi.mmreborn.client.integration.athena.MMRAthenaModels;
 import es.degrassi.mmreborn.client.integration.emi.MMREmiClientIntegration;
@@ -67,13 +68,14 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 @Mod(value = ModularMachineryReborn.MODID, dist = Dist.CLIENT)
@@ -88,14 +90,22 @@ public class ModularMachineryRebornClient {
     MMRAthenaModels.init();
     InitBuiltInModels.init();
     NeoForge.EVENT_BUS.register(clientScheduler);
+    NeoForge.EVENT_BUS.addListener(this::onBlockHighlightEvent);
     bus.register(this);
     this.bus = bus;
+  }
+
+  public void onBlockHighlightEvent(RenderHighlightEvent.Block event) {
+    //IWrenchableRenderer.renderBlockHighlight(event.getPoseStack(), event.getCamera(), event.getTarget(),event.getMultiBufferSource(), event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
   }
 
   @SubscribeEvent
   public void registerBlockEntityRenderers(final EntityRenderersEvent.RegisterRenderers event) {
     event.registerBlockEntityRenderer(EntityRegistration.CONTROLLER.get(), ControllerRenderer::new);
     event.registerBlockEntityRenderer(EntityRegistration.STRUCTURE_CHECKER.get(), StructureCheckerRenderer::new);
+    EntityRegistration.ENTITY_TYPE.getEntries().forEach(holder -> {
+      event.registerBlockEntityRenderer(holder.get(), IWrenchableRenderer::new);
+    });
   }
 
   @SubscribeEvent
@@ -200,7 +210,7 @@ public class ModularMachineryRebornClient {
       });
     }
     for (Block block : blockModelsToRegister) {
-      event.register(ModelResourceLocation.standalone(Holder.direct(block).getKey().location()));
+      event.register(ModelResourceLocation.standalone(Objects.requireNonNull(Holder.direct(block).getKey()).location()));
       itemModelsToRegister.add(block.asItem());
     }
     for (Item item : itemModelsToRegister) {
@@ -243,7 +253,6 @@ public class ModularMachineryRebornClient {
     event.register(ContainerRegistration.REDSTONE_PORT.get(), RedstonePortScreen::new);
   }
 
-  @NotNull
   public static MachineControllerEntity getClientSideMachineControllerEntity(BlockPos pos) {
     if (Minecraft.getInstance().level != null) {
       BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(pos);

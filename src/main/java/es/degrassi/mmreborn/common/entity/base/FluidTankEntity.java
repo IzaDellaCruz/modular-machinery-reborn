@@ -2,10 +2,13 @@ package es.degrassi.mmreborn.common.entity.base;
 
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.capability.config.IOSideMode;
+import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
+import es.degrassi.mmreborn.api.network.syncable.IOSideConfigSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.FluidHatchSize;
 import es.degrassi.mmreborn.common.entity.FluidInputHatchEntity;
@@ -14,11 +17,10 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.FluidComponent;
 import es.degrassi.mmreborn.common.manager.handler.FluidHandler;
+import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateFluidComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
-import es.degrassi.mmreborn.common.manager.handler.slot.HybridTank;
-import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.util.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,8 +46,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -53,10 +55,12 @@ import java.util.function.Consumer;
 @Getter
 @Setter
 public abstract class FluidTankEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<FluidComponent>, ControllerAccessible,
-    TextureableMachineEntity, CapabilityInventoryEntity<IFluidHandlerItem>, ITickEntity, IServerTickEntity, ISyncableStuff, IAutoEntity<IFluidHandler> {
+    TextureableMachineEntity, CapabilityInventoryEntity<IFluidHandlerItem>, ITickEntity, IServerTickEntity,
+    ISyncableStuff, IAutoEntity<IFluidHandler>, ISideConfigComponent<IOSideMode> {
   private FluidHandler tank;
   private IOType ioType;
   private FluidHatchSize hatchSize;
+  @Nullable
   private BlockPos controllerPos;
   private ResourceLocation baseTexture;
   private ResourceLocation overlayTexture;
@@ -71,6 +75,9 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
   private long lastCheckTick;
   private final Map<Direction, BlockCapabilityCache<IFluidHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
 
+  @Getter
+  private final IOSideConfig config;
+
   protected FluidTankEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidHatchSize size,
                            IOType ioType) {
     super(type, pos, state);
@@ -80,6 +87,9 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.defaultOverlayTexture = ModularMachineryReborn.rl("block/overlay_fluid" + ioType.getSerializedName() + "hatch_" + size.getSerializedName());
     this.overlayTexture = defaultOverlayTexture;
     this.capabilityInventory = createCapabilityInventory();
+
+    this.config = IOSideConfig.Template.DEFAULT_ALL_DISABLED.build(this);
+    this.config.setCallback(this::configChanged);
 
     this.tank.setListener((slot, value) -> {
       if(!getLevel().isClientSide()) {
@@ -94,9 +104,6 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
         }
       });
     });
-
-    this.shouldAutoOutput = ioType.isOutput();
-    this.shouldAutoInput = ioType.isInput();
   }
 
   @Override
@@ -189,6 +196,8 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
     this.baseTexture = compound.contains("baseTexture") ? ResourceLocation.parse(compound.getString("baseTexture")) : defaultBaseTexture;
     this.overlayTexture = compound.contains("overlayTexture") ? ResourceLocation.parse(compound.getString("overlayTexture")) : defaultOverlayTexture;
 
+    this.config.deserialize(compound.getCompound("config"));
+
     this.tank.setListener((slot, value) -> {
       if(!getLevel().isClientSide()) {
         PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) getLevel(), new ChunkPos(getBlockPos()),
@@ -202,9 +211,6 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
         }
       });
     });
-
-    this.shouldAutoOutput = ioType.isOutput() && shouldAutoOutput;
-    this.shouldAutoInput = ioType.isInput() && shouldAutoInput;
   }
 
   @Override
@@ -223,6 +229,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
+    compound.put("config", this.config.serialize());
   }
 
   @Override
@@ -310,7 +317,7 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
         case BIG -> MachineHatchTypeRegistration.FLUID_OUTPUT_HATCH_BIG;
         case HUGE -> MachineHatchTypeRegistration.FLUID_OUTPUT_HATCH_HUGE;
         case LUDICROUS -> MachineHatchTypeRegistration.FLUID_OUTPUT_HATCH_LUDICROUS;
-        case VACUUM -> MachineHatchTypeRegistration.FLUID_INPUT_HATCH_VACUUM;
+        case VACUUM -> MachineHatchTypeRegistration.FLUID_OUTPUT_HATCH_VACUUM;
       }).get();
       default -> null;
     };
@@ -318,7 +325,6 @@ public abstract class FluidTankEntity extends ColorableMachineComponentEntity im
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
-    container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
+    container.accept(IOSideConfigSyncable.create(this::getConfig, this.config::set));
   }
 }

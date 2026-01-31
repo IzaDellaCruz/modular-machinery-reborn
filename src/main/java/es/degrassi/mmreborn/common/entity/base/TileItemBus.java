@@ -2,10 +2,13 @@ package es.degrassi.mmreborn.common.entity.base;
 
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.capability.config.IOSideMode;
+import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
+import es.degrassi.mmreborn.api.network.syncable.IOSideConfigSyncable;
 import es.degrassi.mmreborn.client.integration.athena.model.hatch.HatchTextureData;
 import es.degrassi.mmreborn.common.block.prop.ItemBusSize;
 import es.degrassi.mmreborn.common.entity.ItemInputBusEntity;
@@ -14,7 +17,6 @@ import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineHatchType;
 import es.degrassi.mmreborn.common.machine.component.ItemComponent;
 import es.degrassi.mmreborn.common.manager.handler.AbstractHandler;
-import es.degrassi.mmreborn.common.manager.handler.ItemHandler;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineTexturePacket;
 import es.degrassi.mmreborn.common.network.server.component.SUpdateItemComponentPacket;
 import es.degrassi.mmreborn.common.registration.MachineHatchTypeRegistration;
@@ -34,7 +36,6 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -42,8 +43,8 @@ import java.util.function.Consumer;
 
 @Getter
 public abstract class TileItemBus extends TileInventory implements MachineComponentEntity<ItemComponent>, ControllerAccessible, TextureableMachineEntity, ITickEntity,
-    IServerTickEntity, ISyncableStuff, IAutoEntity<IItemHandler> {
-  private BlockPos controllerPos;
+    IServerTickEntity, ISyncableStuff, IAutoEntity<IItemHandler>, ISideConfigComponent<IOSideMode> {
+  @Nullable private BlockPos controllerPos;
   private ItemBusSize size;
   private IOType ioType;
 
@@ -53,6 +54,8 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
   @Getter
   private static final ResourceLocation defaultBaseTexture = ModularMachineryReborn.rl("block/casing_plain");
   private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> neighbourStorages = Maps.newEnumMap(Direction.class);
+
+  private final IOSideConfig config;
 
   protected TileItemBus(BlockEntityType<?> entityType, BlockPos pos, BlockState blockState, ItemBusSize size, IOType ioType) {
     super(entityType, pos, blockState, size.getSlotCount(), size.stackSize);
@@ -82,8 +85,8 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
         }
       }
     });
-    this.shouldAutoOutput = ioType.isOutput();
-    this.shouldAutoInput = ioType.isInput();
+    this.config = IOSideConfig.Template.DEFAULT_ALL_DISABLED.build(this);
+    this.config.setCallback(this::configChanged);
   }
 
   @Nullable
@@ -129,8 +132,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
       }
     });
 
-    this.shouldAutoOutput = ioType.isOutput() && shouldAutoOutput;
-    this.shouldAutoInput = ioType.isInput() && shouldAutoInput;
+    this.config.deserialize(compound.getCompound("config"));
   }
 
   @Override
@@ -148,6 +150,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
       compound.putString("baseTexture", baseTexture.toString());
     if (overlayTexture != null)
       compound.putString("overlayTexture", overlayTexture.toString());
+    compound.put("config", this.config.serialize());
   }
 
   @Override
@@ -161,7 +164,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
   }
 
   @Override
-  public HatchTextureData getTextureData(@NotNull String mode) {
+  public HatchTextureData getTextureData(String mode) {
     return MachineComponentEntity.super.getTextureData(mode).derive(
         "bg_all",
         baseTexture,
@@ -241,8 +244,7 @@ public abstract class TileItemBus extends TileInventory implements MachineCompon
 
   @Override
   public void getStuffToSync(Consumer<ISyncable<?, ?>> container) {
-    container.accept(BooleanSyncable.create(() -> this.shouldAutoOutput, v -> this.shouldAutoOutput = v));
-    container.accept(BooleanSyncable.create(() -> this.shouldAutoInput, v -> this.shouldAutoInput = v));
+    container.accept(IOSideConfigSyncable.create(this::getConfig, this.config::set));
   }
 
   protected void moveStacks(IItemHandler from, IItemHandler to, int maxAmount) {

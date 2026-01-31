@@ -274,7 +274,7 @@ public class FluidHandler extends AbstractHandler<HybridTank, FluidStack> implem
   }
 
   public void setFluid(int slot, FluidStack fluid) {
-    getInventory().get(slot).setFluid(fluid);
+    getInventory().get(slot).setValue(fluid);
     setChanged(slot, fluid);
   }
 

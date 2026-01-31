@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -44,7 +43,7 @@ public class BlockEntitySynchronized extends BlockEntity implements IEntitySynch
   }
 
   @Override
-  public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+  public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
     CompoundTag nbt = super.getUpdateTag(pRegistries);
     saveAdditional(nbt, pRegistries);
     return nbt;

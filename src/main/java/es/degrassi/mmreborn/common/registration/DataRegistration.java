@@ -1,12 +1,14 @@
 package es.degrassi.mmreborn.common.registration;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
 import es.degrassi.mmreborn.api.network.DataType;
 import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.api.network.data.BooleanData;
 import es.degrassi.mmreborn.api.network.data.DoubleData;
 import es.degrassi.mmreborn.api.network.data.FloatData;
 import es.degrassi.mmreborn.api.network.data.FluidStackData;
+import es.degrassi.mmreborn.api.network.data.IOSideConfigData;
 import es.degrassi.mmreborn.api.network.data.IntegerData;
 import es.degrassi.mmreborn.api.network.data.ItemStackData;
 import es.degrassi.mmreborn.api.network.data.LongData;
@@ -17,6 +19,7 @@ import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
 import es.degrassi.mmreborn.api.network.syncable.DoubleSyncable;
 import es.degrassi.mmreborn.api.network.syncable.FloatSyncable;
 import es.degrassi.mmreborn.api.network.syncable.FluidStackSyncable;
+import es.degrassi.mmreborn.api.network.syncable.IOSideConfigSyncable;
 import es.degrassi.mmreborn.api.network.syncable.IntegerSyncable;
 import es.degrassi.mmreborn.api.network.syncable.ItemStackSyncable;
 import es.degrassi.mmreborn.api.network.syncable.LongSyncable;
@@ -61,6 +64,8 @@ public class DataRegistration {
       () -> DataType.create(CompoundTag.class, NbtSyncable::create, NbtData::new));
   public static final Supplier<DataType<ResourceLocationData, ResourceLocation>> RESOURCE_LOCATION_DATA= DATAS.register(rootLC("rl"),
       () -> DataType.create(ResourceLocation.class, ResourceLocationSyncable::create, ResourceLocationData::new));
+  public static final Supplier<DataType<IOSideConfigData, IOSideConfig>> IO_SIDE_CONFIG_DATA = DATAS.register(rootLC("io_side_condig"),
+      () -> DataType.create(IOSideConfig.class, IOSideConfigSyncable::create, IOSideConfigData::readData));
 
 
   public static void register(final IEventBus bus) {

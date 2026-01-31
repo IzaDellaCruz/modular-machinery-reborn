@@ -34,6 +34,7 @@ import es.degrassi.mmreborn.common.item.StructureCheckerItem;
 import es.degrassi.mmreborn.common.item.StructureCreatorItem;
 import es.degrassi.mmreborn.common.item.TimeCounterItem;
 import es.degrassi.mmreborn.common.item.WeatherSensorItem;
+import es.degrassi.mmreborn.common.item.WrenchItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -52,6 +53,7 @@ public class ItemRegistration {
       ItemBlueprint::new);
   public static final DeferredItem<ItemModularium> MODULARIUM = ITEMS.register(rootLC("modularium"),
       ItemModularium::new);
+  public static final DeferredItem<WrenchItem> WRENCH = ITEMS.register(rootLC("wrench"), WrenchItem::new);
   
   public static final DeferredItem<StructureCreatorItem> STRUCTURE_CREATOR_ITEM  = ITEMS.register(rootLC("structure_creator"),
       () -> new StructureCreatorItem(new Item.Properties().stacksTo(1)));

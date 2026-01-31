@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 
 @Getter
 public abstract class EntityBaseEntity extends ColorableMachineComponentEntity implements MachineComponentEntity<EntityComponent>,
@@ -81,7 +80,7 @@ TextureableMachineEntity, ControllerAccessible {
   }
 
   @Override
-  public HatchTextureData getTextureData(@NotNull String mode) {
+  public HatchTextureData getTextureData(String mode) {
     return MachineComponentEntity.super.getTextureData(mode).derive(
         "bg_all",
         baseTexture,

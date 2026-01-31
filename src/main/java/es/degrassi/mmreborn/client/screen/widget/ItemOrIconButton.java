@@ -6,6 +6,7 @@ import es.degrassi.mmreborn.api.client.Icon;
 import es.degrassi.mmreborn.api.client.screen.TooltipRender;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @ParametersAreNonnullByDefault
 public class ItemOrIconButton extends Button implements TooltipRender {
   private boolean halfSize = false;
@@ -68,9 +70,10 @@ public class ItemOrIconButton extends Button implements TooltipRender {
     return this;
   }
 
-  public void setVisibility(boolean vis) {
+  public ItemOrIconButton setVisibility(boolean vis) {
     this.visible = vis;
     this.active = vis;
+    return this;
   }
 
   public void playDownSound(SoundManager soundHandler) {
@@ -95,7 +98,11 @@ public class ItemOrIconButton extends Button implements TooltipRender {
         }
 
         if (item != null) {
-          guiGraphics.renderItem(new ItemStack(item), this.getX(), this.getY(), 0, 20);
+          guiGraphics.pose().pushPose();
+          guiGraphics.pose().translate(getX(), getY(), 0);
+          guiGraphics.pose().scale(0.75f, 0.75f, 0.75f);
+          guiGraphics.renderItem(new ItemStack(item), (int) (getWidth() * 0.45), (int) (getHeight() * 0.65), 0, 20);
+          guiGraphics.pose().popPose();
         } else if (icon != null) {
           Blitter blitter = icon.getBlitter();
           if (!this.active) {
@@ -117,7 +124,6 @@ public class ItemOrIconButton extends Button implements TooltipRender {
         }
       }
     }
-
   }
 
   @Override

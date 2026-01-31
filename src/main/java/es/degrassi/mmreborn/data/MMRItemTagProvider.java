@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import java.util.concurrent.CompletableFuture;
 
 import es.degrassi.mmreborn.common.registration.BlockRegistration;
+import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -19,6 +20,10 @@ public class MMRItemTagProvider extends ItemTagsProvider {
 
   @Override
   public void addTags(HolderLookup.@NotNull Provider provider) {
+    tag(MMRTags.Items.WRENCH)
+        .add(
+            ItemRegistration.WRENCH.asItem()
+        );
     tag(MMRTags.Items.ENERGY_INPUT)
         .add(
             BlockRegistration.ENERGY_INPUT_HATCH_TINY.get().asItem(),

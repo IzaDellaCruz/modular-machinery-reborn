@@ -5,7 +5,7 @@ import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-public class LeftTabWidget extends HorizontalTabWidget {
+public class LeftTabWidget extends VerticalTabWidget {
   public static final ResourceLocation TAB = ModularMachineryReborn.rl("textures/gui/widget/base_tab_left.png");
   private static final ResourceLocation TAB_HOVERED = ModularMachineryReborn.rl("textures/gui/widget/base_tab_hovered_left.png");
 

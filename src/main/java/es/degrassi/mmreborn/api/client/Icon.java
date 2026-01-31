@@ -210,9 +210,12 @@ public enum Icon implements IExtensibleEnum {
   PLUS(64, 192),
   MINUS(64, 176),
 
-  // CUSTOM TEXTURES
-  CHECK(ModularMachineryReborn.rl("textures/gui/check.png"))
+  // configs
+  SIDE_CONFIG(80, 240),
 
+  // CUSTOM TEXTURES
+  CHECK(ModularMachineryReborn.rl("textures/gui/check.png")),
+  AUTOIO_TAB(ModularMachineryReborn.rl("textures/gui/widget/autoio_tab.png"), true)
   ;
 
   public final int x;
@@ -248,6 +251,16 @@ public enum Icon implements IExtensibleEnum {
 
   Icon(ResourceLocation texture) {
     this(0, 0, texture);
+  }
+
+  Icon(ResourceLocation texture, boolean textureSize) {
+    this.x = 0;
+    this.y = 0;
+    this.TEXTURE = texture;
+    this.TEXTURE_WIDTH = TextureSizeHelper.getWidth(texture);
+    this.TEXTURE_HEIGHT = TextureSizeHelper.getHeight(texture);
+    this.width = textureSize ? TEXTURE_WIDTH : 16;
+    this.height = textureSize ? TEXTURE_HEIGHT : 16;
   }
 
   public Blitter getBlitter() {

@@ -32,7 +32,7 @@ public class ItemBusContainer extends ContainerBase<TileItemBus> implements ISlo
   public static void open(ServerPlayer player, TileItemBus machine) {
     player.openMenu(new MenuProvider() {
       @Override
-      public @NotNull Component getDisplayName() {
+      public Component getDisplayName() {
         return Component.translatable("modular_machinery_reborn.gui.title.item_bus");
       }
 
