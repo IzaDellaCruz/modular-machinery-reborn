@@ -147,7 +147,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   @Override
   public ModelData getModelData() {
     return ModelData.builder()
-        .with(ControllerBakedModel.DATA, new ControllerData(getFoundMachine(), null))
+        .with(ControllerBakedModel.DATA, new ControllerData(getFoundMachine(), null, getStatus()))
         .build();
   }
 

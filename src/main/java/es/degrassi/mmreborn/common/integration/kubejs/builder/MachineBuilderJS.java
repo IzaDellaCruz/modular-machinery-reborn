@@ -35,16 +35,17 @@ public class MachineBuilderJS {
   private String color;
   private Integer intColor;
   private StructureBuilderJS structure;
-  private MachineModelLocation controllerModel;
+  private final Map<MachineStatus, MachineModelLocation> controllerModels;
   private final List<ModifierReplacement> modifiers;
   private final Map<MachineStatus, Sounds> sounds;
   private final Map<MachineHatchType, Pair<Boolean, Pair<Optional<ResourceLocation>, Optional<ResourceLocation>>>> textureMap;
 
-  public MachineBuilderJS(@NotNull ResourceLocation id) {
+  public MachineBuilderJS(ResourceLocation id) {
     this.id = id;
     modifiers = Lists.newArrayList();
     sounds = Maps.newEnumMap(MachineStatus.class);
     textureMap = Maps.newHashMap();
+    controllerModels = Maps.newEnumMap(MachineStatus.class);
   }
 
   public MachineBuilderJS name(String name) {
@@ -68,7 +69,13 @@ public class MachineBuilderJS {
   }
 
   public MachineBuilderJS controllerModel(MachineModelLocation modelLocation) {
-    this.controllerModel = modelLocation;
+    for (var status : MachineStatus.values())
+      controllerModel(status, modelLocation);
+    return this;
+  }
+
+  public MachineBuilderJS controllerModel(MachineStatus status, MachineModelLocation modelLocation) {
+    this.controllerModels.put(status, modelLocation);
     return this;
   }
 
@@ -97,7 +104,7 @@ public class MachineBuilderJS {
   public DynamicMachine build() {
     DynamicMachine machine = new DynamicMachine(id, sounds, textureMap);
     machine.setPattern(structure == null ? Structure.EMPTY : structure.build(modifiers));
-    machine.setControllerModel(Objects.requireNonNullElse(controllerModel, MachineModelLocation.DEFAULT));
+    machine.setControllerModels(controllerModels);
     machine.setLocalizedName(Optional.ofNullable(name));
     if (intColor != null)
       machine.setDefinedColor(intColor);

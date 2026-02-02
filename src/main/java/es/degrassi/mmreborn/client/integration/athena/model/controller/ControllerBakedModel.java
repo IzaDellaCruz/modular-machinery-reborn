@@ -9,6 +9,7 @@ import es.degrassi.mmreborn.client.model.controller.ControllerOverrideList;
 import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.item.ControllerItem;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
+import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.common.util.MachineModelLocation;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -69,7 +70,7 @@ public class ControllerBakedModel implements MMRBakedModel {
                                   RandomSource rand, ModelData data, @Nullable RenderType type) {
     try {
       var machine = data.get(DATA);
-      if (machine == null) machine = new ControllerData(DynamicMachine.DUMMY, new NullableEnumMap<>(Direction.class));
+      if (machine == null) machine = new ControllerData(DynamicMachine.DUMMY, new NullableEnumMap<>(Direction.class), MachineStatus.MISSING_STRUCTURE);
       var isCustom = machine.hasCustomModel();
       if (isCustom || (state != null && !state.getValue(BlockMachineComponent.CONNECT_TEXTURES))) {
         return new es.degrassi.mmreborn.client.model.controller.ControllerBakedModel().getQuads(
@@ -107,7 +108,7 @@ public class ControllerBakedModel implements MMRBakedModel {
   @Override
   public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData data) {
     var textureData = data.get(DATA);
-    if (textureData == null) textureData = new ControllerData(DynamicMachine.DUMMY, null);
+    if (textureData == null) textureData = new ControllerData(DynamicMachine.DUMMY, null, MachineStatus.MISSING_STRUCTURE);
     if (textureData.hasCustomModel()) return data.derive().build();
     WrappedGetter getter = new WrappedGetter(level);
     final NullableEnumMap<Direction, Map<Direction, List<MMRAthenaQuad>>> quads = new NullableEnumMap<>(Direction.class);
@@ -126,7 +127,7 @@ public class ControllerBakedModel implements MMRBakedModel {
       nonCullQuads.put(direction, unculledQuads);
     }
     quads.put(null, nonCullQuads);
-    return data.derive().with(DATA, new ControllerData(textureData.machine(), quads)).build();
+    return data.derive().with(DATA, new ControllerData(textureData.machine(), quads, textureData.status())).build();
   }
 
   @Override
@@ -166,7 +167,7 @@ public class ControllerBakedModel implements MMRBakedModel {
   @Override
   public List<RenderType> getRenderTypes(ItemStack stack, boolean fabulous) {
     return ControllerItem.getMachine(stack)
-        .map(machine -> getMachineItemModel(machine.getControllerModel()).getRenderTypes(stack, fabulous))
+        .map(machine -> getMachineItemModel(machine.getControllerModel(MachineStatus.MISSING_STRUCTURE)).getRenderTypes(stack, fabulous))
         .orElse(List.of(RenderTypeHelper.getFallbackItemRenderType(stack, this, fabulous)));
   }
 

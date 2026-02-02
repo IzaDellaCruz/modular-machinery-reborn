@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.SoundType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class DynamicMachine {
       NamedCodec.STRING.optionalFieldOf("localizedName").forGetter(machine -> Optional.of(machine.getLocalizedName())),
       Structure.CODEC.fieldOf("structure").forGetter(DynamicMachine::getPattern),
       DefaultCodecs.HEX.optionalFieldOf("color", Config.machineColor).forGetter(DynamicMachine::getMachineColor),
-      MachineModelLocation.CODEC.optionalFieldOf("controller", MachineModelLocation.DEFAULT).forGetter(DynamicMachine::getControllerModel),
+      NamedCodec.unboundedMap(MachineStatus.CODEC, MachineModelLocation.CODEC, "Controller model by status").optionalFieldOf("controller", Maps.newHashMap()).forGetter(DynamicMachine::getControllerModels),
       NamedCodec.unboundedMap(MachineStatus.CODEC, Sounds.CODEC, "Sounds by status").optionalFieldOf("sound", new HashMap<>()).forGetter(DynamicMachine::getSounds),
       NamedCodec.unboundedMap(
           RegistrarCodec.HATCH_TYPE,
@@ -49,12 +50,12 @@ public class DynamicMachine {
           "Formed Textures by HatchType"
       ).optionalFieldOf("formed_textures", Maps.newHashMap()).forGetter(DynamicMachine::getFormedTextures)
   ).apply(instance,
-      (registryName, localizedName, pattern, color, controllerModel, sounds, formedTextures) -> {
+      (registryName, localizedName, pattern, color, controllerModels, sounds, formedTextures) -> {
     DynamicMachine machine = new DynamicMachine(registryName, sounds, formedTextures);
     machine.setPattern(pattern);
     machine.setLocalizedName(localizedName);
     machine.setDefinedColor(color);
-    machine.setControllerModel(controllerModel);
+    machine.setControllerModels(controllerModels);
     return machine;
   }), "Dynamic Machine");
 
@@ -72,7 +73,7 @@ public class DynamicMachine {
   private Optional<String> localizedName = Optional.empty();
   private Structure pattern = Structure.EMPTY;
   private int definedColor = Config.machineColor;
-  private @Nullable MachineModelLocation controllerModel;
+  private final Map<MachineStatus, MachineModelLocation> controllerModels;
   private final Map<MachineStatus, Sounds> sounds;
   private final Map<MachineHatchType, Pair<Boolean, Pair<Optional<ResourceLocation>, Optional<ResourceLocation>>>> formedTextures;
 
@@ -82,6 +83,15 @@ public class DynamicMachine {
     this.registryName = registryName;
     this.sounds = sounds;
     this.formedTextures = formedTextures;
+    this.controllerModels = new EnumMap<>(MachineStatus.class);
+  }
+
+  public void setControllerModels(Map<MachineStatus, MachineModelLocation> controllerModels) {
+    this.controllerModels.putAll(controllerModels);
+  }
+
+  public MachineModelLocation getControllerModel(MachineStatus status) {
+    return this.controllerModels.get(status);
   }
 
   public List<ModifierReplacement> getModifiers() {
@@ -120,8 +130,11 @@ public class DynamicMachine {
     json.addProperty("localizedName", localizedName.orElse("null"));
     json.add("pattern", pattern.asJson());
     json.addProperty("definedColor", definedColor);
-    if (controllerModel != null && controllerModel.getLoc() != null)
-      json.addProperty("controllerModel", controllerModel.toString());
+    JsonObject controllers = new JsonObject();
+    controllerModels.forEach((status, model) -> {
+      controllers.addProperty(status.getSerializedName(), model.toString());
+    });
+    json.add("controllerModels", controllers);
     JsonObject formedTexts = new JsonObject();
     formedTextures.forEach((hatchType, pair) -> {
       var shouldColor = pair.getFirst();
