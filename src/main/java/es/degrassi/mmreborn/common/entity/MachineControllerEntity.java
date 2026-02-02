@@ -144,6 +144,18 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     this.setStatus(status, Component.empty());
   }
 
+  public void setStatus(CraftingStatus status) {
+    switch(status.getStatus()) {
+      case MISSING_STRUCTURE -> this.status = MachineStatus.MISSING_STRUCTURE;
+      case NO_RECIPE -> this.status = MachineStatus.IDLE;
+      case CRAFTING -> this.status = MachineStatus.RUNNING;
+      case FAILURE -> this.status = MachineStatus.ERRORED;
+    }
+    if (isPaused()) {
+      this.status = MachineStatus.PAUSED;
+    }
+  }
+
   @Override
   public ModelData getModelData() {
     return ModelData.builder()
@@ -277,6 +289,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     this.isPaused = compound.getBoolean("isPaused");
     this.id = ResourceLocation.parse(compound.getString("machine"));
     setMachine(id);
+    setStatus(craftingStatus);
     if (getLevel() instanceof ServerLevel) {
       onBlockStateChanged(getBlockPos(), getBlockState());
     }
@@ -320,7 +333,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     container.accept(ResourceLocationSyncable.create(() -> id, s -> id = s));
     container.accept(IntegerSyncable.create(() -> lastFocus, i -> lastFocus = i));
     container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(registries), s -> craftingStatus = CraftingStatus.deserialize(s, registries)));
-    container.accept(StringSyncable.create(() -> this.status.toString(), status -> this.status = MachineStatus.value(status)));
+    container.accept(StringSyncable.create(() -> getStatus().toString(), status -> setStatus(MachineStatus.value(status))));
     container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.errorMessage, registries), errorMessage -> this.errorMessage = Component.Serializer.fromJson(errorMessage, registries)));
   }
 

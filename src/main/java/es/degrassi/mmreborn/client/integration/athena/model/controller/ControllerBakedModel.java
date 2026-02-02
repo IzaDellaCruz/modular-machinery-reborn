@@ -75,7 +75,10 @@ public class ControllerBakedModel implements MMRBakedModel {
       if (isCustom || (state != null && !state.getValue(BlockMachineComponent.CONNECT_TEXTURES))) {
         return new es.degrassi.mmreborn.client.model.controller.ControllerBakedModel().getQuads(
             state, side, rand,
-            ModelData.builder().with(es.degrassi.mmreborn.client.model.controller.ControllerBakedModel.MACHINE, machine.machine()).build(),
+            ModelData.builder()
+                .with(es.degrassi.mmreborn.client.model.controller.ControllerBakedModel.MACHINE, machine.machine())
+                .with(es.degrassi.mmreborn.client.model.controller.ControllerBakedModel.STATUS, machine.status())
+                .build(),
             type
         );
       }
