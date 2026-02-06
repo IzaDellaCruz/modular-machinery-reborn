@@ -13,7 +13,6 @@ import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
-import es.degrassi.mmreborn.client.integration.athena.model.controller.ControllerBakedModel;
 import es.degrassi.mmreborn.common.block.BlockMachineComponent;
 import es.degrassi.mmreborn.common.crafting.ComponentType;
 import es.degrassi.mmreborn.common.crafting.modifier.ModifierReplacement;
@@ -174,7 +173,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     resetWithColor();
     var controllerPos = controller.getBlockPos();
     cache.refresh(controller);
-    if (controller.getModelData().get(ControllerBakedModel.DATA).hasCustomModel()) {
+    if (controller.hasCustomModel()) {
       level.setBlockAndUpdate(controllerPos, controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, false));
     } else if(!controller.getBlockState().getValue(BlockMachineComponent.CONNECT_TEXTURES)) {
       level.setBlockAndUpdate(controllerPos, controller.getBlockState().setValue(BlockMachineComponent.CONNECT_TEXTURES, true));

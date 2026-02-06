@@ -63,6 +63,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -165,6 +166,13 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   public DynamicMachine getFoundMachine() {
     return ModularMachineryReborn.MACHINES.getOrDefault(id, DynamicMachine.DUMMY);
+  }
+
+  public boolean hasCustomModel() {
+    return getFoundMachine().getControllerModels()
+        .values()
+        .stream()
+        .anyMatch(Objects::nonNull);
   }
 
   public void tryPause() {
