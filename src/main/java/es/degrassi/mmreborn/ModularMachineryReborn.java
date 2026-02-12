@@ -32,6 +32,7 @@ import es.degrassi.mmreborn.common.data.config.FuelTankConfig;
 import es.degrassi.mmreborn.common.data.config.ItemBusConfig;
 import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
+import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.network.server.SSyncMachinePacket;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
@@ -314,6 +315,11 @@ public class ModularMachineryReborn {
       EnergyDisplayUtil.loadFromConfig();
       if (event.getParseResults().getContext().getSource().getEntity() instanceof ServerPlayer player) {
         MMRCommand.reloadMachines(player.server, player);
+        CONTROLLERS.forEach(controller -> {
+          if (controller.getStatus().isMissingStructure()) return;
+          controller.getProcessor().reset();
+          controller.getProcessor().cores().forEach(MachineProcessorCore::reload);
+        });
       }
     }
   }

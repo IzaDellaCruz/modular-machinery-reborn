@@ -8,6 +8,7 @@ import es.degrassi.mmreborn.common.block.prop.ConfigLoaded;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.MachineJsonReloadListener;
+import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.network.server.SOpenFilePacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -49,6 +50,11 @@ public class MMRCommand {
         EnergyDisplayUtil.loadFromConfig();
         if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
           reloadMachines(player.server, player);
+          ModularMachineryReborn.CONTROLLERS.forEach(controller -> {
+            if (controller.getStatus().isMissingStructure()) return;
+            controller.getProcessor().reset();
+            controller.getProcessor().cores().forEach(MachineProcessorCore::reload);
+          });
         }
         return 1;
       });
