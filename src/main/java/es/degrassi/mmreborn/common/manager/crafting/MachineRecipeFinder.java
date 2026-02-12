@@ -34,6 +34,10 @@ public class MachineRecipeFinder {
     this.core = core;
   }
 
+  public void reload() {
+    init();
+  }
+
   public void init() {
     if (tile.getLevel() == null)
       throw new IllegalStateException("Broken machine " + tile.getId() + "doesn't have a world");
@@ -44,8 +48,7 @@ public class MachineRecipeFinder {
         .filter(recipe -> recipe.value().getOwningMachineIdentifier().equals(tile.getId()))
         .sorted(Comparators::compare)
         .map(RecipeChecker::new)
-        .toList()
-        .reversed();
+        .toList();
     this.okToCheck = Lists.newArrayList();
     this.recipeCheckCooldown = tile.getLevel().random.nextInt(this.baseCooldown);
   }

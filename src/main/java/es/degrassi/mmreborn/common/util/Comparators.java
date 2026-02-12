@@ -8,9 +8,9 @@ import java.util.Comparator;
 public final class Comparators {
   private Comparators() {}
 
-  private static final Comparator<MachineRecipe> RECIPE_PRIORITY_COMPARATOR = Comparator.comparingInt(MachineRecipe::getConfiguredPriority).reversed();
+  private static final Comparator<MachineRecipe> RECIPE_PRIORITY_COMPARATOR = Comparator.comparingInt(MachineRecipe::getConfiguredPriority);
 
   public static int compare(RecipeHolder<MachineRecipe> holder1, RecipeHolder<MachineRecipe> holder2) {
-    return RECIPE_PRIORITY_COMPARATOR.compare(holder1.value(), holder2.value());
+    return RECIPE_PRIORITY_COMPARATOR.reversed().compare(holder1.value(), holder2.value());
   }
 }

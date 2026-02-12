@@ -67,6 +67,10 @@ public class MachineProcessorCore implements ISyncableStuff {
     this.core = core;
   }
 
+  public void reload() {
+    recipeFinder.reload();
+  }
+
   public int getCore() {
     return this.processor.cores().indexOf(this) + 1;
   }
