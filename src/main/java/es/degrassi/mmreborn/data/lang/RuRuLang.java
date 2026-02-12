@@ -169,7 +169,9 @@ public final class RuRuLang extends Lang {
 
   @Override
   protected void addItems() {
-    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "Создатель мульти-структуры");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_SINGLE, "Создатель мульти-структуры (Single)");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_BOX, "Создатель мульти-структуры (Box)");
+    addItem(ItemRegistration.STRUCTURE_TEMPLATE_ITEM, "Structure Template (Incomplete)");
     addItem(ItemRegistration.BLUEPRINT, "Мульти-структуры чертеж");
     addItem(ItemRegistration.MODULARIUM, "Модулариум");
     addItem(ItemRegistration.WRENCH, "Wrench");

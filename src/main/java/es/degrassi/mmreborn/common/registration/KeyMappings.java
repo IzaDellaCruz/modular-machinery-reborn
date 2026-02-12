@@ -18,16 +18,7 @@ public abstract class KeyMappings {
 
   private KeyMappings() {}
 
-  public static final Lazy<KeyMapping> STRUCTURE_MODE_CHANGE = Lazy.of(() -> new KeyMapping(
-      "key." + ModularMachineryReborn.MODID + ".STRUCTURE_MODE_CHANGE".toLowerCase(Locale.ROOT),
-      KeyConflictContext.IN_GAME,
-      InputConstants.Type.KEYSYM,
-      GLFW.GLFW_KEY_MINUS,
-      "key.categories." + ModularMachineryReborn.MODID
-  ));
-
   @SubscribeEvent
   public static void registerBindings(RegisterKeyMappingsEvent event) {
-    event.register(STRUCTURE_MODE_CHANGE.get());
   }
 }

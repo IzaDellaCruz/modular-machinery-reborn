@@ -32,6 +32,8 @@ import es.degrassi.mmreborn.common.item.ParallelHatchItem;
 import es.degrassi.mmreborn.common.item.RedstonePortItem;
 import es.degrassi.mmreborn.common.item.StructureCheckerItem;
 import es.degrassi.mmreborn.common.item.StructureCreatorItem;
+import es.degrassi.mmreborn.common.item.StructureCreatorItemMode;
+import es.degrassi.mmreborn.common.item.StructureTemplateItem;
 import es.degrassi.mmreborn.common.item.TimeCounterItem;
 import es.degrassi.mmreborn.common.item.WeatherSensorItem;
 import es.degrassi.mmreborn.common.item.WrenchItem;
@@ -49,15 +51,14 @@ public class ItemRegistration {
   private ItemRegistration() {}
   public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ModularMachineryReborn.MODID);
 
-  public static final DeferredItem<ItemBlueprint> BLUEPRINT = ITEMS.register(rootLC("blueprint"),
-      ItemBlueprint::new);
-  public static final DeferredItem<ItemModularium> MODULARIUM = ITEMS.register(rootLC("modularium"),
-      ItemModularium::new);
+  public static final DeferredItem<ItemBlueprint> BLUEPRINT = ITEMS.register(rootLC("blueprint"), ItemBlueprint::new);
+  public static final DeferredItem<ItemModularium> MODULARIUM = ITEMS.register(rootLC("modularium"), ItemModularium::new);
   public static final DeferredItem<WrenchItem> WRENCH = ITEMS.register(rootLC("wrench"), WrenchItem::new);
-  
-  public static final DeferredItem<StructureCreatorItem> STRUCTURE_CREATOR_ITEM  = ITEMS.register(rootLC("structure_creator"),
-      () -> new StructureCreatorItem(new Item.Properties().stacksTo(1)));
-
+  public static final DeferredItem<StructureCreatorItem> STRUCTURE_CREATOR_ITEM_SINGLE = ITEMS.register(rootLC("structure_creator_single"),
+      () -> new StructureCreatorItem(StructureCreatorItemMode.SINGLE, new Item.Properties()));
+  public static final DeferredItem<StructureCreatorItem> STRUCTURE_CREATOR_ITEM_BOX = ITEMS.register(rootLC("structure_creator_box"),
+      () -> new StructureCreatorItem(StructureCreatorItemMode.BOX, new Item.Properties().component(DataComponentRegistration.STRUCTURE_CREATOR_BOX_CURRENT, true)));
+  public static final DeferredItem<StructureTemplateItem> STRUCTURE_TEMPLATE_ITEM = ITEMS.register(rootLC("structure_template_item"), StructureTemplateItem::new);
   public static final DeferredItem<CasingItem> CASING_PLAIN =
       ITEMS.register(rootLC("casing_" + CasingType.PLAIN.getSerializedName()),
       () -> new CasingItem(BlockRegistration.CASING_PLAIN.get()));

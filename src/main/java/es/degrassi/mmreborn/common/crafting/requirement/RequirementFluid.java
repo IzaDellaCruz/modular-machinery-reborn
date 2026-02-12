@@ -92,7 +92,7 @@ public class RequirementFluid implements IRequirement<FluidComponent, FluidHandl
         component.getContainerProvider().getFluidAmount(ingredient.ingredient()));
   }
 
-  private Component ingredients() {
+  public Component ingredients() {
     return Arrays.stream(ingredient.ingredient().getStacks())
         .map(FluidStack::getHoverName)
         .collect(Component::empty, (a, b) -> a.append(Component.translatable("modular_machinery_reborn.jei.ingredient.structure.or").append(b)), MutableComponent::append);

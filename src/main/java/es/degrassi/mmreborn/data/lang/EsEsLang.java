@@ -168,7 +168,9 @@ public final class EsEsLang extends Lang {
 
   @Override
   protected void addItems() {
-    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "Creador de estructuras");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_SINGLE, "Creador de estructura (Single)");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_BOX, "Creador de estructura (Box)");
+    addItem(ItemRegistration.STRUCTURE_TEMPLATE_ITEM, "Structure Template (Incomplete)");
     addItem(ItemRegistration.BLUEPRINT, "Machine Blueprint");
     addItem(ItemRegistration.MODULARIUM, "Modularium");
     addItem(ItemRegistration.WRENCH, "Wrench");

@@ -168,7 +168,9 @@ public final class PtBrLang extends Lang {
 
   @Override
   protected void addItems() {
-    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "Criador de Estrutura");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_SINGLE, "Criador de Estrutura (Single)");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_BOX, "Criador de Estrutura (Box)");
+    addItem(ItemRegistration.STRUCTURE_TEMPLATE_ITEM, "Structure Template (Incomplete)");
     addItem(ItemRegistration.BLUEPRINT, "Projeto de Máquina");
     addItem(ItemRegistration.MODULARIUM, "Barra de Modularium");
     addItem(ItemRegistration.WRENCH, "Wrench");

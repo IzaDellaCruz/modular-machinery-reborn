@@ -170,7 +170,9 @@ public final class ZhCnLang extends Lang {
 
   @Override
   protected void addItems() {
-    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "结构创建器");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_SINGLE, "结构创建器 (Single)");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_BOX, "结构创建器 (Box)");
+    addItem(ItemRegistration.STRUCTURE_TEMPLATE_ITEM, "Structure Template (Incomplete)");
     addItem(ItemRegistration.BLUEPRINT, "机械蓝图");
     addItem(ItemRegistration.MODULARIUM, "模块化合金");
     addItem(ItemRegistration.WRENCH, "Wrench");

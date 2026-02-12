@@ -172,7 +172,9 @@ public final class EnUsLang extends Lang {
 
   @Override
   protected void addItems() {
-    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM, "Structure Creator");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_SINGLE, "Structure Creator (Single)");
+    addItem(ItemRegistration.STRUCTURE_CREATOR_ITEM_BOX, "Structure Creator (Box)");
+    addItem(ItemRegistration.STRUCTURE_TEMPLATE_ITEM, "Structure Template (Incomplete)");
     addItem(ItemRegistration.BLUEPRINT, "Machine Blueprint");
     addItem(ItemRegistration.MODULARIUM, "Modularium");
     addItem(ItemRegistration.WRENCH, "Wrench");

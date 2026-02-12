@@ -1,7 +1,11 @@
 package es.degrassi.mmreborn.common.integration.theoneprobe;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.common.crafting.MachineRecipe;
 import es.degrassi.mmreborn.common.crafting.helper.CraftingStatus;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluid;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementFluidPerTick;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementItem;
 import es.degrassi.mmreborn.common.entity.EffectDispenserEntity;
 import es.degrassi.mmreborn.common.entity.FuelTankEntity;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
@@ -12,9 +16,12 @@ import es.degrassi.mmreborn.common.entity.base.IAutoInputEntity;
 import es.degrassi.mmreborn.common.entity.base.IAutoOutputEntity;
 import es.degrassi.mmreborn.common.integration.theoneprobe.element.CustomProgress;
 import es.degrassi.mmreborn.common.integration.theoneprobe.element.FuelElement;
+import es.degrassi.mmreborn.common.integration.theoneprobe.element.SizedFluidIngredientRenderer;
+import es.degrassi.mmreborn.common.integration.theoneprobe.element.SizedItemIngredientRenderer;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.util.RomanNumber;
 import mcjty.theoneprobe.api.ElementAlignment;
+import mcjty.theoneprobe.api.IElement;
 import mcjty.theoneprobe.api.ILayoutStyle;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -31,10 +38,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -45,6 +54,8 @@ public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProb
     probe.registerProvider(this);
     probe.registerElementFactory(new CustomProgress.CustomProgressFactory());
     probe.registerElementFactory(new FuelElement.FuelElementFactory());
+    probe.registerElementFactory(new SizedItemIngredientRenderer.SizedItemIngredientFactory());
+    probe.registerElementFactory(new SizedFluidIngredientRenderer.SizedFluidIngredientFactory());
     return null;
   }
 
@@ -151,11 +162,46 @@ public class TOPInfoProvider implements IProbeInfoProvider, Function<ITheOneProb
         .filter(MachineProcessorCore::isActive)
         .filter(MachineProcessorCore::hasActiveRecipe)
         .count();
-    Component component = Component.translatable(
-        "mmr.waila.cores",
-        runningCores
-    );
-    info.mcText(component);
+    if (runningCores != 1) {
+      Component component = Component.translatable(
+          "mmr.waila.cores",
+          runningCores
+      );
+      info.mcText(component);
+      return;
+    }
+    var core = tile.getProcessor()
+        .cores()
+        .stream()
+        .filter(MachineProcessorCore::hasActiveRecipe)
+        .findFirst();
+    if (core.isEmpty() || !core.get().hasActiveRecipe()) return;
+    info.progress((int)core.get().getRecipeProgressTime(), (int)core.get().getRecipeTotalTime(), info.defaultProgressStyle().suffix("/%s", (int)core.get().getRecipeTotalTime()));
+    info.mcText(Component.literal("Outputs:").withStyle(ChatFormatting.GRAY));
+    var outRequirements = core
+        .map(MachineProcessorCore::getCurrentRecipe)
+        .map(RecipeHolder::value)
+        .map(MachineRecipe::getRequirements)
+        .stream()
+        .flatMap(List::stream)
+        .filter(r -> r.requirement().getMode().isOutput())
+        .toList();
+    List<IElement> items = new ArrayList<>();
+    outRequirements.stream()
+        .filter(r -> r.requirement() instanceof RequirementItem)
+        .forEach(r -> items.add(new SizedItemIngredientRenderer(((RequirementItem)r.requirement()).getIngredient(), r.chance())));
+    info.horizontal(style()).elements(items);
+    List<IElement> fluids = new ArrayList<>();
+    outRequirements.stream()
+        .filter(r -> r.requirement() instanceof RequirementFluid || r.requirement() instanceof RequirementFluidPerTick)
+        .forEach(r -> {
+          switch (r.requirement()) {
+            case RequirementFluid f -> fluids.add(new SizedFluidIngredientRenderer(f.getIngredient(), r.chance(), info.defaultIconStyle()));
+            case RequirementFluidPerTick f -> fluids.add(new SizedFluidIngredientRenderer(f.getIngredient(), r.chance(), info.defaultIconStyle()));
+            default -> {}
+          }
+        });
+    info.horizontal(style()).elements(fluids);
   }
 
   private ILayoutStyle style() {

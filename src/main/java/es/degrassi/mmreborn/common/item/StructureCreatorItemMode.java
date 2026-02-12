@@ -27,7 +27,7 @@ public enum StructureCreatorItemMode implements StringRepresentable {
   };
 
   public StructureCreatorItemMode next() {
-    return this == SINGLE ? BOX : SINGLE;
+    return isSingle() ? BOX : SINGLE;
   }
 
   public boolean isSingle() {
