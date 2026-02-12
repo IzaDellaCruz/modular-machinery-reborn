@@ -268,7 +268,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
 
   public Optional<ParallelComponent> getParallel() {
     try {
-      return getComponent(ComponentRegistration.COMPONENT_PARALLEL.get(), IOType.INPUT);
+      return getComponent(ComponentRegistration.COMPONENT_PARALLEL.get(), IOType.NONE);
     } catch(Exception e) {
       return Optional.empty();
     }

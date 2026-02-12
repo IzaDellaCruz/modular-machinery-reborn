@@ -20,7 +20,7 @@ public class ParallelComponent extends MachineComponent<Integer> {
   private final ParallelHatchSize parallel;
 
   public ParallelComponent(ParallelHatchSize parallel) {
-    super(IOType.INPUT);
+    super(IOType.NONE);
     this.parallel = parallel;
     this.cores = 1;
   }
