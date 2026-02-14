@@ -32,6 +32,11 @@ public class FunctionComponent extends MachineComponent<Void> implements Control
   }
 
   @Override
+  public <C extends MachineComponent<Void>> boolean canMerge(C c) {
+    return false;
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public <C extends MachineComponent<Void>> C merge(C c) {
     return (C) this;

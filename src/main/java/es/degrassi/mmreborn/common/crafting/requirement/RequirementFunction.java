@@ -1,5 +1,8 @@
 package es.degrassi.mmreborn.common.crafting.requirement;
 
+import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
@@ -14,7 +17,6 @@ import es.degrassi.mmreborn.common.registration.RequirementTypeRegistration;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public class RequirementFunction implements IRequirement<FunctionComponent, Void
       functionRequirementInstance.group(
           NamedCodec.enumCodec(Phase.class).fieldOf("phase").forGetter(RequirementFunction::getPhase),
           NamedCodec.STRING.fieldOf("id").forGetter(RequirementFunction::getIdentifier),
-          NamedCodec.STRING.listOf().fieldOf("args").forGetter(RequirementFunction::getArgs)
+          NamedCodec.STRING.listOf().optionalFieldOf("args", Lists.newArrayList()).forGetter(RequirementFunction::getArgs)
       ).apply(functionRequirementInstance, RequirementFunction::new), "Function requirement"
   );
   public static final List<RequirementFunction> errors = new ArrayList<>();
@@ -52,7 +54,7 @@ public class RequirementFunction implements IRequirement<FunctionComponent, Void
 
   @Override
   public IOType getMode() {
-    return IOType.NONE;
+    return IOType.INPUT;
   }
 
   @Override
@@ -92,13 +94,24 @@ public class RequirementFunction implements IRequirement<FunctionComponent, Void
   }
 
   @Override
-  public @NotNull Component getMissingComponentErrorMessage(IOType ioType) {
+  public Component getMissingComponentErrorMessage(IOType ioType) {
     return Component.translatable("component.missing.function");
   }
 
   @Override
+  public JsonObject asJson() {
+    var json = IRequirement.super.asJson();
+    json.addProperty("identifier", identifier);
+    json.addProperty("phase", phase.name().toLowerCase());
+    JsonArray arguments = new JsonArray();
+    args.forEach(arguments::add);
+    json.add("args", arguments);
+    return json;
+  }
+
+  @Override
   public boolean isComponentValid(FunctionComponent m, ICraftingContext context) {
-    return getMode().equals(m.getIOType());
+    return true;
   }
 
   public enum Phase {

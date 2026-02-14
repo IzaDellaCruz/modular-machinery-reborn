@@ -255,10 +255,13 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
     }
   }
 
+  @SuppressWarnings("unchecked")
   public <C extends MachineComponent<T>, T> Optional<C> getComponent(IRequirement<C, T> requirement, ICraftingContext context) {
     try {
       if (requirement.getType().equals(RequirementTypeRegistration.DURABILITY.get())) {
         return getComponent(requirement.getComponentType(), IOType.INPUT);
+      } else if (requirement.getType().equals(RequirementTypeRegistration.FUNCTION.get())) {
+        return (Optional<C>) fC.get(controller.getBlockPos());
       }
       return getComponent(requirement.getComponentType(), requirement.getMode());
     } catch(Exception e) {

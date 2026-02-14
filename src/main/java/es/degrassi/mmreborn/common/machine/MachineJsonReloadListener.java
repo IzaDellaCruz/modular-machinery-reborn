@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementFunction;
 import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.integration.kubejs.KubeJSIntegration;
 import es.degrassi.mmreborn.common.util.CustomJsonReloadListener;
@@ -17,6 +18,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.io.IOException;
 import java.util.Map;
@@ -78,6 +80,7 @@ public class MachineJsonReloadListener extends CustomJsonReloadListener {
     context = null;
 
     MMRLogger.INSTANCE.info("Finished creating {} modular machines.", ModularMachineryReborn.MACHINES.keySet().size());
+    RequirementFunction.errors.clear();
   }
 
   private MachineLocation getMachineLocation(ResourceManager resourceManager, ResourceLocation id) {
