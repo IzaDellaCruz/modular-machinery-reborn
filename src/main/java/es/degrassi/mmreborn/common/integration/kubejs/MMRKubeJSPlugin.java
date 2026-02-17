@@ -24,6 +24,7 @@ import es.degrassi.mmreborn.common.integration.kubejs.builder.ProgressDataJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.StructureBuilderJS;
 import es.degrassi.mmreborn.common.integration.kubejs.function.FunctionKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.function.MachineControllerJS;
+import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.util.sound.Sounds;
 import es.degrassi.mmreborn.common.util.IntRange;
 import es.degrassi.mmreborn.common.util.MachineModelLocation;
@@ -73,6 +74,7 @@ public class MMRKubeJSPlugin implements KubeJSPlugin {
     registry.add("MachineController", MachineControllerJS.class);
     registry.add("ProgressData", ProgressDataJS.class);
     registry.add("FuelData", FuelDataJS.class);
+    registry.add("IOType", IOType.class);
   }
 
   @Override
