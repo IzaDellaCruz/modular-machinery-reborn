@@ -157,7 +157,7 @@ public class MachineControllerJS {
         .filter(c -> c instanceof FluidComponent)
         .map(c -> (FluidComponent) c)
         .filter(c -> c.getIOType().equals(mode))
-        .map(c -> Arrays.asList(c.getContainerProvider().getFluids().getStacks()))
+        .map(c -> Arrays.asList(c.getContainerProvider().getFluidStacks()))
         .flatMap(List::stream)
         .toList();
   }
