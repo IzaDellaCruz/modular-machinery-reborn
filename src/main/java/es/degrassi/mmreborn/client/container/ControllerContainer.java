@@ -1,6 +1,5 @@
 package es.degrassi.mmreborn.client.container;
 
-import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.api.network.syncable.IntegerSyncable;
 import es.degrassi.mmreborn.client.ModularMachineryRebornClient;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
@@ -40,12 +39,10 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
 
   public ControllerContainer(int id, Inventory playerInv, MachineControllerEntity entity) {
     super(entity, playerInv.player, ContainerRegistration.CONTROLLER.get(), id);
-    postInit();
   }
 
   public ControllerContainer(int id, Inventory inv, FriendlyByteBuf buffer) {
     this(id, inv, ModularMachineryRebornClient.getClientSideMachineControllerEntity(buffer.readBlockPos()));
-    postInit();
   }
 
   @Override
@@ -69,22 +66,8 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
     stuffToSync.add(IntegerSyncable.create(() -> corePage, i -> corePage = i));
   }
 
-  public void postInit() {
-    this.pages.clear();
-    int maxCores = entity.getProcessor().getMaxCores();
-    int pages = maxCores / 50;
-    int rest = maxCores % 50;
-    pages += rest > 0 ? 1 : 0;
-    for (int i = 0; i < pages; i++) {
-      List<MachineProcessorCore> cores = Lists.newArrayList();
-      for (int j = i * 50; j < Math.min((i + 1) * 50, maxCores); j++)
-        cores.add(entity.getProcessor().cores().get(j));
-      this.pages.put(i + 1, cores);
-    }
-  }
-
   public List<MachineProcessorCore> getPage() {
-    return pages.get(corePage);
+    return entity.getPages().get(corePage);
   }
 
   public int getCurrentCorePage() {
@@ -92,7 +75,7 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
   }
 
   public int getPagesNumber() {
-    return pages.size();
+    return entity.getPages().size();
   }
 
   public void setPage(int corePage) {

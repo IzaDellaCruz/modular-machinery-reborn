@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class MachineProcessorCore implements ISyncableStuff {
+
   private final MachineProcessor processor;
   private final MachineControllerEntity tile;
   private final RandomSource rand = Utils.RAND;

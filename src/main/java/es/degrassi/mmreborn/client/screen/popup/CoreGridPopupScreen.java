@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-// TODO: fix this popup not showing all the cores
 public class CoreGridPopupScreen extends PopupScreen<ControllerContainer> {
   private boolean closeButton = false;
   private final int initialXSize;

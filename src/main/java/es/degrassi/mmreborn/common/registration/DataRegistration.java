@@ -2,9 +2,11 @@ package es.degrassi.mmreborn.common.registration;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
+import es.degrassi.mmreborn.api.controller.CorePopup;
 import es.degrassi.mmreborn.api.network.DataType;
 import es.degrassi.mmreborn.api.network.IData;
 import es.degrassi.mmreborn.api.network.data.BooleanData;
+import es.degrassi.mmreborn.api.network.data.CorePopupData;
 import es.degrassi.mmreborn.api.network.data.DoubleData;
 import es.degrassi.mmreborn.api.network.data.FloatData;
 import es.degrassi.mmreborn.api.network.data.FluidStackData;
@@ -16,6 +18,7 @@ import es.degrassi.mmreborn.api.network.data.NbtData;
 import es.degrassi.mmreborn.api.network.data.ResourceLocationData;
 import es.degrassi.mmreborn.api.network.data.StringData;
 import es.degrassi.mmreborn.api.network.syncable.BooleanSyncable;
+import es.degrassi.mmreborn.api.network.syncable.CorePopupSyncable;
 import es.degrassi.mmreborn.api.network.syncable.DoubleSyncable;
 import es.degrassi.mmreborn.api.network.syncable.FloatSyncable;
 import es.degrassi.mmreborn.api.network.syncable.FluidStackSyncable;
@@ -66,6 +69,9 @@ public class DataRegistration {
       () -> DataType.create(ResourceLocation.class, ResourceLocationSyncable::create, ResourceLocationData::new));
   public static final Supplier<DataType<IOSideConfigData, IOSideConfig>> IO_SIDE_CONFIG_DATA = DATAS.register(rootLC("io_side_condig"),
       () -> DataType.create(IOSideConfig.class, IOSideConfigSyncable::create, IOSideConfigData::readData));
+
+  public static final Supplier<DataType<CorePopupData, CorePopup>> CORE_POPUP_DATA = DATAS.register(rootLC("core_popup"),
+      () -> DataType.create(CorePopup.class, CorePopupSyncable::create, CorePopupData::new));
 
 
   public static void register(final IEventBus bus) {
