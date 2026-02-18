@@ -1,14 +1,17 @@
 package es.degrassi.mmreborn.common.entity;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.machine.SoundManagerEntity;
 import es.degrassi.mmreborn.api.controller.ComponentMapper;
+import es.degrassi.mmreborn.api.controller.CorePopup;
 import es.degrassi.mmreborn.api.controller.IMultiblockController;
 import es.degrassi.mmreborn.api.controller.MMRWorldSavedData;
 import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.network.ISyncable;
 import es.degrassi.mmreborn.api.network.ISyncableStuff;
+import es.degrassi.mmreborn.api.network.syncable.CorePopupSyncable;
 import es.degrassi.mmreborn.api.network.syncable.IntegerSyncable;
 import es.degrassi.mmreborn.api.network.syncable.NbtSyncable;
 import es.degrassi.mmreborn.api.network.syncable.ResourceLocationSyncable;
@@ -25,6 +28,7 @@ import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
+import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.util.sound.AmbientSound;
 import es.degrassi.mmreborn.common.util.sound.Sounds;
 import es.degrassi.mmreborn.common.manager.ComponentManager;
@@ -38,6 +42,8 @@ import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
 import es.degrassi.mmreborn.common.util.sound.SoundManager;
 import es.degrassi.mmreborn.common.util.Utils;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -61,6 +67,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -93,6 +100,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
   private final MachineProcessor processor;
   private int lastFocus;
   private SoundManager soundManager;
+  private final Int2ObjectMap<List<MachineProcessorCore>> pages = new Int2ObjectArrayMap<>();
 
   private final long tickOffset = Utils.RAND.nextIntBetweenInclusive(0, Integer.MAX_VALUE - 1);
   private long lastCheckTick;
@@ -101,6 +109,20 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     super(EntityRegistration.CONTROLLER.get(), pos, state);
     this.componentManager = new ComponentManager(this);
     this.processor = new MachineProcessor(this);
+  }
+
+  public void updateCorePages() {
+    this.pages.clear();
+    int maxCores = getProcessor().getMaxCores();
+    int pagesN = maxCores / 50;
+    int rest = maxCores % 50;
+    pagesN += rest > 0 ? 1 : 0;
+    for (int i = 0; i < pagesN; i++) {
+      List<MachineProcessorCore> cores = Lists.newArrayList();
+      for (int j = i * 50; j < Math.min((i + 1) * 50, maxCores); j++)
+        cores.add(getProcessor().cores().get(j));
+      pages.put(i + 1, cores);
+    }
   }
 
   @Override
@@ -343,6 +365,22 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     container.accept(NbtSyncable.create(() -> craftingStatus.serializeNBT(registries), s -> craftingStatus = CraftingStatus.deserialize(s, registries)));
     container.accept(StringSyncable.create(() -> getStatus().toString(), status -> setStatus(MachineStatus.value(status))));
     container.accept(StringSyncable.create(() -> Component.Serializer.toJson(this.errorMessage, registries), errorMessage -> this.errorMessage = Component.Serializer.fromJson(errorMessage, registries)));
+    container.accept(CorePopupSyncable.create(() -> {
+      int maxCores = getProcessor().getMaxCores();
+      Map<String, List<CompoundTag>> pages = new HashMap<>();
+      this.pages.forEach((page, list) -> pages.put(page.toString(),
+          list.stream().map(MachineProcessorCore::serialize).toList()));
+      return new CorePopup(maxCores, pages);
+    }, corePopup -> {
+      corePopup.pages().forEach((page, cores) -> {
+        var list = cores.stream().map(tag -> {
+          var core = getProcessor().cores().get(tag.getInt("core") - 1);
+          core.deserialize(tag);
+          return core;
+        }).toList();
+        this.pages.put(Integer.valueOf(page).intValue(), list);
+      });
+    }));
   }
 
   public SoundType getInteractionSound() {

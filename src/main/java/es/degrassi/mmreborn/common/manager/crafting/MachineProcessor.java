@@ -72,6 +72,7 @@ public class MachineProcessor implements IProcessor, ISyncableStuff {
     for (int i = 0; i < Math.min(cores, this.cores.size()); ++i) {
       this.cores.get(i).setActive(true);
     }
+    tile.updateCorePages();
   }
 
   private void init() {
