@@ -148,7 +148,7 @@ public class BlockController extends BlockMachineComponent implements BlockTickE
       if (player instanceof ServerPlayer serverPlayer) {
         if (player.getItemInHand(hand).getItem() instanceof ItemBlueprint) {
           DynamicMachine machine = controller.getFoundMachine();
-          PacketDistributor.sendToPlayersTrackingChunk(serverPlayer.serverLevel(), new ChunkPos(pos), new SAddControllerRenderer(pos));
+          PacketDistributor.sendToPlayersTrackingChunk(serverPlayer.serverLevel(), new ChunkPos(pos), new SAddControllerRenderer(machine.getRegistryName(), pos));
           return ItemInteractionResult.SUCCESS;
         }
         ControllerContainer.open(serverPlayer, controller);

@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.client;
 
 import com.google.common.collect.Lists;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.IWrenchable;
 import es.degrassi.mmreborn.client.entity.renderer.ControllerRenderer;
 import es.degrassi.mmreborn.client.entity.renderer.IWrenchableRenderer;
 import es.degrassi.mmreborn.client.entity.renderer.StructureCheckerRenderer;
@@ -101,11 +102,13 @@ public class ModularMachineryRebornClient {
 
   @SubscribeEvent
   public void registerBlockEntityRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+    EntityRegistration.ENTITY_TYPE.getEntries().forEach(holder -> {
+      if (holder.getDelegate().value().create(BlockPos.ZERO,
+          holder.value().getValidBlocks().iterator().next().defaultBlockState()) instanceof IWrenchable aw && aw.shouldAddRender())
+        event.registerBlockEntityRenderer(holder.get(), IWrenchableRenderer::new);
+    });
     event.registerBlockEntityRenderer(EntityRegistration.CONTROLLER.get(), ControllerRenderer::new);
     event.registerBlockEntityRenderer(EntityRegistration.STRUCTURE_CHECKER.get(), StructureCheckerRenderer::new);
-    EntityRegistration.ENTITY_TYPE.getEntries().forEach(holder -> {
-      event.registerBlockEntityRenderer(holder.get(), IWrenchableRenderer::new);
-    });
   }
 
   @SubscribeEvent

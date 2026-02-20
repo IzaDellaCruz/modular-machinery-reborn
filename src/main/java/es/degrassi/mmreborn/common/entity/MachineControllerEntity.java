@@ -111,6 +111,11 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
     this.processor = new MachineProcessor(this);
   }
 
+  @Override
+  public boolean shouldAddRender() {
+    return false;
+  }
+
   public void updateCorePages() {
     this.pages.clear();
     int maxCores = getProcessor().getMaxCores();

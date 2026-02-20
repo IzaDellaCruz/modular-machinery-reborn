@@ -10,6 +10,10 @@ public interface IWrenchable {
    */
   Result onWrenched(RelativeSide side, Player player);
 
+  default boolean shouldAddRender() {
+    return true;
+  }
+
   enum Result{
     SUCCESS,
     FAIL,
