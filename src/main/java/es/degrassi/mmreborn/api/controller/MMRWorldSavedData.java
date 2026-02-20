@@ -112,6 +112,7 @@ public class MMRWorldSavedData extends SavedData {
       IN_SERVICE.set(true);
       for (var controller : controllers) {
         try {
+          if (controller.isPause()) return;
           controller.asyncCheckPattern(periodID);
         } catch(Throwable e) {
           MMRLogger.INSTANCE.error("Error while assembling multiblock {}", controller.getId(), e);

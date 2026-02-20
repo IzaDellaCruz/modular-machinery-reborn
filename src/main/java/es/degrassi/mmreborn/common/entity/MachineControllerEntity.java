@@ -456,6 +456,7 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void asyncCheckPattern(long periodID) {
+    if (isRemoved()) return;
     if (!formed && Utils.shouldRunPeriodicCheck(false, periodID, lastCheckTick, tickOffset, MMRConfig.get().checkStructureTicks.get())) {
       lastCheckTick = periodID;
       if (getLevel() instanceof ServerLevel sl) {
