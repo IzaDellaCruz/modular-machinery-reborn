@@ -7,10 +7,11 @@ import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.script.data.VirtualDataPack;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
-import es.degrassi.mmreborn.common.integration.kubejs.builder.MachineBuilderJS;
+import es.degrassi.mmreborn.common.integration.kubejs.events.MachineKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.function.FunctionKubeEvent;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineLocation;
+import es.degrassi.mmreborn.common.util.MMRLogger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -35,7 +36,7 @@ public class KubeJSIntegration {
   public static Map<ResourceLocation, DynamicMachine> collectMachines() {
     ScriptType.SERVER.console.info("Collecting Modular Machinery Reborn machines from JS scripts.");
 
-    MachineBuilderJS.MachineKubeEvent event = new MachineBuilderJS.MachineKubeEvent();
+    MachineKubeEvent event = new MachineKubeEvent();
     MMRKubeJSPlugin.MACHINES.post(event);
 
     Map<ResourceLocation, DynamicMachine> machines = Maps.newHashMap();
@@ -43,7 +44,10 @@ public class KubeJSIntegration {
     try {
       event.getBuilders().forEach(builder -> {
         machineId.set(builder.getId());
+        MMRLogger.INSTANCE.info("Parsing machine {} in js script", machineId.get().toString());
         DynamicMachine machine = builder.build();
+        MMRLogger.INSTANCE.info("Successfully parsed machine from script: {}", machineId.get().toString());
+        MMRLogger.INSTANCE.debug("Machine: {}", machine.asJson().toString());
         machines.put(machine.getRegistryName(), machine);
       });
     } catch (Exception e) {

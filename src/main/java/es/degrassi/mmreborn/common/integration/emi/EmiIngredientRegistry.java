@@ -26,14 +26,21 @@ public class EmiIngredientRegistry {
   }
 
   @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>,
-      X> EmiIngredientFactory<R, T, C, X> getIngredient(RequirementType<T, C, X> type) {
+  public static <
+      R extends RecipeRequirement<C, T, X>,
+      T extends IRequirement<C, X>,
+      C extends MachineComponent<X>,
+      X
+  > EmiIngredientFactory<R, T, C, X> getIngredient(RequirementType<T, C, X> type) {
     return (EmiIngredientFactory<R, T, C, X>) stacks.get(type);
   }
 
-  @SuppressWarnings("unchecked")
-  public static <R extends RecipeRequirement<C, T, X>, T extends IRequirement<C, X>, C extends MachineComponent<X>,
-      X> EmiIngredient create(R type) {
-    return ((EmiIngredientFactory<R, T, C, X>) stacks.get(type.getType())).create(type);
+  public static <
+      R extends RecipeRequirement<C, T, X>,
+      T extends IRequirement<C, X>,
+      C extends MachineComponent<X>,
+      X
+  > EmiIngredient create(R type) {
+    return getIngredient(type.getType()).create(type);
   }
 }

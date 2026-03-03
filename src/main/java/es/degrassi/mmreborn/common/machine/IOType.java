@@ -38,6 +38,10 @@ public enum IOType implements StringRepresentable, ComponentTranslatable {
     return this == OUTPUT;
   }
 
+  public boolean isNone() {
+    return this == NONE;
+  }
+
   @Override
   public String getSerializedName() {
     return name().toLowerCase(Locale.ROOT);

@@ -2,8 +2,10 @@ package es.degrassi.mmreborn.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.screen.popup.BasePopupScreen;
+import es.degrassi.mmreborn.client.screen.widget.tabs.ControllerExtraTooltipsTabWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.CoreTabWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.ShowRecipesTabWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.StructureBreakWidget;
@@ -30,6 +32,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
@@ -72,6 +75,12 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
             )
         )
         .addTab(new CoreTabWidget(this));
+    Optional.ofNullable(ModularMachineryReborn.MACHINE_EXTRA_TOOLTIPS.get(getMenu().getId()))
+        .map(enumTooltips -> Optional.ofNullable(enumTooltips.get(TooltipUse.GUI)).orElse(List.of()))
+        .ifPresent(tooltips -> {
+          if (tooltips.isEmpty()) return;
+          tabs.addTab(new ControllerExtraTooltipsTabWidget(getMenu().getId()));
+        });
     if (Mods.isJEIorEMILoaded())
       tabs.addTab(new ShowRecipesTabWidget(/*ModularMachineryReborn.rl("textures/gui/tabs/recipes.png")*/ null, getMenu().getEntity().getFoundMachine()));
     tabs.setInitialFocus(getMenu().getEntity().getLastFocus());

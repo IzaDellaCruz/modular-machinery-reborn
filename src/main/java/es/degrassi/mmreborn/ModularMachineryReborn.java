@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
+import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.api.crafting.IProcessor;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
 import es.degrassi.mmreborn.api.network.DataType;
@@ -34,6 +35,7 @@ import es.degrassi.mmreborn.common.data.config.ParallelHatchConfig;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.network.server.SSyncMachinePacket;
+import es.degrassi.mmreborn.common.network.server.SSyncTooltipsPacket;
 import es.degrassi.mmreborn.common.util.EmptyRequirementType;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
@@ -57,6 +59,7 @@ import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.common.util.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -84,6 +87,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.EnumMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -94,6 +100,7 @@ public class ModularMachineryReborn {
 
   public static final BiMap<ResourceLocation, DynamicMachine> MACHINES = HashBiMap.create();
   public static final BiMap<ResourceLocation, BlockController> MACHINES_BLOCK = HashBiMap.create();
+  public static final BiMap<ResourceLocation, EnumMap<TooltipUse, List<Component>>> MACHINE_EXTRA_TOOLTIPS = HashBiMap.create();
   public static final Set<MachineControllerEntity> CONTROLLERS = Sets.newHashSet();
 
   public ModularMachineryReborn(final ModContainer CONTAINER, final IEventBus MOD_BUS) {
@@ -188,6 +195,7 @@ public class ModularMachineryReborn {
   public void syncData(ServerPlayer player) {
     MACHINES.forEach((id, machine) -> PacketDistributor.sendToPlayer(player, new SSyncMachinePacket(machine)));
     PacketDistributor.sendToPlayer(player, new SLootTablesPacket(LootTableHelper.getLoots()));
+    MACHINE_EXTRA_TOOLTIPS.forEach((id, tooltips) -> PacketDistributor.sendToPlayer(player, new SSyncTooltipsPacket(id, tooltips)));
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {

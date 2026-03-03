@@ -8,8 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class SoundManager {
 
   private static final SoundInstance DEFAULT = SimpleSoundInstance.forMusic(AmbientSound.DEFAULT.sound());

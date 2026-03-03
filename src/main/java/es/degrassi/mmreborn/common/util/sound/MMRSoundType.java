@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.util.sound;
 
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import es.degrassi.mmreborn.api.PartialBlockState;
 import es.degrassi.mmreborn.api.codec.DefaultCodecs;
@@ -48,6 +49,18 @@ public class MMRSoundType extends SoundType {
   public MMRSoundType(PartialBlockState state) {
     super(1.0F, 1.0F, state.getBlockState().getSoundType().getBreakSound(), state.getBlockState().getSoundType().getStepSound(), state.getBlockState().getSoundType().getPlaceSound(), state.getBlockState().getSoundType().getHitSound(), state.getBlockState().getSoundType().getFallSound());
     this.defaultBlock = state;
+  }
+
+  public JsonObject asJson() {
+    JsonObject json = new JsonObject();
+    json.addProperty("volume", this.volume);
+    json.addProperty("pitch", this.pitch);
+    json.addProperty("break", getBreakSound().getLocation().toString());
+    json.addProperty("step", getStepSound().getLocation().toString());
+    json.addProperty("place", getPlaceSound().getLocation().toString());
+    json.addProperty("hit", getHitSound().getLocation().toString());
+    json.addProperty("fall", getFallSound().getLocation().toString());
+    return json;
   }
 
   private static NamedRecordCodec<MMRSoundType, SoundEvent> partCodec(String field, Function<SoundType, SoundEvent> typeToSound) {

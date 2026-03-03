@@ -28,14 +28,16 @@ public class EmiFluidPerTickComponent extends EmiComponent<FluidStack, RecipeReq
   private int width = 16;
   private int height = 16;
   private int fluid;
+  private final List<FluidStack> ingredients;
 
   public EmiFluidPerTickComponent(RecipeRequirement<FluidComponent, RequirementFluidPerTick, FluidHandler> requirement) {
     super(requirement, 0, 0);
+    this.ingredients = Arrays.asList(requirement.requirement().getIngredient().getFluids());
   }
 
   @Override
   public List<FluidStack> ingredients() {
-    return Arrays.stream(requirement.requirement().getIngredient().getFluids()).toList();
+    return ingredients;
   }
 
   @Override

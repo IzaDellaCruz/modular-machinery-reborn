@@ -25,4 +25,8 @@ public interface Mods {
   static boolean isLDLibLoaded() {
     return ModList.get().isLoaded("ldlib2");
   }
+
+  static boolean shouldAddExpHandlerToAe2() {
+    return ModList.get().isLoaded("ae2") && ModList.get().isLoaded("appex");
+  }
 }

@@ -107,7 +107,6 @@ public class DynamicMachine {
     return Component.translatableWithFallback(localizationKey, localizedName.orElse(localizationKey));
   }
 
-  @Nullable
   public AmbientSound getAmbientSound(MachineStatus status) {
     return Optional.ofNullable(sounds.get(status)).map(Sounds::ambientSound).orElse(AmbientSound.DEFAULT);
   }
@@ -135,6 +134,11 @@ public class DynamicMachine {
       controllers.addProperty(status.getSerializedName(), model.toString());
     });
     json.add("controllerModels", controllers);
+    JsonObject sounds = new JsonObject();
+    this.sounds.forEach((status, s) -> {
+      sounds.add(status.getSerializedName(), s.asJson());
+    });
+    json.add("sounds", sounds);
     JsonObject formedTexts = new JsonObject();
     formedTextures.forEach((hatchType, pair) -> {
       var shouldColor = pair.getFirst();

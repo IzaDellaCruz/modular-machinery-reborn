@@ -376,6 +376,15 @@ public interface NamedCodec<A> {
     return DefaultOptionalFieldCodec.of(fieldName, this, defaultValue, name());
   }
 
+  /**
+   * This method is purely to make it easier to create stream codecs
+   * @param buf
+   * @param input
+   */
+  default void toNetwork(FriendlyByteBuf buf, A input) {
+    toNetwork(input, buf);
+  }
+
   default void toNetwork(A input, FriendlyByteBuf buf) {
     DataResult<Tag> result = encodeStart(NbtOps.INSTANCE, input);
     result.error().ifPresent(error -> {

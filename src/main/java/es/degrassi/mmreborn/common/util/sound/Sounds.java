@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.util.sound;
 
+import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 
 public record Sounds(
@@ -12,4 +13,11 @@ public record Sounds(
       AmbientSound.CODEC.optionalFieldOf("ambient", AmbientSound.DEFAULT).forGetter(Sounds::ambientSound),
       MMRSoundType.CODEC.optionalFieldOf("interaction", MMRSoundType.DEFAULT).forGetter(Sounds::interaction)
   ).apply(soundInstance, Sounds::new), "Sounds codec");
+
+  public JsonObject asJson() {
+    JsonObject json = new JsonObject();
+    json.add("interaction", interaction.asJson());
+    json.add("ambient", ambientSound.asJson());
+    return json;
+  }
 }

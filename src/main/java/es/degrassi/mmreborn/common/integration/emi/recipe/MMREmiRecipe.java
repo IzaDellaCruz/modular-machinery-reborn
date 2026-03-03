@@ -65,14 +65,14 @@ public class MMREmiRecipe extends BasicEmiRecipe {
     this.outputs = this.recipe
         .getRequirements()
         .stream()
-        .filter(requirement -> !requirement.requirement().getMode().isInput())
+        .filter(requirement -> requirement.requirement().getMode().isOutput())
         .filter(requirement -> EmiStackRegistry.hasEmiStack(requirement.getType()))
         .map(EmiStackRegistry::create)
         .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     this.catalysts = this.recipe
         .getRequirements()
         .stream()
-        .filter(requirement -> requirement.requirement().getMode().isInput())
+        .filter(requirement -> requirement.requirement().getMode().isNone())
         .filter(requirement -> EmiStackRegistry.hasEmiStack(requirement.getType()))
         .map(EmiStackRegistry::create)
         .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);

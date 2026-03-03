@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.item;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
+import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.common.block.BlockController;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.registration.BlockRegistration;
@@ -126,6 +127,12 @@ public class ControllerItem extends ItemBlockMachineComponent {
                 .append(Component.translatable("modular_machinery_reborn.controller.control.modifier").withStyle(ChatFormatting.GRAY))
         );
       }
+      var enumTooltips = ModularMachineryReborn.MACHINE_EXTRA_TOOLTIPS.get(machine.getRegistryName());
+      if (enumTooltips == null || enumTooltips.isEmpty()) return;
+      var extra = enumTooltips.get(TooltipUse.ITEM);
+      if (extra == null || extra.isEmpty()) return;
+      tooltipComponents.add(Component.literal(""));
+      tooltipComponents.addAll(extra);
     }, () -> tooltipComponents.add(Component.translatable("modular_machinery_reborn.controller.no_machine").withStyle(ChatFormatting.GRAY)));
   }
 

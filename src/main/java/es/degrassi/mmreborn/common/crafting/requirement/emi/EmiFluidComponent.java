@@ -29,13 +29,16 @@ public class EmiFluidComponent extends EmiComponent<FluidStack,
   private int height = 16;
   private int fluid;
 
+  private final List<FluidStack> ingredients;
+
   public EmiFluidComponent(RecipeRequirement<FluidComponent, RequirementFluid, FluidHandler> requirement) {
     super(requirement, 0, 0);
+    this.ingredients = Arrays.asList(requirement.requirement().getIngredient().getFluids());
   }
 
   @Override
   public List<FluidStack> ingredients() {
-    return Arrays.stream(requirement.requirement().getIngredient().getFluids()).toList();
+    return ingredients;
   }
 
   @Override
@@ -65,7 +68,7 @@ public class EmiFluidComponent extends EmiComponent<FluidStack,
     List<Component> tooltip = new LinkedList<>();
     String mode = requirement.requirement().getMode().isInput() ? "input" : "output";
     tooltip.add(Component.translatable("modular_machinery_reborn.jei.ingredient.fluid." + mode,
-        ingredients().get(fluid).getHoverName(),
+        this.ingredients.get(fluid).getHoverName(),
         requirement.requirement().getIngredient().amount()));
     addChanceTooltips(tooltip);
     return tooltip;
@@ -78,7 +81,7 @@ public class EmiFluidComponent extends EmiComponent<FluidStack,
 
   @Override
   public EmiStack getStack() {
-    return EmiStack.of(ingredients().get(fluid).getFluid(), requirement.requirement().getIngredient().amount());
+    return EmiStack.of(this.ingredients.get(fluid).getFluid(), requirement.requirement().getIngredient().amount());
   }
 
   @Override

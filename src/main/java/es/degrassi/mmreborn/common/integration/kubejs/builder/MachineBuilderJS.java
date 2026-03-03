@@ -112,15 +112,4 @@ public class MachineBuilderJS {
       machine.setDefinedColor(DefaultCodecs.HEX.decode(JsonOps.INSTANCE, new JsonPrimitive(color)).result().orElse(new Pair<>(Config.toInt(MMRConfig.get().general_casing_color.get(), 0xFF4900), null)).getFirst());
     return machine;
   }
-
-  @Getter
-  public static class MachineKubeEvent implements KubeEvent {
-    private final List<MachineBuilderJS> builders = Lists.newArrayList();
-
-    public MachineBuilderJS create(ResourceLocation id) {
-      MachineBuilderJS builder = new MachineBuilderJS(id);
-      builders.add(builder);
-      return builder;
-    }
-  }
 }

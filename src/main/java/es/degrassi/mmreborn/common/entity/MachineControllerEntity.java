@@ -28,11 +28,9 @@ import es.degrassi.mmreborn.common.entity.base.IServerTickEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
-import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
-import es.degrassi.mmreborn.common.util.sound.AmbientSound;
-import es.degrassi.mmreborn.common.util.sound.Sounds;
 import es.degrassi.mmreborn.common.manager.ComponentManager;
 import es.degrassi.mmreborn.common.manager.crafting.MachineProcessor;
+import es.degrassi.mmreborn.common.manager.crafting.MachineProcessorCore;
 import es.degrassi.mmreborn.common.manager.crafting.MachineStatus;
 import es.degrassi.mmreborn.common.network.server.SMachineUpdatePacket;
 import es.degrassi.mmreborn.common.network.server.SSyncPauseStatePacket;
@@ -40,8 +38,9 @@ import es.degrassi.mmreborn.common.network.server.SUpdateCraftingStatusPacket;
 import es.degrassi.mmreborn.common.registration.DataComponentRegistration;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
 import es.degrassi.mmreborn.common.util.RedstoneHelper;
-import es.degrassi.mmreborn.common.util.sound.SoundManager;
 import es.degrassi.mmreborn.common.util.Utils;
+import es.degrassi.mmreborn.common.util.sound.AmbientSound;
+import es.degrassi.mmreborn.common.util.sound.SoundManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.Getter;
@@ -218,12 +217,13 @@ public class MachineControllerEntity extends BlockEntityRestrictedTick implement
 
   @Override
   public void doClientTick() {
+    if (componentManager == null || processor == null) return;
     if (soundManager == null)
       soundManager = new SoundManager(getBlockPos());
     AmbientSound sound = getFoundMachine().getAmbientSound(status);
 
     if (!soundManager.isCurrentlyPlaying(sound)) {
-      if (sound == Sounds.DEFAULT.ambientSound()) {
+      if (sound.isDefault()) {
         soundManager.setSound(null);
       } else {
         soundManager.setSound(sound);

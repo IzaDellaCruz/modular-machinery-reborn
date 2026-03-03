@@ -1,5 +1,6 @@
 package es.degrassi.mmreborn.common.util.sound;
 
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import es.degrassi.mmreborn.api.codec.DefaultCodecs;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
@@ -29,5 +30,22 @@ public record AmbientSound(SoundEvent sound, float volume, float pitch, SoundSou
 
   public static AmbientSound makeDefault(SoundEvent sound) {
     return new AmbientSound(sound, 1, 1, SoundSource.BLOCKS, true, true, 0, false);
+  }
+
+  public JsonObject asJson() {
+    JsonObject json = new JsonObject();
+    json.addProperty("sound", sound.getLocation().toString());
+    json.addProperty("volume", volume);
+    json.addProperty("pitch", pitch);
+    json.addProperty("source", source.getName().toLowerCase());
+    json.addProperty("loop", loop);
+    json.addProperty("attenuation", attenuation);
+    json.addProperty("delay", delay);
+    json.addProperty("relative", relative);
+    return json;
+  }
+
+  public boolean isDefault() {
+    return this == DEFAULT;
   }
 }

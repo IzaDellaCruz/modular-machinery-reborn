@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventTargetType;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
@@ -17,18 +18,24 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.PartialBlockState;
+import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.FuelDataJS;
-import es.degrassi.mmreborn.common.integration.kubejs.builder.MachineBuilderJS.MachineKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ModifierBuilderJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ProgressDataJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.StructureBuilderJS;
+import es.degrassi.mmreborn.common.integration.kubejs.events.ExtraTooltipsKubeEvent;
+import es.degrassi.mmreborn.common.integration.kubejs.events.MachineKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.function.FunctionKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.function.MachineControllerJS;
 import es.degrassi.mmreborn.common.machine.IOType;
-import es.degrassi.mmreborn.common.util.sound.Sounds;
 import es.degrassi.mmreborn.common.util.IntRange;
 import es.degrassi.mmreborn.common.util.MachineModelLocation;
+import es.degrassi.mmreborn.common.util.sound.AmbientSound;
+import es.degrassi.mmreborn.common.util.sound.MMRSoundType;
+import es.degrassi.mmreborn.common.util.sound.Sounds;
 import net.minecraft.network.chat.Component;
+
+import java.util.EnumMap;
 
 public class MMRKubeJSPlugin implements KubeJSPlugin {
   public static final EventGroup MMR_EVENTS = EventGroup.of("MMREvents");
@@ -37,6 +44,7 @@ public class MMRKubeJSPlugin implements KubeJSPlugin {
       .server("recipeFunction", () -> FunctionKubeEvent.class)
       .hasResult(TypeInfo.of(Component.class))
       .requiredTarget(EventTargetType.STRING);
+  public static final EventHandler TOOLTIPS = MMR_EVENTS.server("extraTooltips", () -> ExtraTooltipsKubeEvent.class);
 
   @Override
   public void registerEvents(EventGroupRegistry registry) {
@@ -75,12 +83,17 @@ public class MMRKubeJSPlugin implements KubeJSPlugin {
     registry.add("ProgressData", ProgressDataJS.class);
     registry.add("FuelData", FuelDataJS.class);
     registry.add("IOType", IOType.class);
+    registry.add("TooltipUse", TooltipUse.class);
   }
 
   @Override
   public void registerTypeWrappers(TypeWrapperRegistry registry) {
     registry.register(IntRange.class, IntRange::of);
-    registry.registerCodec(Sounds.class, Sounds.CODEC.codec());
+    registry.registerCodec(Sounds.class, Sounds.CODEC.codec(), Sounds.DEFAULT);
+    registry.registerCodec(AmbientSound.class, AmbientSound.CODEC.codec(), AmbientSound.DEFAULT);
+    registry.registerCodec(MMRSoundType.class, MMRSoundType.CODEC.codec(), MMRSoundType.DEFAULT);
+    registry.registerEnumFromStringCodec(IOType.class, IOType.CODEC.codec());
+    registry.registerEnumFromStringCodec(TooltipUse.class, TooltipUse.CODEC.codec());
     registry.register(BlockIngredient.class, o -> {
       try {
           return BlockIngredient.create(o);
@@ -97,6 +110,26 @@ public class MMRKubeJSPlugin implements KubeJSPlugin {
         }
       }
       throw new IllegalArgumentException("BlockState must be a string");
+    });
+  }
+
+  @Override
+  public void generateData(KubeDataGenerator generator) {
+    KubeJSPlugin.super.generateData(generator);
+    var event = new ExtraTooltipsKubeEvent();
+    TOOLTIPS.post(event);
+    event.getBuilders().forEach(builder -> {
+      var id = builder.getId();
+      var useOn = builder.getUseOn();
+      ModularMachineryReborn
+          .MACHINE_EXTRA_TOOLTIPS
+          .compute(
+              id,
+              (k, v) -> v == null ? new EnumMap<>(TooltipUse.class) : v
+          ).compute(
+              useOn,
+              (k, v ) -> builder.build()
+          );
     });
   }
 }
