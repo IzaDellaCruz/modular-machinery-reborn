@@ -191,7 +191,7 @@ dependencies {
   compileOnly "org.projectlombok:lombok:${project.lombok_version}"
   annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
   implementation "net.neoforged:neoforge:${neo_version}"
-  compileOnly localRuntime ("es.degrassi:experiencelib:${minecraft_version}-${experiencelib_version}")
+  compileOnly localRuntime("es.degrassi:experiencelib:${minecraft_version}-${experiencelib_version}")
 
   //LDLib2
   compileOnly ("org.appliedenergistics.yoga:yoga:${yoga_version}")
@@ -201,12 +201,12 @@ dependencies {
   localRuntime("curse.maven:probejs-585406:7105159")
 
   // JEI
-  compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+  libraries("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
   compileOnly localRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
   // EMI
-  compileOnly("dev.emi:emi-neoforge:${emi_version}+${minecraft_version}:api")
-  compileOnly localRuntime("dev.emi:emi-neoforge:${emi_version}+${minecraft_version}")
+  libraries("dev.emi:emi-neoforge:${emi_version}+${minecraft_version}:api")
+  compileOnly("dev.emi:emi-neoforge:${emi_version}+${minecraft_version}")
 
   // KubeJS
   compileOnly localRuntime("dev.latvian.mods:kubejs-neoforge:$kubejs_version")
