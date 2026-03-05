@@ -1,0 +1,43 @@
+package es.degrassi.mmreborn.common.crafting.requirement.jei;
+
+import es.degrassi.experiencelib.api.capability.IExperienceHandler;
+import es.degrassi.experiencelib.api.xei.ExperienceStack;
+import es.degrassi.experiencelib.api.xei.jei.IngredientTypes;
+import es.degrassi.mmreborn.api.crafting.requirement.RecipeRequirement;
+import es.degrassi.mmreborn.common.crafting.MachineRecipe;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementExperience;
+import es.degrassi.mmreborn.common.crafting.requirement.RequirementExperiencePerTick;
+import es.degrassi.mmreborn.common.integration.jei.category.MMRRecipeCategory;
+import es.degrassi.mmreborn.common.machine.component.ExperienceComponent;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.recipe.IFocusGroup;
+
+import java.util.List;
+
+public class JeiExperiencePerTickComponent extends JeiComponent<ExperienceStack,
+    RecipeRequirement<ExperienceComponent, RequirementExperiencePerTick, IExperienceHandler>> {
+  public JeiExperiencePerTickComponent(RecipeRequirement<ExperienceComponent, RequirementExperiencePerTick, IExperienceHandler> requirement) {
+    super(requirement, 0, 0);
+  }
+
+  @Override
+  public int getWidth() {
+    return 0;
+  }
+
+  @Override
+  public int getHeight() {
+    return 0;
+  }
+
+  @Override
+  public List<ExperienceStack> ingredients() {
+    return List.of(new ExperienceStack(requirement.requirement().getRequired()));
+  }
+
+  @Override
+  public void setRecipe(MMRRecipeCategory category, IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
+    builder.addInvisibleIngredients(role())
+        .addIngredients(IngredientTypes.EXPERIENCE, ingredients());
+  }
+}

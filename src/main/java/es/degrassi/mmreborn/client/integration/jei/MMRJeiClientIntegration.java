@@ -7,6 +7,8 @@ import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiDurabilityPerTick
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiEmptyComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiEnergyComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiEnergyPerTickComponent;
+import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiExperienceComponent;
+import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiExperiencePerTickComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiFluidComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiFluidPerTickComponent;
 import es.degrassi.mmreborn.common.crafting.requirement.jei.JeiFuelComponent;
@@ -75,5 +77,9 @@ public class MMRJeiClientIntegration {
     event.register(RequirementTypeRegistration.LOOT_TABLE.get(), JeiLootTableComponent::new);
     event.register(RequirementTypeRegistration.FUEL.get(), JeiFuelComponent::new);
     event.register(RequirementTypeRegistration.EMPTY.get(), JeiEmptyComponent::new);
+
+    // Register requirements that will be invisible, just to make ae2 compatible
+    event.register(RequirementTypeRegistration.EXPERIENCE.get(), JeiExperienceComponent::new);
+    event.register(RequirementTypeRegistration.EXPERIENCE_PER_TICK.get(), JeiExperiencePerTickComponent::new);
   }
 }
