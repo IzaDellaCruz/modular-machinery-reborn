@@ -40,6 +40,8 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
 
   private static final int startX = 2, startY = 2;
   private static final int configWidth = 18, configHeight = 20;
+  private final ItemOrIconButton infoButton;
+
   public AutoTabWidget(T entity, Component info) {
     super(
         0,
@@ -51,6 +53,11 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
     );
     this.info = info;
     this.entity = entity;
+
+    this.infoButton = new ItemOrIconButton(startX, startY, Icon.HELP, b -> {})
+        .setRenderTooltip(true)
+        .setTooltips(Component.translatable("mmr.config.tooltip.info", Component.translatable("mmr." + this.entity.getControllerFacing().getName())))
+        .setDisableClickSound(true);
 
     createSide(RelativeSide.LEFT, startX, startY + configHeight);
     createSide(RelativeSide.FRONT, startX + configWidth, startY + configHeight);
@@ -89,12 +96,14 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
   @Override
   public void setX(int x) {
     super.setX(x);
+    this.infoButton.setX(startX + x);
     sideConfigs.values().forEach(side -> side.setX(side.getInitialX() + x));
   }
 
   @Override
   public void setY(int y) {
     super.setY(y);
+    this.infoButton.setY(startY + y);
     sideConfigs.values().forEach(side -> side.setY(side.getInitialY() + y));
   }
 
@@ -119,7 +128,10 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
   @Override
   public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     if (!opened) getIconButton().renderTooltip(guiGraphics, x, y);
-    else this.sideConfigs.values().forEach(config -> config.renderTooltip(guiGraphics, x, y));
+    else {
+      this.infoButton.renderTooltip(guiGraphics, x, y);
+      this.sideConfigs.values().forEach(config -> config.renderTooltip(guiGraphics, x, y));
+    }
   }
 
   @Override
@@ -130,6 +142,7 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
 
   private void renderOpen(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
     Icon.AUTOIO_TAB.getBlitter().dest(this.getX() - 2, this.getY()).blit(guiGraphics);
+    this.infoButton.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
     this.sideConfigs.values().forEach(config -> config.render(guiGraphics, mouseX, mouseY, partialTick));
   }
 

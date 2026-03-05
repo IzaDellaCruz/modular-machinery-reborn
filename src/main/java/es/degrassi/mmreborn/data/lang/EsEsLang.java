@@ -88,6 +88,13 @@ public final class EsEsLang extends Lang {
     add(mmr("structure.error.max"), "Expected at most %s, but found %s (%s)");
     add(mmr("structure.error.min"), "Expected at least %s, but found %s (%s)");
     add(mmr("structure.error.between"), "Expected to be between %s and %s, but found %s (%s)");
+    add(mmr("config.tooltip.info"), "Relative to %s");
+    add(mmr("north"), "North");
+    add(mmr("south"), "South");
+    add(mmr("east"), "East");
+    add(mmr("west"), "West");
+    add(mmr("up"), "Up");
+    add(mmr("down"), "Down");
   }
 
   @Override

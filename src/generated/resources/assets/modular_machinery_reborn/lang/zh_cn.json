@@ -179,6 +179,7 @@
   "itemgroup.modular_machinery_reborn.group": "模块化机械:重生",
   "key.categories.modular_machinery_reborn": "模块化机械:重置",
   "key.modular_machinery_reborn.structure_mode_change": "结构创建器模式",
+  "mmr.config.tooltip.info": "Relative to %s",
   "mmr.controller.exactly": " (Exactly %s)",
   "mmr.controller.max": " (Max: %s)",
   "mmr.controller.min": " (Min: %s)",
@@ -187,6 +188,8 @@
   "mmr.core.active.true": "当前核心能为配方工作",
   "mmr.core.number": "核心编号: %s",
   "mmr.damagesource.kill": "%s was killed by a %s",
+  "mmr.down": "Down",
+  "mmr.east": "East",
   "mmr.emi.no_items": "配方中没有物品",
   "mmr.gui.button.back": "返回",
   "mmr.gui.button.close": "关闭",
@@ -227,6 +230,7 @@
   "mmr.gui.tooltip.redstone.button.mode.input": "Input",
   "mmr.gui.tooltip.redstone.button.mode.none": "None",
   "mmr.gui.tooltip.redstone.button.mode.output": "Output",
+  "mmr.north": "North",
   "mmr.place.no_item": "尝试放置 %s 在 %s 但是在玩家库存中未找到 %s ",
   "mmr.place.non_air": "尝试放置 %s 在 %s 但是找到了不属于当前结构的方块",
   "mmr.place.replace": "正在破坏 %s 位于 %s 以放置新方块",
@@ -254,6 +258,7 @@
   "mmr.side.left": "Left",
   "mmr.side.right": "Right",
   "mmr.side.top": "Top",
+  "mmr.south": "South",
   "mmr.structure.error.between": "Expected to be between %s and %s, but found %s (%s)",
   "mmr.structure.error.exact": "Expected %s, but found %s (%s)",
   "mmr.structure.error.max": "Expected at most %s, but found %s (%s)",
@@ -265,6 +270,7 @@
   "mmr.tooltip.open_side_config": "Open Side Config",
   "mmr.tooltip.redstone.emit": "Emitting %s",
   "mmr.tooltip.redstone.receive": "Receiving %s",
+  "mmr.up": "Up",
   "mmr.waila.cores": [
     {
       "color": "gray",
@@ -279,6 +285,7 @@
       "text": " 核心"
     }
   ],
+  "mmr.west": "West",
   "mmr.wrench.side_mode.change": "Changed side: %s from %s to %s",
   "modular_machinery_reborn.command.reload.machines": "成功重载模块化机械！",
   "modular_machinery_reborn.command.reload.recipes": "成功重载模块化机械的配方",
