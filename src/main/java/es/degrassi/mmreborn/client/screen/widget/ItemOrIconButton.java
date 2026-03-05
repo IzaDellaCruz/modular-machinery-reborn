@@ -15,6 +15,7 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -29,7 +30,7 @@ public class ItemOrIconButton extends Button implements TooltipRender {
   private boolean disableClickSound = false;
   private boolean disableBackground = false;
   @Nullable
-  private final Item item;
+  private final ItemLike item;
   @Nullable
   private final Icon icon;
 
@@ -42,7 +43,7 @@ public class ItemOrIconButton extends Button implements TooltipRender {
     this.icon = null;
   }
 
-  public ItemOrIconButton(int x, int y, Item item, OnPress onPress) {
+  public ItemOrIconButton(int x, int y, ItemLike item, OnPress onPress) {
     super(x, y, 16, 16, Component.empty(), onPress, Button.DEFAULT_NARRATION);
     this.item = item;
     this.icon = null;
@@ -85,7 +86,7 @@ public class ItemOrIconButton extends Button implements TooltipRender {
   public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
     if (this.visible) {
       Icon icon = this.getIcon();
-      Item item = this.getItem();
+      ItemLike item = this.getItem();
       if (this.halfSize) {
         this.width = getWidth() / 2;
         this.height = getHeight() / 2;

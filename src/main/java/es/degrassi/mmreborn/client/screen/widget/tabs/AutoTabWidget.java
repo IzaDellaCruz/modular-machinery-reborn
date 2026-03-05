@@ -6,6 +6,8 @@ import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.capability.config.RelativeSide;
 import es.degrassi.mmreborn.api.client.Icon;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
+import es.degrassi.mmreborn.common.block.BlockController;
+import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.entity.base.IAutoEntity;
 import es.degrassi.mmreborn.common.network.client.CChangeIOSideConfigPacket;
 import lombok.Getter;
@@ -24,6 +26,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
 @ParametersAreNonnullByDefault
@@ -189,6 +192,10 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
       );
     }
 
+    private boolean isEnabled() {
+      return this.entity.getConfig().getSideMode(this.side).isEnabled();
+    }
+
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
       if (this.visible) {
@@ -209,7 +216,7 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
           if (!this.isDisableBackground()) {
             Icon bgIcon = this.isHovered()
                 ? Icon.TOOLBAR_BUTTON_BACKGROUND_HOVER
-                : (this.entity.getConfig().getSideMode(side).isEnabled() ? Icon.TOOLBAR_BUTTON_BACKGROUND_FOCUS : Icon.TOOLBAR_BUTTON_BACKGROUND);
+                : (isEnabled() ? Icon.TOOLBAR_BUTTON_BACKGROUND_FOCUS : Icon.TOOLBAR_BUTTON_BACKGROUND);
             bgIcon.getBlitter().dest(this.getX() - 1, this.getY() + yOffset, configWidth, configHeight).zOffset(2).blit(guiGraphics);
           }
 
@@ -221,24 +228,30 @@ public abstract class AutoTabWidget<T extends IAutoEntity<?> & ISideConfigCompon
     private @Nullable Component getBlockName() {
       BlockPos pos = entity.getBlockPos();
       if (Minecraft.getInstance().player == null) return null;
-      var direction = side.getDirection(Minecraft.getInstance().player.getDirection().getOpposite());
+      var direction = side.getDirection(entity.getControllerFacing());
       var relativePos = pos.relative(direction);
       if (entity.getLevel() == null) return null;
       var blockstate = entity.getLevel().getBlockState(relativePos);
       if (blockstate.isAir()) return null;
-      return blockstate.getBlock().getName();
+      Optional<MachineControllerEntity> controller = Optional.empty();
+      if (blockstate.getBlock() instanceof BlockController) {
+        controller = Optional.ofNullable((MachineControllerEntity) entity.getLevel().getBlockEntity(relativePos));
+      }
+      return controller
+          .map(c -> c.getFoundMachine().getName())
+          .orElse(blockstate.getBlock().getName());
     }
 
     private void renderBlockItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
       BlockPos pos = entity.getBlockPos();
       if (Minecraft.getInstance().player == null) return;
-      var direction = side.getDirection(Minecraft.getInstance().player.getDirection().getOpposite());
+      var direction = side.getDirection(entity.getControllerFacing());
       var relativePos = pos.relative(direction);
       if (entity.getLevel() == null) return;
 
       var blockstate = entity.getLevel().getBlockState(relativePos);
       if (blockstate.isAir()) return;
-      var item = blockstate.getBlock().asItem();
+      var item = blockstate.getBlock();
 
       new ItemOrIconButton(
           getX(),

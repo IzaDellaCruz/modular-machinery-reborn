@@ -25,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -185,7 +184,7 @@ public class ControllerItem extends ItemBlockMachineComponent {
   }
 
   @Override
-  public @NotNull Component getName(@NotNull ItemStack pStack) {
+  public Component getName(ItemStack pStack) {
     return getMachine(pStack).map(DynamicMachine::getName).orElse(super.getName(pStack));
   }
 }

@@ -17,6 +17,7 @@ public abstract class SideConfig<M extends SideMode> {
 
   public static final Color DEFAULT_COLOR = Color.fromColors(0.5, 0, 0, 1);
 
+  @Getter
   final Map<RelativeSide, M> sides = new EnumMap<>(RelativeSide.class);
   @Getter
   private final ISideConfigComponent<M> component;
