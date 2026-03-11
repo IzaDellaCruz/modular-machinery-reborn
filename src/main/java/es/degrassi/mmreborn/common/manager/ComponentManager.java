@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import es.degrassi.mmreborn.api.BlockIngredient;
 import es.degrassi.mmreborn.api.controller.ControllerAccessible;
+import es.degrassi.mmreborn.api.controller.ControllerAttacheable;
 import es.degrassi.mmreborn.api.crafting.ComponentNotFoundException;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
 import es.degrassi.mmreborn.api.crafting.requirement.IRequirement;
@@ -20,7 +21,7 @@ import es.degrassi.mmreborn.common.crafting.modifier.RecipeModifier;
 import es.degrassi.mmreborn.common.crafting.requirement.RequirementType;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
-import es.degrassi.mmreborn.common.entity.base.ColorableMachineComponentEntity;
+import es.degrassi.mmreborn.common.entity.base.ColorableMachineEntity;
 import es.degrassi.mmreborn.common.entity.base.MachineComponentEntity;
 import es.degrassi.mmreborn.common.entity.base.TextureableMachineEntity;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
@@ -156,9 +157,10 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
   public final void resetWithColor() {
     try {
       for (BlockPos current : cache.get(controller)) {
-        if (Objects.requireNonNull(controller.getLevel()).getBlockEntity(current) instanceof ColorableMachineComponentEntity entity) {
+        if (Objects.requireNonNull(controller.getLevel()).getBlockEntity(current) instanceof ControllerAttacheable entity) {
           entity.getControllerPosSet().remove(controller.getBlockPos());
-          entity.setMachineColor(Config.machineColor);
+          if (entity instanceof ColorableMachineEntity cEntity)
+            cEntity.setMachineColor(Config.machineColor);
           if (entity instanceof TextureableMachineEntity e) e.resetTextures();
         }
       }
@@ -184,7 +186,7 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
       cache.get(controller).forEach(pos -> {
         var oldState = level.getBlockState(pos);
         var entity = level.getBlockEntity(pos);
-        if (entity instanceof ColorableMachineComponentEntity ce) {
+        if (entity instanceof ControllerAttacheable ce) {
           ce.getControllerPosSet().add(controllerPos);
         }
         try {

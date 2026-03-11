@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.api.IWrenchable;
 import es.degrassi.mmreborn.api.capability.config.IOSideConfig;
 import es.degrassi.mmreborn.api.capability.config.ISideConfigComponent;
 import es.degrassi.mmreborn.api.capability.config.RelativeSide;
+import es.degrassi.mmreborn.api.controller.ControllerAttacheable;
 import es.degrassi.mmreborn.common.data.Config;
 import es.degrassi.mmreborn.common.network.server.SUpdateMachineColorPacket;
 import es.degrassi.mmreborn.common.registration.EntityRegistration;
@@ -28,7 +29,7 @@ import java.util.Set;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ColorableMachineComponentEntity extends BlockEntitySynchronized implements ColorableMachineEntity, IWrenchable {
+public class ColorableMachineComponentEntity extends BlockEntitySynchronized implements ColorableMachineEntity, IWrenchable, ControllerAttacheable {
   private int definedColor = Config.machineColor;
   @Getter
   protected final Set<BlockPos> controllerPosSet = new HashSet<>();
