@@ -103,7 +103,10 @@ public class ComponentManager implements INBTSerializable<CompoundTag>, ISyncabl
         .build(new CacheLoader<>() {
           @Override
           public @NotNull Map<IOType, List<MachineComponent<?>>> load(ComponentType<?> key) {
-            Map<IOType, List<MachineComponent<?>>> foundComponentsValues = Maps.newHashMap();
+            Map<IOType, List<MachineComponent<?>>> foundComponentsValues = Maps.newEnumMap(IOType.class);
+            for (var value : IOType.values()) {
+              foundComponentsValues.computeIfAbsent(value, io -> Lists.newArrayList());
+            }
             for (MachineComponent<?> comp :
                 getFoundComponentsList()
                     .parallelStream()
