@@ -59,6 +59,10 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   @Getter
   protected final RecipeType<MachineRecipe> recipeType;
 
+  private boolean dimensionsCalculated = false;
+  private int cachedWidth;
+  private int cachedHeight;
+
   public MMRRecipeCategory(DynamicMachine machine) {
     this.machine = machine;
     this.title = machine.getLocalizedName();
@@ -132,7 +136,23 @@ public class MMRRecipeCategory implements IRecipeCategory<MachineRecipe> {
   public void setRecipe(IRecipeLayoutBuilder builder, MachineRecipe recipe, IFocusGroup focuses) {
     this.width = recipe.getWidth();
     this.height = recipe.getHeight();
-    this.setupRecipeDimensions();
+
+    /*
+    Jei doesn't allow, apparently, dynamic size recipes diplays, so we need to get the max size on both
+    to cached it and not need to calculate them again.
+    Since we would do that on every recipe, and if we have lots of them, things scalate fast
+    Basically a loop inside a loop
+    */
+    if (!this.dimensionsCalculated) {
+        this.setupRecipeDimensions();
+        this.cachedWidth = this.width;
+        this.cachedHeight = this.height;
+        this.dimensionsCalculated = true;
+    } else {
+        this.width = this.cachedWidth;
+        this.height = this.cachedHeight;
+    }
+
     recipe.textsToRender.clear();
     recipe.chanceTexts.clear();
     if (recipe.isShouldRenderProgress()) {
