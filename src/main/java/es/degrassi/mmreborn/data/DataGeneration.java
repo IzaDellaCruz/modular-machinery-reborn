@@ -1,6 +1,7 @@
 package es.degrassi.mmreborn.data;
 
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.data.lang.MMRLangProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -40,6 +41,7 @@ public class DataGeneration {
     generator.addProvider(true, new MMRLangProvider(packOutput, "pt_br"));
     generator.addProvider(true, new MMRLangProvider(packOutput, "zh_cn"));
     generator.addProvider(true, new MMRLangProvider(packOutput, "ru_ru"));
+    generator.addProvider(true, new MMRLangProvider(packOutput, "uk_ua"));
 
     generator.addProvider(true, new MMRBlockStateProvider(packOutput, fileHelper));
   }

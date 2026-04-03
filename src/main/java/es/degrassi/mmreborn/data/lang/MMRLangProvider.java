@@ -1,8 +1,7 @@
-package es.degrassi.mmreborn.data;
+package es.degrassi.mmreborn.data.lang;
 
 import com.google.gson.JsonObject;
 import es.degrassi.mmreborn.ModularMachineryReborn;
-import es.degrassi.mmreborn.data.lang.Lang;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;

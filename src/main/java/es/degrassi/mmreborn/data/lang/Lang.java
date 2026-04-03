@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 @Getter
 @ParametersAreNonnullByDefault
-public abstract class Lang {
+abstract class Lang {
   private final Map<String, String> data = new TreeMap<>();
   private final Map<String, JsonElement> jsonData = new TreeMap<>();
 
@@ -34,6 +34,7 @@ public abstract class Lang {
       case "pt_br" -> new PtBrLang();
       case "ru_ru" -> new RuRuLang();
       case "zh_cn" -> new ZhCnLang();
+      case "uk_ua" -> new UkUaLang();
       default -> null;
     };
   }

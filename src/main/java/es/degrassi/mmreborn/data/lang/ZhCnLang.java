@@ -6,7 +6,7 @@ import es.degrassi.mmreborn.common.registration.BlockRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.data.MMRTags;
 
-public final class ZhCnLang extends Lang {
+final class ZhCnLang extends Lang {
 
   @Override
   protected void addKeys() {

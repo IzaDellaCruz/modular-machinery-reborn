@@ -6,7 +6,7 @@ import es.degrassi.mmreborn.common.registration.BlockRegistration;
 import es.degrassi.mmreborn.common.registration.ItemRegistration;
 import es.degrassi.mmreborn.data.MMRTags;
 
-public final class PtBrLang extends Lang {
+final class PtBrLang extends Lang {
 
   @Override
   protected void addKeys() {
