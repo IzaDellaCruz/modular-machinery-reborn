@@ -270,7 +270,10 @@ public class FluidHandler extends AbstractHandler<HybridTank, FluidStack> implem
   }
 
   public FluidIngredient getFluids() {
-    return FluidIngredient.of(getInventory().stream().map(HybridTank::getValue).toArray(FluidStack[]::new));
+    var stacks = getFluidStacks();
+    if (stacks.length < 1) return FluidIngredient.empty();
+    if (stacks[0].isEmpty()) return FluidIngredient.empty();
+    return FluidIngredient.of(stacks);
   }
 
   public FluidStack[] getFluidStacks() {
