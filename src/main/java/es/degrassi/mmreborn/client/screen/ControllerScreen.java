@@ -5,6 +5,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.screen.popup.BasePopupScreen;
+import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
 import es.degrassi.mmreborn.client.screen.widget.tabs.ControllerExtraTooltipsTabWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.CoreTabWidget;
 import es.degrassi.mmreborn.client.screen.widget.tabs.ShowRecipesTabWidget;
@@ -30,6 +31,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +84,7 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
           tabs.addTab(new ControllerExtraTooltipsTabWidget(getMenu().getId()));
         });
     if (Mods.isJEIorEMILoaded())
-      tabs.addTab(new ShowRecipesTabWidget(/*ModularMachineryReborn.rl("textures/gui/tabs/recipes.png")*/ null, getMenu().getEntity().getFoundMachine()));
+      tabs.addTab(new ShowRecipesTabWidget(new ItemOrIconButton(0, 0, Items.CRAFTING_TABLE, (b) -> {}), getMenu().getEntity().getFoundMachine()));
     tabs.setInitialFocus(getMenu().getEntity().getLastFocus());
   }
 
