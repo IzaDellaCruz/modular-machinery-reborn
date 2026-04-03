@@ -384,7 +384,7 @@ unifiedPublishingWithMMRBot {
           optional "emi"
           optional "jade"
           optional "the-one-probe"
-          optional "almost-unified"
+          optional "almostunified"
           optional "ldlib"
         }
       }

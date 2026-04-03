@@ -13,6 +13,7 @@ body:
       label: Version
       description: What version of Modular Machinery Reborn are you using?
       options:
+        - 3.0.12
         - 3.0.11
         - 3.0.10
         - 3.0.9
