@@ -26,6 +26,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -263,7 +264,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
         .stream()
         .map(PartialBlockState::getBlockState)
         .map(BlockState::getBlock)
-        .map(Block::asItem)
+        .map(b -> b instanceof LiquidBlock lb ? lb.fluid.getBucket() : b.asItem())
         .map(Item::getDefaultInstance)
         .map(stack -> stack.copyWithCount(amount))
         .toList();
@@ -274,7 +275,7 @@ public class BlockIngredient implements IIngredient<PartialBlockState, BlockInWo
         insertedTags
             .stream()
             .flatMap(TagUtil::getBlocks)
-            .map(Block::asItem)
+            .map(b -> b instanceof LiquidBlock lb ? lb.fluid.getBucket() : b.asItem())
             .map(Item::getDefaultInstance)
             .map(stack -> stack.copyWithCount(amount))
             .iterator()
