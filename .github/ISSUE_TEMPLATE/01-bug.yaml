@@ -13,6 +13,7 @@ body:
       label: Version
       description: What version of Modular Machinery Reborn are you using?
       options:
+        - 3.0.13
         - 3.0.12
         - 3.0.11
         - 3.0.10
@@ -90,9 +91,9 @@ body:
       description: Steps to reproduce the behavior.
       placeholder: |
         1. In this environment...
-        1. With this config...
-        1. Run '...'
-        1. See error...
+        2. With this config...
+        3. Run '...'
+        4. See error...
   - type: textarea
     id: logs
     attributes:
