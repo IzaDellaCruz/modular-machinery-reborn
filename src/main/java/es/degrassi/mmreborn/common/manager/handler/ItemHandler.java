@@ -155,20 +155,25 @@ public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements
   }
 
   public int getDurabilityAmount(ItemStack stack) {
-    return this.getInputs().stream().filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
+    return this.getInputs()
+        .stream()
+        .filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .mapToInt(component -> component.getItemStack().getMaxDamage() - component.getItemStack().getDamageValue())
         .sum();
   }
 
   public int getSpaceForDurability(ItemStack stack) {
-    return this.getInputs().stream().filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
+    return this.getInputs()
+        .stream()
+        .filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .mapToInt(component -> component.getItemStack().getDamageValue())
         .sum();
   }
 
   public void repairItem(ItemStack stack, int amount) {
     AtomicInteger toRepair = new AtomicInteger(amount);
-    this.getInputs().stream()
+    this.getInputs()
+        .stream()
         .filter(component -> isSameItem(component.getItemStack(), stack) && component.getItemStack().isDamageableItem())
         .forEach(component -> {
           int maxRepair = Math.min(component.getItemStack().getDamageValue(), toRepair.get());
@@ -180,7 +185,8 @@ public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements
 
   public void removeDurability(ItemStack input, int amount) {
     AtomicInteger toRemove = new AtomicInteger(amount);
-    this.getInputs().stream()
+    this.getInputs()
+        .stream()
         .filter(component -> isSameItem(component.getItemStack(), input) && component.getItemStack().isDamageableItem())
         .forEach(component -> {
           int maxRemove = Math.min(component.getItemStack().getMaxDamage() - component.getItemStack().getDamageValue(), toRemove.get());
@@ -315,19 +321,21 @@ public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements
 
   public void removeFromInputs(ItemStack stack, int amount) {
     AtomicInteger toRemove = new AtomicInteger(amount);
-    this.getInputs().stream()
+    this.getInputs()
+        .stream()
         .filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
         .forEach(component -> {
-          int maxExtract = Math.min(component.getItemStack().getCount(), toRemove.get());
+          int maxExtract = toRemove.get() - component.extractItemBypassLimit(stack.getCount(), false).getCount();
           toRemove.addAndGet(-maxExtract);
-          component.getItemStack().shrink(maxExtract);
+          component.extractItemBypassLimit(maxExtract, false);
           component.setChanged();
         });
   }
 
   public void addToOutputs(ItemStack stack, int amount) {
     AtomicInteger toAdd = new AtomicInteger(amount);
-    this.getOutputs().stream()
+    this.getOutputs()
+        .stream()
         .filter(component -> canPlaceOutput(component, stack))
         .forEach(component -> {
           int maxInsert = toAdd.get() - component.insertItemBypassLimit(stack, true).getCount();
@@ -355,7 +363,9 @@ public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements
   }
 
   public int getSpaceForItem(ItemStack stack) {
-    return this.getOutputs().stream().filter(component -> canPlaceOutput(component, stack))
+    return this.getOutputs()
+        .stream()
+        .filter(component -> canPlaceOutput(component, stack))
         .mapToInt(component -> {
           if (component.getItemStack().isEmpty())
             return Math.min(component.getCapacity(), stack.getMaxStackSize());
@@ -366,7 +376,9 @@ public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements
   }
 
   public int getItemAmount(ItemStack stack) {
-    return this.getInputs().stream().filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
+    return this.getInputs()
+        .stream()
+        .filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
         .mapToInt(component -> component.getItemStack().getCount())
         .sum();
   }
