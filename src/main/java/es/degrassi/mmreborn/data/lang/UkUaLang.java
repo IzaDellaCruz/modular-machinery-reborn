@@ -530,6 +530,7 @@ final class UkUaLang extends Lang {
     add(mmr(tooltip("effect.interdimensional")), "Накладання ефекту між вимірами");
     add(mmr(tooltip("redstone.emit")), "Випромінює %s");
     add(mmr(tooltip("redstone.receive")), "Отримує %s");
+    add(mmr(gui("missing_structure")), "Not Available until structure formed");
   }
 
   @Override

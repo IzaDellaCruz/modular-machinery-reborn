@@ -487,6 +487,7 @@ final class RuRuLang extends Lang {
     add(mmr(tooltip("effect.interdimensional")), "Giving effect interdimensionally");
     add(mmr(tooltip("redstone.emit")), "Emitting %s");
     add(mmr(tooltip("redstone.receive")), "Receiving %s");
+    add(mmr(gui("missing_structure")), "Not Available until structure formed");
   }
 
   @Override
