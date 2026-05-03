@@ -2,6 +2,7 @@ package es.degrassi.mmreborn.common.integration.kubejs.function;
 
 import dev.latvian.mods.kubejs.level.CachedLevelBlock;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import es.degrassi.mmreborn.common.entity.MachineControllerEntity;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.machine.MachineComponent;
@@ -32,7 +33,8 @@ import java.util.function.Predicate;
 public class MachineControllerJS {
   private final MachineControllerEntity internal;
 
-  protected MachineControllerJS(MachineControllerEntity internal) {
+  @HideFromJS
+  public MachineControllerJS(MachineControllerEntity internal) {
     this.internal = internal;
   }
 

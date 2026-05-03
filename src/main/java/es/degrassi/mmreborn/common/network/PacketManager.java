@@ -4,6 +4,7 @@ import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.common.network.client.CBreakStructurePacket;
 import es.degrassi.mmreborn.common.network.client.CChangeIOSideConfigPacket;
 import es.degrassi.mmreborn.common.network.client.CCoreButtonClickedPacked;
+import es.degrassi.mmreborn.common.network.client.CDynamicTooltipEventCallPacket;
 import es.degrassi.mmreborn.common.network.client.CExperienceButtonClickedPacket;
 import es.degrassi.mmreborn.common.network.client.CPlaceStructurePacket;
 import es.degrassi.mmreborn.common.network.client.CRedstoneButtonModeClickedPacket;
@@ -14,6 +15,7 @@ import es.degrassi.mmreborn.common.network.server.SMachineUpdatePacket;
 import es.degrassi.mmreborn.common.network.server.SOpenFilePacket;
 import es.degrassi.mmreborn.common.network.server.SRemoveControllerRenderer;
 import es.degrassi.mmreborn.common.network.server.SStopSoundInstancePacket;
+import es.degrassi.mmreborn.common.network.server.SSyncDynamicTooltipsPacket;
 import es.degrassi.mmreborn.common.network.server.SSyncMachinePacket;
 import es.degrassi.mmreborn.common.network.server.SSyncPauseStatePacket;
 import es.degrassi.mmreborn.common.network.server.SSyncTooltipsPacket;
@@ -55,6 +57,7 @@ public class PacketManager {
     registrar.playToClient(SSyncMachinePacket.TYPE, SSyncMachinePacket.CODEC, SSyncMachinePacket::handle);
     registrar.playToClient(SSyncPauseStatePacket.TYPE, SSyncPauseStatePacket.CODEC, SSyncPauseStatePacket::handle);
     registrar.playToClient(SSyncTooltipsPacket.TYPE, SSyncTooltipsPacket.CODEC, SSyncTooltipsPacket::handle);
+    registrar.playToClient(SSyncDynamicTooltipsPacket.TYPE, SSyncDynamicTooltipsPacket.CODEC, SSyncDynamicTooltipsPacket::handle);
     registrar.playToClient(SAddControllerRenderer.TYPE, SAddControllerRenderer.CODEC, SAddControllerRenderer::handle);
     registrar.playToClient(SRemoveControllerRenderer.TYPE, SRemoveControllerRenderer.CODEC, SRemoveControllerRenderer::handle);
     registrar.playToClient(SUpdateContainerPacket.TYPE, SUpdateContainerPacket.CODEC, SUpdateContainerPacket::handle);
@@ -69,6 +72,7 @@ public class PacketManager {
     registrar.playToServer(CCoreButtonClickedPacked.TYPE, CCoreButtonClickedPacked.CODEC, CCoreButtonClickedPacked::handle);
     registrar.playToServer(CRedstoneButtonModeClickedPacket.TYPE, CRedstoneButtonModeClickedPacket.CODEC, CRedstoneButtonModeClickedPacket::handle);
     registrar.playToServer(CChangeIOSideConfigPacket.TYPE, CChangeIOSideConfigPacket.CODEC, CChangeIOSideConfigPacket::handle);
+    registrar.playToServer(CDynamicTooltipEventCallPacket.TYPE, CDynamicTooltipEventCallPacket.CODEC, CDynamicTooltipEventCallPacket::handle);
 
     // EMI packet
     if (Mods.isJEIorEMILoaded()) {

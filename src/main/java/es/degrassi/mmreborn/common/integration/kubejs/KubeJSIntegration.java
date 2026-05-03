@@ -7,8 +7,9 @@ import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.script.data.VirtualDataPack;
 import es.degrassi.mmreborn.api.crafting.CraftingResult;
 import es.degrassi.mmreborn.api.crafting.ICraftingContext;
+import es.degrassi.mmreborn.common.integration.kubejs.events.DynamicTooltipKubeEvent;
+import es.degrassi.mmreborn.common.integration.kubejs.events.FunctionKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.events.MachineKubeEvent;
-import es.degrassi.mmreborn.common.integration.kubejs.function.FunctionKubeEvent;
 import es.degrassi.mmreborn.common.machine.DynamicMachine;
 import es.degrassi.mmreborn.common.machine.MachineLocation;
 import es.degrassi.mmreborn.common.util.MMRLogger;
@@ -69,6 +70,20 @@ public class KubeJSIntegration {
       return CraftingResult.error(Component.literal(charSequence.toString()));
     else
       return CraftingResult.error(Component.translatable("craftcheck.failure.function.interrupt"));
+  }
+
+  public static Component sendDynamicTooltipEvent(ResourceLocation id) {
+    if (!MMRKubeJSPlugin.DYNAMIC_TOOLTIPS.hasListeners(id)) return Component.literal(id.getPath());
+    Component toReturn;
+    EventResult result = MMRKubeJSPlugin.DYNAMIC_TOOLTIPS.post(new DynamicTooltipKubeEvent(), id);
+    if (result.value() instanceof Component comp) {
+      toReturn = comp;
+    } else if (result.value() instanceof CharSequence charSequence) {
+      toReturn = Component.literal(charSequence.toString());
+    } else {
+      toReturn = Component.literal(id.getPath());
+    }
+    return toReturn;
   }
 
   public static void logError(Throwable error) {

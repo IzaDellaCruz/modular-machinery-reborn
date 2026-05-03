@@ -1,7 +1,10 @@
 package es.degrassi.mmreborn.common.network.server;
 
+import com.mojang.datafixers.util.Either;
 import es.degrassi.mmreborn.ModularMachineryReborn;
 import es.degrassi.mmreborn.api.client.machine.TooltipUse;
+import es.degrassi.mmreborn.api.codec.DefaultCodecs;
+import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.common.util.MMRLogger;
 import es.degrassi.mmreborn.common.util.TextComponentUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,15 +17,16 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.EnumMap;
 import java.util.List;
 
-public record SSyncTooltipsPacket(ResourceLocation machineId, EnumMap<TooltipUse, List<Component>> tooltips) implements CustomPacketPayload {
+public record SSyncTooltipsPacket(ResourceLocation machineId,
+                                  EnumMap<TooltipUse, List<Either<ResourceLocation, Component>>> tooltips) implements CustomPacketPayload {
   public static final Type<SSyncTooltipsPacket> TYPE = new Type<>(ModularMachineryReborn.rl("sync_tooltips"));
 
   public static final StreamCodec<RegistryFriendlyByteBuf, SSyncTooltipsPacket> CODEC = new StreamCodec<>() {
     @Override
     public SSyncTooltipsPacket decode(RegistryFriendlyByteBuf buf) {
       var rl = buf.readResourceLocation();
-      EnumMap<TooltipUse, List<Component>> tooltips = new EnumMap<>(TooltipUse.class);
-      var map = buf.readMap(TooltipUse.CODEC::fromNetwork, TextComponentUtils.CODEC.listOf()::fromNetwork);
+      EnumMap<TooltipUse, List<Either<ResourceLocation, Component>>> tooltips = new EnumMap<>(TooltipUse.class);
+      var map = buf.readMap(TooltipUse.CODEC::fromNetwork, NamedCodec.either(DefaultCodecs.RESOURCE_LOCATION, TextComponentUtils.CODEC).listOf()::fromNetwork);
       tooltips.putAll(map);
       return new SSyncTooltipsPacket(rl, tooltips);
     }
@@ -34,7 +38,7 @@ public record SSyncTooltipsPacket(ResourceLocation machineId, EnumMap<TooltipUse
         buf.writeMap(
             packet.tooltips,
             TooltipUse.CODEC::toNetwork,
-            TextComponentUtils.CODEC.listOf()::toNetwork
+            NamedCodec.either(DefaultCodecs.RESOURCE_LOCATION, TextComponentUtils.CODEC).listOf()::toNetwork
         );
       } catch (Exception e) {
         MMRLogger.INSTANCE.error("Encode error: ", e);

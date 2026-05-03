@@ -3,6 +3,7 @@ package es.degrassi.mmreborn.common.integration.jei;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import es.degrassi.mmreborn.ModularMachineryReborn;
+import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.api.codec.NamedCodec;
 import es.degrassi.mmreborn.api.integration.almostunified.RecipeIndicator;
 import es.degrassi.mmreborn.client.screen.BaseScreen;
@@ -146,7 +147,10 @@ public class MMRJeiPlugin implements IModPlugin {
           return List.of();
         var tab = containerScreen.getTabs().getTabs().get(0);
         return List.of(createBasic(
-            tab.getWidth() * 3,
+            tab.getWidth() * Optional.ofNullable(ModularMachineryReborn.MACHINE_EXTRA_TOOLTIPS.get(containerScreen.getMenu().getId()))
+                .map(c -> c.get(TooltipUse.GUI))
+                .map(c -> !c.isEmpty() ? 4 : 3)
+                .orElse(3),
             -tab.getHeight(),
             tab.getWidth(),
             tab.getHeight(),

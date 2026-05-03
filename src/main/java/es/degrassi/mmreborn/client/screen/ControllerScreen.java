@@ -81,7 +81,7 @@ public class ControllerScreen extends BasePopupScreen<ControllerContainer> {
         .map(enumTooltips -> Optional.ofNullable(enumTooltips.get(TooltipUse.GUI)).orElse(List.of()))
         .ifPresent(tooltips -> {
           if (tooltips.isEmpty()) return;
-          tabs.addTab(new ControllerExtraTooltipsTabWidget(getMenu().getId()));
+          tabs.addTab(new ControllerExtraTooltipsTabWidget(getMenu().getId(), getMenu()));
         });
     if (Mods.isJEIorEMILoaded())
       tabs.addTab(new ShowRecipesTabWidget(new ItemOrIconButton(0, 0, Items.CRAFTING_TABLE, (b) -> {}), getMenu().getEntity().getFoundMachine()));

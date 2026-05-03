@@ -23,9 +23,10 @@ import es.degrassi.mmreborn.common.integration.kubejs.builder.FuelDataJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ModifierBuilderJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.ProgressDataJS;
 import es.degrassi.mmreborn.common.integration.kubejs.builder.StructureBuilderJS;
+import es.degrassi.mmreborn.common.integration.kubejs.events.DynamicTooltipKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.events.ExtraTooltipsKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.events.MachineKubeEvent;
-import es.degrassi.mmreborn.common.integration.kubejs.function.FunctionKubeEvent;
+import es.degrassi.mmreborn.common.integration.kubejs.events.FunctionKubeEvent;
 import es.degrassi.mmreborn.common.integration.kubejs.function.MachineControllerJS;
 import es.degrassi.mmreborn.common.machine.IOType;
 import es.degrassi.mmreborn.common.util.IntRange;
@@ -34,6 +35,7 @@ import es.degrassi.mmreborn.common.util.sound.AmbientSound;
 import es.degrassi.mmreborn.common.util.sound.MMRSoundType;
 import es.degrassi.mmreborn.common.util.sound.Sounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.EnumMap;
 
@@ -45,6 +47,10 @@ public class MMRKubeJSPlugin implements KubeJSPlugin {
       .hasResult(TypeInfo.of(Component.class))
       .requiredTarget(EventTargetType.STRING);
   public static final EventHandler TOOLTIPS = MMR_EVENTS.server("extraTooltips", () -> ExtraTooltipsKubeEvent.class);
+  public static final TargetedEventHandler<ResourceLocation> DYNAMIC_TOOLTIPS = MMR_EVENTS
+      .server("dynamicTooltip", () -> DynamicTooltipKubeEvent.class)
+      .hasResult(TypeInfo.of(Component.class))
+      .requiredTarget(EventTargetType.ID);
 
   @Override
   public void registerEvents(EventGroupRegistry registry) {

@@ -67,7 +67,11 @@ public abstract class ContainerBase<T extends ColorableMachineComponentEntity> e
   }
 
   public boolean needFullSync() {
-    return this.entity.getLevel() != null && this.entity.getLevel().getGameTime() % 100 == 0;
+    return needFullSync(100);
+  }
+
+  public boolean needFullSync(int ticks) {
+    return this.entity.getLevel() != null && this.entity.getLevel().getGameTime() % ticks == 0;
   }
 
   @Override

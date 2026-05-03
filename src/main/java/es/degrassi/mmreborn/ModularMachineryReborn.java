@@ -3,6 +3,7 @@ package es.degrassi.mmreborn;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import es.degrassi.experiencelib.api.capability.ExperienceLibCapabilities;
 import es.degrassi.mmreborn.api.client.machine.TooltipUse;
@@ -100,7 +101,7 @@ public class ModularMachineryReborn {
 
   public static final BiMap<ResourceLocation, DynamicMachine> MACHINES = HashBiMap.create();
   public static final BiMap<ResourceLocation, BlockController> MACHINES_BLOCK = HashBiMap.create();
-  public static final BiMap<ResourceLocation, EnumMap<TooltipUse, List<Component>>> MACHINE_EXTRA_TOOLTIPS = HashBiMap.create();
+  public static final BiMap<ResourceLocation, EnumMap<TooltipUse, List<Either<ResourceLocation, Component>>>> MACHINE_EXTRA_TOOLTIPS = HashBiMap.create();
   public static final Set<MachineControllerEntity> CONTROLLERS = Sets.newHashSet();
 
   public ModularMachineryReborn(final ModContainer CONTAINER, final IEventBus MOD_BUS) {

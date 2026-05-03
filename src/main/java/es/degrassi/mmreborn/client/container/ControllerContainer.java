@@ -22,6 +22,7 @@ import java.util.List;
 public class ControllerContainer extends ContainerBase<MachineControllerEntity> {
   private int corePage = 1;
   private final Int2ObjectMap<List<MachineProcessorCore>> pages = new Int2ObjectArrayMap<>();
+  public Int2ObjectMap<Component> dynamicTooltips = new Int2ObjectArrayMap<>();
 
   public static void open(ServerPlayer player, MachineControllerEntity machine) {
     player.openMenu(new MenuProvider() {
@@ -48,16 +49,6 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
   @Override
   public void clicked(int slotId, int button, ClickType clickType, Player player) {
     super.clicked(slotId, button, clickType, player);
-    /*if (Mods.isEMILoaded()) {
-      List<Slot> prevSlots = this.slots.stream().toList();
-      List<Slot> newSlots = MMREmiRecipeHandler.getSlots(this);
-      this.slots.clear();
-      newSlots.stream()
-          .filter(Objects::nonNull)
-          .forEach(this.slots::add);
-      this.slots.clear();
-      this.slots.addAll(prevSlots);
-    }*/
   }
 
   @Override
@@ -84,5 +75,9 @@ public class ControllerContainer extends ContainerBase<MachineControllerEntity> 
 
   public ResourceLocation getId() {
     return getEntity().getFoundMachine().getRegistryName();
+  }
+
+  public void setTooltips(Int2ObjectArrayMap<Component> tooltips) {
+    this.dynamicTooltips = tooltips;
   }
 }
