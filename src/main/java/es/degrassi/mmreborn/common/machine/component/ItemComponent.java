@@ -48,9 +48,8 @@ public class ItemComponent extends MachineComponent<ItemHandler> {
     AtomicInteger toRemove = new AtomicInteger(amount);
     this.handler.getInputs().stream().filter(component -> ingredient.test(component.getItemStack())).forEach(component -> {
       int maxExtract = Math.min(component.getItemStack().getCount(), toRemove.get());
-      toRemove.addAndGet(-maxExtract);
-      component.getItemStack().shrink(maxExtract);
-      component.setChanged();
+      var extracted = component.extractItemBypassLimit(maxExtract, false);
+      toRemove.addAndGet(-extracted.getCount());
     });
   }
 
