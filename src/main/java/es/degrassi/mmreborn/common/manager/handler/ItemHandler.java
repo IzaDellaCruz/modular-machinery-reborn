@@ -325,7 +325,7 @@ public class ItemHandler extends AbstractHandler<ItemSlot, ItemStack> implements
         .stream()
         .filter(component -> ItemStack.isSameItemSameComponents(component.getItemStack(), stack))
         .forEach(component -> {
-          int maxExtract = toRemove.get() - component.extractItemBypassLimit(stack.getCount(), false).getCount();
+          int maxExtract = toRemove.get() - component.extractItemBypassLimit(stack.getCount(), true).getCount();
           toRemove.addAndGet(-maxExtract);
           component.extractItemBypassLimit(maxExtract, false);
           component.setChanged();
