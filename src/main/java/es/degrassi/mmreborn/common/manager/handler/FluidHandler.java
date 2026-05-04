@@ -45,7 +45,7 @@ public class FluidHandler extends AbstractHandler<HybridTank, FluidStack> implem
         .forEach(component -> {
           int maxExtract = Math.min(component.getValue().getAmount(), toRemove.get());
           toRemove.addAndGet(-maxExtract);
-          component.getValue().shrink(maxExtract);
+          component.extractFluidBypassLimit(maxExtract, false);
           component.setChanged();
         });
   }
@@ -57,7 +57,7 @@ public class FluidHandler extends AbstractHandler<HybridTank, FluidStack> implem
         .forEach(component -> {
           int maxExtract = Math.min(component.getValue().getAmount(), toRemove.get());
           toRemove.addAndGet(-maxExtract);
-          component.getValue().shrink(maxExtract);
+          component.extractFluidBypassLimit(maxExtract, false);
           component.setChanged();
         });
   }
