@@ -7,6 +7,7 @@ import es.degrassi.mmreborn.api.client.Icon;
 import es.degrassi.mmreborn.api.client.machine.TooltipUse;
 import es.degrassi.mmreborn.client.container.ControllerContainer;
 import es.degrassi.mmreborn.client.screen.widget.ItemOrIconButton;
+import es.degrassi.mmreborn.common.data.MMRConfig;
 import es.degrassi.mmreborn.common.integration.kubejs.CKubeJSIntegration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,7 +37,7 @@ public class ControllerExtraTooltipsTabWidget extends TopTabWidget{
   public void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
     super.renderTooltip(guiGraphics, x, y);
     List<Either<FormattedText, TooltipComponent>> components = Lists.newArrayList();
-    if (container.needFullSync(20))
+    if (container.needFullSync(MMRConfig.get().dynamicTooltipTicks.get()))
       CKubeJSIntegration.collectDynamicTooltip(container.containerId);
     gatherComponents(components);
     container.dynamicTooltips.forEach((id, comp) -> components.add(Either.left(comp)));
@@ -47,10 +48,5 @@ public class ControllerExtraTooltipsTabWidget extends TopTabWidget{
         y,
         ItemStack.EMPTY
     );
-  }
-
-  @Override
-  public void gatherComponents(List<Either<FormattedText, TooltipComponent>> components) {
-    super.gatherComponents(components);
   }
 }

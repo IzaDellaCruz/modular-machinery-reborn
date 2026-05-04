@@ -28,6 +28,7 @@ public class MMRConfig {
   public final ConfigValue<String> chance_color;
   public final ConfigValue<Integer> checkStructureTicks;
   public final ConfigValue<Integer> checkRecipeTicks;
+  public final ConfigValue<Integer> dynamicTooltipTicks;
   public final ConfigValue<Integer> maxParallel;
 
   public final ConfigValue<Boolean> shouldReplace;
@@ -74,6 +75,9 @@ public class MMRConfig {
       this.checkRecipeTicks = builder
           .comment("Defines the time in ticks that the machine should check for a recipe update.\n20 ticks = 1 second. Default: 80")
           .defineInRange("check_recipe_ticks", 20, 1, Integer.MAX_VALUE);
+      this.dynamicTooltipTicks = builder
+          .comment("Defines the time between updates in dynamic extra tooltips")
+          .defineInRange("dynamic_tooltip_interval", 20, 1, Integer.MAX_VALUE);
       this.maxParallel = builder
           .comment("Defines the number of max parallel recipes that can be run on multiblocks. If this number is " +
               "below than any on [parallel hatch] config path, it will use the max value of them instead.")
